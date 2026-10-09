@@ -7,6 +7,7 @@ import { activity, categories, customerProducts, expiringProducts, fastMoversPer
 import type { Store as StoreType } from '@/lib/mock-data'
 import { headOfficeStoreRankings, storeOperationalDiagnosis, type ConnectedProblem } from '@/lib/head-office-ops'
 import CustomerApp from '@/components/customer-app'
+import AiCopilotModal from '@/components/ai-copilot-modal'
 
 type View = 'overview' | 'stores' | 'sales' | 'inventory' | 'waste' | 'incidents' | 'rankings'
 const iconMap: Record<string, React.ElementType> = { grid: Grid2X2, store: Store, chart: FileText, box: Box, clock: Clock3, alert: AlertTriangle, trophy: Trophy }
@@ -78,7 +79,44 @@ function Sidebar({ view, setView, mobileOpen, onClose }: { view: View; setView: 
   )
 }
 
-function Topbar({ onMenu, onCustomer }: { onMenu: () => void; onCustomer: () => void }) { return <header className="flex h-[70px] items-center justify-between border-b border-border/80 bg-white/90 px-5 backdrop-blur lg:px-8"><div className="flex items-center gap-3"><button onClick={onMenu} className="lg:hidden"><Menu className="size-5" /></button><div className="hidden items-center gap-2 text-[11px] text-muted-foreground sm:flex"><span>Workspace</span><span>/</span><span className="font-semibold text-foreground">Overview</span></div></div><div className="flex items-center gap-2"><div className="hidden items-center gap-2 rounded-xl border bg-[#fafcfa] px-3 py-2 sm:flex"><Search className="size-4 text-muted-foreground" /><span className="text-[11px] text-muted-foreground">Search anything...</span><kbd className="ml-6 rounded border bg-white px-1.5 py-0.5 text-[9px] text-muted-foreground">⌘ K</kbd></div><button className="relative rounded-xl p-2.5 hover:bg-muted"><Bell className="size-[17px] text-muted-foreground" /><span className="absolute right-2 top-2 size-1.5 rounded-full bg-red-500" /></button><button onClick={onCustomer} className="hidden rounded-xl bg-[#123f31] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#1d5a45] md:block">Preview customer app</button></div></header> }
+function Topbar({ onMenu, onCustomer, onOpenCopilot }: { onMenu: () => void; onCustomer: () => void; onOpenCopilot: () => void }) {
+  return (
+    <header className="flex h-[70px] items-center justify-between border-b border-border/80 bg-white/90 px-5 backdrop-blur lg:px-8">
+      <div className="flex items-center gap-3">
+        <button onClick={onMenu} className="lg:hidden">
+          <Menu className="size-5" />
+        </button>
+        <div className="hidden items-center gap-2 text-[11px] text-muted-foreground sm:flex">
+          <span>Workspace</span>
+          <span>/</span>
+          <span className="font-semibold text-foreground">Overview</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-2.5">
+        <button
+          onClick={onOpenCopilot}
+          className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-[11px] font-bold text-[#164e3b] hover:bg-emerald-100 transition-colors shadow-2xs"
+        >
+          <Sparkles className="size-3.5 text-[#247c55] animate-pulse" />
+          <span>Ask AI Copilot</span>
+          <span className="rounded-full bg-[#164e3b] px-1.5 py-0.2 text-[9px] text-white">Live</span>
+        </button>
+        <div className="hidden items-center gap-2 rounded-xl border bg-[#fafcfa] px-3 py-2 sm:flex">
+          <Search className="size-4 text-muted-foreground" />
+          <span className="text-[11px] text-muted-foreground">Search anything...</span>
+          <kbd className="ml-6 rounded border bg-white px-1.5 py-0.5 text-[9px] text-muted-foreground">⌘ K</kbd>
+        </div>
+        <button className="relative rounded-xl p-2.5 hover:bg-muted">
+          <Bell className="size-[17px] text-muted-foreground" />
+          <span className="absolute right-2 top-2 size-1.5 rounded-full bg-red-500" />
+        </button>
+        <button onClick={onCustomer} className="hidden rounded-xl bg-[#123f31] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#1d5a45] md:block">
+          Preview customer app
+        </button>
+      </div>
+    </header>
+  )
+}
 
 function TrendChart() { const max = 6.5; return <div className="relative h-[190px] pt-3"><div className="absolute inset-0 flex flex-col justify-between pb-7 pt-2">{['₹6L','₹4L','₹2L','₹0'].map(x => <div key={x} className="flex items-center gap-2"><span className="w-7 text-[9px] text-muted-foreground">{x}</span><div className="h-px flex-1 bg-[#edf1ed]" /></div>)}</div><div className="absolute bottom-7 left-9 right-1 flex h-[145px] items-end gap-2 sm:gap-4">{salesData.map((item, i) => <div key={item.day} className="relative flex h-full flex-1 items-end gap-0.5"><div className="w-1/2 rounded-t-sm bg-[#cfe7c2]" style={{ height: `${item.forecast / max * 100}%` }} /><div className="w-1/2 rounded-t-sm bg-[#2e8b65]" style={{ height: `${item.actual / max * 100}%` }} /><span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground">{item.day}</span></div>)}</div></div> }
 const StoreMap = dynamic(() => import('@/components/store-map'), { ssr: false, loading: () => <div className="h-[230px] animate-pulse rounded-xl bg-[#edf4e9]" /> })
@@ -1041,4 +1079,52 @@ function PageTitle({ title, eyebrow, desc }: { title: string; eyebrow: string; d
 
 
 
-export default function GroceryDashboard() { const [view, setView] = useState<View>('overview'); const [mobileOpen, setMobileOpen] = useState(false); const [customer, setCustomer] = useState(false); if (customer) return <CustomerApp onBack={() => setCustomer(false)} />; return <div className="flex min-h-screen bg-[#f4f7f2] text-foreground"><Sidebar view={view} setView={setView} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} /><div className="flex min-w-0 flex-1 flex-col"><Topbar onMenu={() => setMobileOpen(true)} onCustomer={() => setCustomer(true)} /><main className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-7">{view === 'overview' ? <Overview setView={setView} /> : <DataPage view={view} />}</main></div></div> }
+export default function GroceryDashboard() {
+  const [view, setView] = useState<View>('overview')
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [customer, setCustomer] = useState(false)
+  const [copilotOpen, setCopilotOpen] = useState(false)
+  const [copilotPrompt, setCopilotPrompt] = useState<string | undefined>(undefined)
+
+  if (customer) return <CustomerApp onBack={() => setCustomer(false)} />
+
+  return (
+    <div className="flex min-h-screen bg-[#f4f7f2] text-foreground">
+      <Sidebar view={view} setView={setView} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Topbar
+          onMenu={() => setMobileOpen(true)}
+          onCustomer={() => setCustomer(true)}
+          onOpenCopilot={() => {
+            setCopilotPrompt(undefined)
+            setCopilotOpen(true)
+          }}
+        />
+        <main className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+          {view === 'overview' ? <Overview setView={setView} /> : <DataPage view={view} />}
+        </main>
+      </div>
+
+      {/* Floating Real-Time AI Copilot Action Button */}
+      <button
+        onClick={() => {
+          setCopilotPrompt(undefined)
+          setCopilotOpen(true)
+        }}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-[#123f31] px-4 py-3 text-xs font-bold text-white shadow-xl ring-4 ring-emerald-500/20 hover:bg-[#195643] hover:scale-105 transition-all cursor-pointer"
+      >
+        <Sparkles className="size-4 text-emerald-300 animate-pulse" />
+        <span>GrocerAI Copilot</span>
+        <span className="rounded-full bg-emerald-400/20 px-2 py-0.5 text-[9px] font-semibold text-emerald-300">
+          Live AI
+        </span>
+      </button>
+
+      <AiCopilotModal
+        isOpen={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+        initialPrompt={copilotPrompt}
+      />
+    </div>
+  )
+}
