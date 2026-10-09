@@ -23,7 +23,7 @@ import {
   Zap,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 import { useCart } from "@/components/cart-provider";
 import { CartPill } from "@/components/cart-pill";
@@ -39,7 +39,34 @@ export default function ScanScreen() {
   const [mode, setMode] = useState<"camera" | "manual">("camera");
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
-  const [permission, requestPermission] = useCameraPermissions();
+  
+  // Initialize html5-qrcode for the web platform
+  useEffect(() => {
+    if (mode === "camera") {
+      const scanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E
+        ]
+      }, false);
+      
+      scanner.render((decodedText) => {
+        // Pause scanner visually if possible, or just ignore if already scanning
+        triggerScan(decodedText);
+      }, (err) => {
+        // ignore errors
+      });
+
+      return () => {
+        scanner.clear().catch(console.error);
+      };
+    }
+  }, [mode, isScanning]);
 
   // Animated laser line
   const laserAnim = useRef(new Animated.Value(0)).current;
@@ -72,10 +99,10 @@ export default function ScanScreen() {
 
     try {
       if (typeof productOrBarcode === "string") {
-        // Real barcode scan: Fetch from API
-        // Hackathon Demo Mode: Fallback to local mock data if API is unreachable
+        const scannedCode = productOrBarcode.trim();
+        // Fallback to local mock data
         const match = customerProducts.find(
-          (p) => p.barcode === productOrBarcode,
+          (p) => p.barcode === scannedCode || scannedCode.includes(p.barcode) || p.barcode.includes(scannedCode),
         );
         
         if (match) {
@@ -85,8 +112,8 @@ export default function ScanScreen() {
         } else {
           // DEMO MAGIC: If the product is not in the database, automatically generate it!
           const dynamicProduct: CustomerProduct = {
-            barcode: productOrBarcode,
-            name: productOrBarcode === '8901725013790' ? 'Bingo! Mad Angles' : `Scanned Item (${productOrBarcode.slice(-4)})`,
+            barcode: scannedCode,
+            name: scannedCode === '8901725013790' ? 'Bingo! Mad Angles' : `Scanned Item (${scannedCode.slice(-4)})`,
             size: '1 unit',
             price: Math.floor(Math.random() * 100) + 20,
             category: 'Store Item',
@@ -185,42 +212,8 @@ export default function ScanScreen() {
 
         {mode === "camera" ? (
           <View className="mt-5 w-full items-center">
-            {/* Viewfinder Target */}
-            <View className="relative size-60 items-center justify-center overflow-hidden rounded-3xl border-2 border-[#2e8b65] shadow-inner">
-              {!permission ? (
-                <View className="items-center p-4">
-                  <Text className="text-center text-xs text-gray-500">
-                    Requesting camera...
-                  </Text>
-                </View>
-              ) : !permission.granted ? (
-                <View className="items-center p-4 bg-[#f2f8e8] w-full h-full justify-center">
-                  <Text className="text-center text-[10px] text-gray-600 mb-2">
-                    Camera permission required
-                  </Text>
-                  <Pressable
-                    onPress={requestPermission}
-                    className="bg-[#164e3b] px-3 py-1.5 rounded-lg"
-                  >
-                    <Text className="text-white text-[10px] font-bold">
-                      Allow Camera
-                    </Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <CameraView
-                  style={{ width: "100%", height: "100%" }}
-                  facing="back"
-                  barcodeScannerSettings={{
-                    barcodeTypes: ["ean13", "ean8", "qr", "upc_a", "upc_e", "code128"],
-                  }}
-                  onBarcodeScanned={(result) => {
-                    if (isScanning || scannedProduct?.barcode === result.data)
-                      return;
-                    triggerScan(result.data);
-                  }}
-                />
-              )}
+            <View className="relative size-60 items-center justify-center overflow-hidden rounded-3xl border-2 border-[#2e8b65] shadow-inner bg-black">
+              <View nativeID="reader" style={{ width: "100%", height: "100%" }} />
 
               {/* Animated laser line */}
               <Animated.View
@@ -232,9 +225,10 @@ export default function ScanScreen() {
                   right: 0,
                 }}
                 className="h-0.5 bg-red-500 shadow-lg"
+                pointerEvents="none"
               />
 
-              <View className="absolute bottom-3 rounded-full bg-[#164e3b]/90 px-3 py-1">
+              <View className="absolute bottom-3 rounded-full bg-[#164e3b]/90 px-3 py-1 pointer-events-none">
                 <Text className="text-[9px] font-semibold text-white">
                   {isScanning ? "Processing…" : "Aim at product barcode"}
                 </Text>
