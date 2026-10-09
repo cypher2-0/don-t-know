@@ -1,6 +1,3 @@
-packages:
-  - mobile
-
 pmOnFail: ignore
 
 minimumReleaseAgeExclude:
