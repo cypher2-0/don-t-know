@@ -15,6 +15,7 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: '#fbfdf9' },
         }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="ai-assistant" options={{ presentation: 'card' }} />
         <Stack.Screen name="product/[id]" />
         <Stack.Screen name="cart" options={{ presentation: 'modal' }} />
         <Stack.Screen

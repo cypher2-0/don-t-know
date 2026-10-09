@@ -16,9 +16,22 @@ export type PlacedOrder = {
   date: string;
   items: number;
   total: number;
+  finalPaid?: number;
+  paymentMethod?: string;
+  discount?: number;
+  tip?: number;
+  delivery?: number;
   status: string;
   slot?: string;
   itemsList?: PlacedOrderItem[];
+};
+
+export type PlaceOrderOptions = {
+  slot?: string;
+  paymentMethod?: string;
+  discount?: number;
+  tip?: number;
+  delivery?: number;
 };
 
 type CartValue = {
@@ -31,7 +44,7 @@ type CartValue = {
   removeItem: (name: string) => void;
   clearCart: () => void;
   placedOrders: PlacedOrder[];
-  placeOrder: (slot?: string) => PlacedOrder;
+  placeOrder: (options?: PlaceOrderOptions | string) => PlacedOrder;
   reorder: (orderItems: PlacedOrderItem[]) => void;
 };
 
@@ -76,7 +89,15 @@ export function CartProvider({ children }: PropsWithChildren) {
   const total = items.reduce((sum, i) => sum + i.qty * i.product.price, 0);
 
   const placeOrder = useCallback(
-    (slot = 'In 20 mins'): PlacedOrder => {
+    (options?: PlaceOrderOptions | string): PlacedOrder => {
+      const opts = typeof options === 'string' ? { slot: options } : (options ?? {});
+      const slot = opts.slot ?? 'In 20 mins';
+      const paymentMethod = opts.paymentMethod ?? 'UPI';
+      const discount = opts.discount ?? 0;
+      const tip = opts.tip ?? 0;
+      const delivery = opts.delivery ?? 0;
+      const finalPaid = Math.max(0, total - discount + delivery + tip);
+
       const currentItems: PlacedOrderItem[] = items.map((i) => ({
         name: i.product.name,
         qty: i.qty,
@@ -89,6 +110,11 @@ export function CartProvider({ children }: PropsWithChildren) {
         date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
         items: count,
         total,
+        finalPaid,
+        paymentMethod,
+        discount,
+        tip,
+        delivery,
         status: 'Confirmed',
         slot,
         itemsList: currentItems,

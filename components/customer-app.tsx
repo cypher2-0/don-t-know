@@ -6,8 +6,10 @@ import {
   Award,
   Barcode,
   Bell,
+  Bot,
   Camera,
   Check,
+  ChefHat,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +18,7 @@ import {
   Clock3,
   CreditCard,
   FileText,
+  Flame,
   Grid2X2,
   HelpCircle,
   MapPin,
@@ -25,6 +28,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Send,
   Settings,
   ShieldCheck,
   ShoppingBag,
@@ -36,6 +40,7 @@ import {
   Truck,
   Users,
   X,
+  Zap,
 } from 'lucide-react'
 
 import {
@@ -77,9 +82,136 @@ const FREE_DELIVERY_OVER = 499
 export default function CustomerApp({ onBack }: { onBack: () => void }) {
   // Navigation & tabs
   const [tab, setTab] = useState<'Home' | 'Explore' | 'Scan' | 'Orders' | 'Profile'>('Home')
-  const [activeModal, setActiveModal] = useState<'none' | 'product' | 'cart' | 'order-placed'>('none')
+  const [activeModal, setActiveModal] = useState<'none' | 'product' | 'cart' | 'order-placed' | 'ai'>('none')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [latestOrderId, setLatestOrderId] = useState<string>('')
+
+  // AI Copilot state
+  const [aiInput, setAiInput] = useState('')
+  const [aiMessages, setAiMessages] = useState<
+    Array<{
+      id: string
+      sender: 'user' | 'assistant'
+      text: string
+      recipe?: { title: string; prep: string; servings: string; calories: string; steps: string[] }
+      bundle?: Array<{ product: Product; qty: number; reason: string }>
+      chips?: string[]
+    }>
+  >([
+    {
+      id: '1',
+      sender: 'assistant',
+      text: "Hi Arjun! I'm your grocerAI Shopping Copilot 🤖. Ask me for recipes, diet meal plans, or budget shopping baskets, and I'll assemble your cart with 1 click!",
+      chips: [
+        '🍲 Paneer & Tomato Dinner for 2',
+        '🥗 High-Protein Breakfast (~₹200)',
+        '💰 Weekly Staples Basket under ₹600',
+        '🥛 Dairy Freshness & Storage Tips',
+      ],
+    },
+  ])
+
+  const sendAiQuery = (prompt: string) => {
+    const p = prompt.trim()
+    if (!p) return
+    const userMsg = {
+      id: Math.random().toString(),
+      sender: 'user' as const,
+      text: p,
+    }
+    setAiMessages((prev) => [...prev, userMsg])
+    setAiInput('')
+
+    setTimeout(() => {
+      const q = p.toLowerCase()
+      let reply: (typeof aiMessages)[0]
+
+      if (q.includes('paneer') || q.includes('dinner') || q.includes('recipe')) {
+        const paneer = customerProducts.find((i) => i.name === 'Fresh Paneer')!
+        const tomato = customerProducts.find((i) => i.name === 'Hybrid Tomatoes')!
+        const butter = customerProducts.find((i) => i.name === 'Amul Salted Butter')!
+        reply = {
+          id: Math.random().toString(),
+          sender: 'assistant',
+          text: "Here is your chef-curated **Paneer Makhani** recipe! All 3 fresh ingredients are in stock at GreenBasket Indiranagar for 18-minute delivery.",
+          recipe: {
+            title: 'Quick Restaurant-Style Paneer Makhani',
+            prep: '20 mins',
+            servings: '2 - 3 people',
+            calories: '~420 kcal/serving',
+            steps: [
+              'Purée fresh tomatoes with ginger & mild spices.',
+              'Melt Amul Butter in pan, sauté tomato gravy until fragrant.',
+              'Simmer gently and toss in fresh malai paneer cubes.',
+              'Garnish and serve hot with rotis or basmati rice.',
+            ],
+          },
+          bundle: [
+            { product: paneer, qty: 1, reason: 'Fresh malai paneer (200g)' },
+            { product: tomato, qty: 1, reason: 'Ripe tomatoes for gravy (1kg)' },
+            { product: butter, qty: 1, reason: 'Rich tempering & taste (100g)' },
+          ],
+          chips: ['High-protein diet ideas', 'Budget under ₹500', 'Check dairy shelf life'],
+        }
+      } else if (q.includes('protein') || q.includes('diet') || q.includes('breakfast')) {
+        const paneer = customerProducts.find((i) => i.name === 'Fresh Paneer')!
+        const bananas = customerProducts.find((i) => i.name === 'Organic Bananas')!
+        const milk = customerProducts.find((i) => i.name === 'Amul Taaza Milk')!
+        reply = {
+          id: Math.random().toString(),
+          sender: 'assistant',
+          text: "Assembled a **High-Protein Vegetarian Breakfast Basket** delivering 46g pure protein under ₹170:",
+          recipe: {
+            title: 'Banana Protein Shake + Pan-Seared Paneer',
+            prep: '8 mins',
+            servings: '1 person',
+            calories: '380 kcal · 42g protein',
+            steps: [
+              'Blend chilled milk with 2 ripe bananas.',
+              'Pan-sear 100g paneer with black pepper and salt.',
+              'Enjoy as optimal morning workout fuel.',
+            ],
+          },
+          bundle: [
+            { product: paneer, qty: 1, reason: '18g pure protein per 100g' },
+            { product: milk, qty: 1, reason: 'Calcium & casein protein' },
+            { product: bananas, qty: 1, reason: 'Potassium & natural energy' },
+          ],
+          chips: ['Weekly staples basket', 'Quick evening snack'],
+        }
+      } else if (q.includes('budget') || q.includes('under') || q.includes('staple')) {
+        const atta = customerProducts.find((i) => i.name === 'Aashirvaad Atta')!
+        const rice = customerProducts.find((i) => i.name === 'India Gate Basmati Rice')!
+        const oil = customerProducts.find((i) => i.name === 'Fortune Sunflower Oil')!
+        reply = {
+          id: Math.random().toString(),
+          sender: 'assistant',
+          text: "Optimized your **Weekly Essentials Basket**! You get staple grains and cooking oil for **₹580**, staying strictly under budget with zero quality compromise.",
+          bundle: [
+            { product: atta, qty: 1, reason: 'Wholewheat grain (5kg)' },
+            { product: rice, qty: 1, reason: 'Long-grain aged basmati (1kg)' },
+            { product: oil, qty: 1, reason: 'Fortified cooking oil (1L)' },
+          ],
+          chips: ['Add salt & spices', 'Apply GB120 coupon'],
+        }
+      } else {
+        const matched = customerProducts.slice(0, 3)
+        reply = {
+          id: Math.random().toString(),
+          sender: 'assistant',
+          text: `Found top store matches for **"${p}"** at GreenBasket Indiranagar:`,
+          bundle: matched.map((prod) => ({
+            product: prod,
+            qty: 1,
+            reason: `${prod.category} · In stock with 15-min delivery`,
+          })),
+          chips: ['Paneer & Tomato Dinner for 2', 'Weekly Staples Basket under ₹600'],
+        }
+      }
+
+      setAiMessages((prev) => [...prev, reply])
+    }, 600)
+  }
 
   // Cart state
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -376,6 +508,26 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   <X className="size-3.5 text-muted-foreground" />
                 </button>
               )}
+            </div>
+
+            {/* grocerAI Shopping Copilot Banner */}
+            <div
+              onClick={() => setActiveModal('ai')}
+              className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl border border-[#b7d66b] bg-[#f5fbf1] p-3.5 shadow-sm transition-all hover:bg-[#eef8e8]"
+            >
+              <div className="flex-1 pr-3">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="size-4 text-[#1f7956]" />
+                  <span className="text-[12px] font-bold text-[#1f7956]">grocerAI Shopping Copilot</span>
+                  <span className="rounded bg-[#e3f1dc] px-1.5 py-0.5 text-[8px] font-bold text-[#2e8b65]">AI RECIPES</span>
+                </div>
+                <p className="mt-1 text-[11px] leading-4 text-[#4b7861]">
+                  Ask for dinner recipes, high-protein diet baskets & 1-click cart assembly.
+                </p>
+              </div>
+              <button className="rounded-xl bg-[#164e3b] px-3 py-2 text-[10px] font-bold text-white hover:bg-[#1a5d46]">
+                Ask AI →
+              </button>
             </div>
 
             {/* Welcome & Points Card */}
@@ -1404,6 +1556,161 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
               >
                 Continue shopping
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* AI Copilot Modal */}
+        {activeModal === 'ai' && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+            <div className="relative flex max-h-[85vh] w-full max-w-lg flex-col rounded-3xl bg-[#fbfdf9] shadow-2xl overflow-hidden">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-[#e5e7eb] bg-white px-5 py-3.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 items-center justify-center rounded-lg bg-[#164e3b] text-white">
+                    <Sparkles className="size-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-[13px] font-bold text-[#173f31]">grocerAI Shopping Copilot</h2>
+                    <p className="text-[9px] font-semibold text-[#2e8b65]">● Online · Instant Cart AI</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveModal('none')}
+                  className="rounded-full p-1.5 hover:bg-muted text-gray-500"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3.5 max-h-[55vh]">
+                {aiMessages.map((msg) => {
+                  const isUser = msg.sender === 'user'
+                  return (
+                    <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                      <div
+                        className={`max-w-[90%] rounded-2xl p-3.5 text-[12px] leading-5 ${
+                          isUser
+                            ? 'rounded-tr-none bg-[#164e3b] text-white'
+                            : 'rounded-tl-none border border-[#e5e7eb] bg-white text-[#1f2937] shadow-sm'
+                        }`}
+                      >
+                        {!isUser && (
+                          <div className="mb-1 flex items-center gap-1 text-[10px] font-bold text-[#2e8b65]">
+                            <Bot className="size-3" /> grocerAI
+                          </div>
+                        )}
+                        <p>{msg.text}</p>
+                      </div>
+
+                      {/* Recipe card */}
+                      {msg.recipe && (
+                        <div className="mt-2.5 w-full rounded-2xl border border-[#cfe7c2] bg-[#f7fcf4] p-3 text-[11px]">
+                          <div className="flex items-center gap-1.5 font-bold text-[#164e3b]">
+                            <ChefHat className="size-4" /> {msg.recipe.title}
+                          </div>
+                          <div className="mt-1 flex gap-3 text-[10px] text-[#4b7861]">
+                            <span>⏱ {msg.recipe.prep}</span>
+                            <span>👥 {msg.recipe.servings}</span>
+                            <span>🔥 {msg.recipe.calories}</span>
+                          </div>
+                          <div className="mt-2 space-y-1 border-t border-[#e2f1db] pt-1.5 text-[10px] text-gray-700">
+                            {msg.recipe.steps.map((st, i) => (
+                              <p key={i}>
+                                <b className="text-[#164e3b]">{i + 1}.</b> {st}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Ingredient bundle */}
+                      {msg.bundle && msg.bundle.length > 0 && (
+                        <div className="mt-2.5 w-full rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm">
+                          <div className="flex items-center justify-between text-[11px] font-bold text-[#173f31]">
+                            <span>Ingredients in Stock ({msg.bundle.length})</span>
+                            <span className="text-[#2e8b65]">
+                              ₹{msg.bundle.reduce((s, b) => s + b.product.price * b.qty, 0)}
+                            </span>
+                          </div>
+                          <div className="mt-2 space-y-1.5">
+                            {msg.bundle.map((it) => (
+                              <div
+                                key={it.product.name}
+                                className="flex items-center justify-between rounded-xl bg-[#f9fafb] p-2 text-[10px]"
+                              >
+                                <div>
+                                  <p className="font-bold text-[#173f31]">{it.product.name}</p>
+                                  <p className="text-muted-foreground">{it.reason}</p>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    addToCart(it.product, it.qty)
+                                    showNotice(`Added ${it.product.name} to cart!`)
+                                  }}
+                                  className="rounded-lg bg-[#dff0d8] px-2 py-1 font-bold text-[#21664b] hover:bg-[#cde4c4]"
+                                >
+                                  + ₹{it.product.price}
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => {
+                              msg.bundle?.forEach((b) => addToCart(b.product, b.qty))
+                              showNotice(`Added ${msg.bundle?.length ?? 0} items to cart!`)
+                              setActiveModal('cart')
+                            }}
+                            className="mt-3 w-full rounded-xl bg-[#164e3b] py-2 text-[11px] font-bold text-white shadow-sm hover:bg-[#124031]"
+                          >
+                            Add All to Cart & Checkout →
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Chips */}
+                      {msg.chips && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {msg.chips.map((ch) => (
+                            <button
+                              key={ch}
+                              onClick={() => sendAiQuery(ch)}
+                              className="rounded-full border border-[#b7d66b] bg-[#f6fbf2] px-2.5 py-1 text-[10px] font-semibold text-[#1f7956] hover:bg-[#e4f3da]"
+                            >
+                              {ch}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Chat Input */}
+              <div className="border-t border-[#e5e7eb] bg-white p-3">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    sendAiQuery(aiInput)
+                  }}
+                  className="flex items-center gap-2 rounded-2xl border border-[#e5e7eb] bg-[#f9fafb] px-3 py-1.5"
+                >
+                  <input
+                    value={aiInput}
+                    onChange={(e) => setAiInput(e.target.value)}
+                    placeholder="Ask for dinner recipes, diet meal plans, budget baskets…"
+                    className="flex-1 bg-transparent text-[11px] outline-none text-[#173f31]"
+                  />
+                  <button
+                    type="submit"
+                    className="flex size-7 items-center justify-center rounded-xl bg-[#164e3b] text-white hover:bg-[#124031]"
+                  >
+                    <Send className="size-3.5" />
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         )}

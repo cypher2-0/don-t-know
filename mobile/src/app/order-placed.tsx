@@ -78,9 +78,19 @@ export default function OrderPlacedScreen() {
               </View>
               <Text className="text-[11px] font-semibold text-[#173f31]">{order.items} items</Text>
             </View>
+            <View className="mt-2 flex-row items-center justify-between">
+              <Text className="text-[11px] text-[#6b7280]">Payment</Text>
+              <Text className="text-[11px] font-semibold text-[#173f31]">{order.paymentMethod ?? 'UPI'}</Text>
+            </View>
+            {order.discount ? (
+              <View className="mt-2 flex-row items-center justify-between">
+                <Text className="text-[11px] text-[#1f7956]">Smart Savings</Text>
+                <Text className="text-[11px] font-bold text-[#1f7956]">-₹{order.discount}</Text>
+              </View>
+            ) : null}
             <View className="mt-2 flex-row items-center justify-between border-t border-[#f0f2ef] pt-2">
               <Text className="text-[11px] font-bold text-[#173f31]">Amount paid</Text>
-              <Text className="text-[13px] font-bold text-[#2e8b65]">₹{order.total}</Text>
+              <Text className="text-[13px] font-bold text-[#2e8b65]">₹{order.finalPaid ?? order.total}</Text>
             </View>
           </View>
         )}

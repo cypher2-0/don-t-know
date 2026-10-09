@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, ChevronDown, MapPin, Search, Trophy, X } from 'lucide-react-native';
+import { Bell, ChevronDown, MapPin, Search, Sparkles, Trophy, X } from 'lucide-react-native';
 import { router } from 'expo-router';
 import {
   Alert,
@@ -112,6 +112,24 @@ export default function HomeScreen() {
             </Pressable>
           )}
         </View>
+
+        {/* grocerAI Copilot Banner */}
+        <Pressable
+          onPress={() => router.push('/ai-assistant')}
+          className="mt-3 flex-row items-center justify-between rounded-2xl border border-[#b7d66b] bg-[#f5fbf1] p-3.5 shadow-sm active:opacity-90">
+          <View className="flex-1 pr-3">
+            <View className="flex-row items-center gap-1.5">
+              <Sparkles size={14} color="#1f7956" />
+              <Text className="text-[12px] font-bold text-[#1f7956]">grocerAI Shopping Copilot</Text>
+            </View>
+            <Text className="mt-1 text-[11px] leading-4 text-[#4b7861]">
+              Ask for recipes, budget meal plans & 1-tap cart building
+            </Text>
+          </View>
+          <View className="rounded-xl bg-[#164e3b] px-3 py-2">
+            <Text className="text-[10px] font-bold text-white">Ask AI →</Text>
+          </View>
+        </Pressable>
 
         <View className="mt-6 flex-row items-center justify-between">
           <Text className="text-[18px] font-bold text-[#173f31]">Good morning, Arjun</Text>

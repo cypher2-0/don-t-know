@@ -1,4 +1,4 @@
-import { Check, ChevronLeft, MapPin, Minus, Plus, ShoppingBag, Sparkles, Tag, Trash2 } from 'lucide-react-native';
+import { Banknote, Check, ChevronLeft, CreditCard, MapPin, Minus, Plus, ShoppingBag, Smartphone, Sparkles, Tag, Trash2, Wallet } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useCart } from '@/components/cart-provider';
 import { Screen } from '@/components/screen';
-import { deliverySlots, storeInfo } from '@/lib/mock-data';
+import { deliverySlots, paymentMethods, storeInfo } from '@/lib/mock-data';
 
 const DELIVERY_FEE = 30;
 const FREE_DELIVERY_OVER = 499;
@@ -14,6 +14,7 @@ const FREE_DELIVERY_OVER = 499;
 export default function CartScreen() {
   const { items, count, total, changeQty, removeItem, placeOrder } = useCart();
   const [slot, setSlot] = useState(deliverySlots[0]);
+  const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].id);
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState('');
@@ -49,10 +50,18 @@ export default function CartScreen() {
     setCouponApplied('');
   };
 
+  const selectedPayment = paymentMethods.find((p) => p.id === paymentMethod)?.name ?? 'UPI';
+
   const handlePlaceOrder = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    const order = placeOrder(slot);
+    const order = placeOrder({
+      slot,
+      paymentMethod: selectedPayment,
+      discount: effectiveDiscount,
+      tip,
+      delivery,
+    });
     router.replace(`/order-placed?id=${encodeURIComponent(order.id)}`);
   };
 
@@ -253,6 +262,53 @@ export default function CartScreen() {
                         className={`text-[11px] font-bold ${active ? 'text-white' : 'text-[#173f31]'}`}>
                         {amount === 0 ? 'None' : `₹${amount}`}
                       </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Payment method selection */}
+            <View className="mt-4 rounded-2xl border border-[#e5e7eb] bg-white p-4">
+              <Text className="text-[12px] font-bold text-[#173f31]">Payment method</Text>
+              <View className="mt-3 gap-2.5">
+                {paymentMethods.map((pm) => {
+                  const active = paymentMethod === pm.id;
+                  const Icon =
+                    pm.id === 'upi'
+                      ? Smartphone
+                      : pm.id === 'cod'
+                        ? Banknote
+                        : pm.id === 'card'
+                          ? CreditCard
+                          : Wallet;
+                  return (
+                    <Pressable
+                      key={pm.id}
+                      onPress={() => setPaymentMethod(pm.id)}
+                      className={`flex-row items-center gap-3 rounded-xl border p-3 ${active ? 'border-[#164e3b] bg-[#f2f8ee]' : 'border-[#e5e7eb] bg-[#f9fafb]'}`}>
+                      <View
+                        className={`size-8 items-center justify-center rounded-lg ${active ? 'bg-[#164e3b]' : 'bg-[#e5e7eb]'}`}>
+                        <Icon size={16} color={active ? '#ffffff' : '#4b5563'} />
+                      </View>
+                      <View className="flex-1">
+                        <View className="flex-row items-center gap-2">
+                          <Text
+                            className={`text-[12px] font-bold ${active ? 'text-[#164e3b]' : 'text-[#173f31]'}`}>
+                            {pm.name}
+                          </Text>
+                          {pm.badge && (
+                            <View className="rounded bg-[#e3f1dc] px-1.5 py-0.5">
+                              <Text className="text-[8px] font-bold text-[#2e8b65]">{pm.badge}</Text>
+                            </View>
+                          )}
+                        </View>
+                        <Text className="mt-0.5 text-[10px] text-[#6b7280]">{pm.subtitle}</Text>
+                      </View>
+                      <View
+                        className={`size-4 items-center justify-center rounded-full border ${active ? 'border-[#164e3b] bg-[#164e3b]' : 'border-[#9ca3af]'}`}>
+                        {active && <View className="size-1.5 rounded-full bg-white" />}
+                      </View>
                     </Pressable>
                   );
                 })}
