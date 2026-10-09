@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ArrowUpDown,
   Award,
@@ -32,6 +32,8 @@ import {
   Settings,
   ShieldCheck,
   ShoppingBag,
+  ShoppingBasket,
+  ShoppingCart,
   Sparkles,
   Star,
   Tag,
@@ -39,8 +41,14 @@ import {
   Trophy,
   Truck,
   Users,
+  User,
   X,
   Zap,
+  Milk,
+  Apple,
+  Wheat,
+  Croissant,
+  Cookie,
 } from 'lucide-react'
 
 import {
@@ -77,10 +85,20 @@ type OrderRecord = {
   itemsList?: PlacedOrderItem[]
 }
 
-const DELIVERY_FEE = 30
-const FREE_DELIVERY_OVER = 499
+const DELIVERY_FEE = 0
+const FREE_DELIVERY_OVER = 0
 
 export default function CustomerApp({ onBack }: { onBack: () => void }) {
+  const [showSplash, setShowSplash] = useState(true)
+
+  // Auto-hide splash screen after 800ms for faster load
+  useEffect(() => {
+    if (showSplash) {
+      const timer = setTimeout(() => setShowSplash(false), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [showSplash])
+
   // Navigation & tabs
   const [tab, setTab] = useState<'Home' | 'Explore' | 'Scan' | 'Orders' | 'Profile'>('Home')
   const [activeModal, setActiveModal] = useState<'none' | 'product' | 'cart' | 'order-placed' | 'ai'>('none')
@@ -456,30 +474,63 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     return true
   })
 
-  return (
-    <div className="min-h-screen w-full bg-[#fbfdf9] font-sans">
-      <div className="relative mx-auto flex min-h-screen w-full max-w-2xl flex-col bg-[#fbfdf9]">
-        {/* App Topbar */}
-        <header className="flex items-center justify-between border-b border-[#f0f3ee] bg-white px-5 pb-3 pt-5">
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-xl bg-[#0d4f3c] text-white">
-              <ShoppingBag className="size-4" />
-            </div>
-            <div>
-              <p className="text-[13px] font-bold tracking-tight text-[#123c31]">
-                grocer<span className="text-[#a6c83f]">AI</span>
-              </p>
-              <p className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground">
-                smart customer app
-              </p>
+  if (showSplash) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-[#0d4f3c] to-[#1a6b52] font-sans">
+        <div className="flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-8">
+          <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#ffffff] to-[#f0f8f1] shadow-[0_20px_50px_rgba(0,0,0,0.3)] shadow-[#092b20] transition-transform duration-700 hover:scale-105">
+            <ShoppingBag className="h-16 w-16 text-[#164e3b] drop-shadow-md" />
+            <div className="absolute -bottom-3 -right-3 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#89ac2e] to-[#b6d669] p-3 text-white shadow-xl ring-4 ring-[#1a6b52] animate-[spin_4s_linear_infinite]">
+              <Sparkles className="h-6 w-6" />
             </div>
           </div>
-          <button
-            onClick={onBack}
-            className="rounded-lg border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-1 text-[10px] font-bold text-[#173f31] hover:bg-[#eef2ec] transition-colors"
-          >
-            ← Back to Admin
-          </button>
+          <h1 className="text-5xl font-black tracking-tighter text-white drop-shadow-lg">
+            grocer<span className="text-[#a6c83f]">AI</span>
+          </h1>
+          <p className="mt-4 text-[13px] font-bold tracking-[0.2em] text-[#d1e8d1] uppercase opacity-90 drop-shadow-sm">
+            the grocery inventory
+          </p>
+        </div>
+        <div className="absolute bottom-16 flex flex-col items-center animate-pulse">
+          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-white/20">
+            <div className="h-full w-1/2 bg-[#a6c83f] rounded-full animate-[bounce_1s_infinite]"></div>
+          </div>
+          <p className="mt-3 text-xs font-semibold text-white/60">Preparing your store...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex w-full flex-col bg-[#fbfdf9] font-sans h-full min-h-screen">
+      <div className="relative mx-auto flex min-h-screen w-full flex-col bg-white">
+        {/* App Topbar */}
+        <header className="flex items-center justify-between bg-white px-5 pb-3 pt-5 sticky top-0 z-10">
+          <div className="flex items-center gap-2">
+            <ShoppingBasket className="size-8 text-[#164e3b]" />
+            <span className="text-[22px] font-bold tracking-tight text-[#173f31]">
+              FreshBasket
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setActiveModal('cart')}
+              className="relative text-[#173f31] hover:text-[#164e3b]"
+            >
+              <ShoppingCart className="size-6" />
+              {cartCount > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setTab('Profile')}
+              className="flex size-8 items-center justify-center rounded-full bg-[#e3f1dc] text-[#164e3b]"
+            >
+              <User className="size-5" />
+            </button>
+          </div>
         </header>
 
         {/* Global Floating Notification Toast */}
@@ -498,23 +549,25 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* ======================================================================= */}
         {/* TAB 1: HOME */}
         {/* ======================================================================= */}
+        {/* ======================================================================= */}
         {tab === 'Home' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-3">
+          <main className="flex-1 overflow-y-auto px-5 pb-32 pt-2">
             {/* Store Location Bar */}
             <div className="relative">
               <button
                 onClick={() => setHomeStoreDropdown(!homeStoreDropdown)}
-                className="w-full flex items-center justify-between rounded-2xl bg-[#e3f1dc] p-3.5 text-left transition-colors hover:bg-[#d8edd0]"
+                className="w-full flex items-center justify-between rounded-2xl bg-[#f0f9f4] p-3 text-left transition-colors hover:bg-[#e4f3eb]"
               >
-                <div>
-                  <p className="text-[10px] font-semibold text-[#327255]">Shopping at</p>
-                  <p className="mt-0.5 text-[13px] font-bold text-[#173f31]">{currentStore}</p>
-                  <div className="mt-1 flex items-center gap-1 text-[10px] text-[#4b7861]">
-                    <MapPin className="size-3" />
-                    <span>{storeInfo.distance} · {storeInfo.hours} · {storeInfo.deliveryTime}</span>
+                <div className="flex items-center gap-3">
+                  <MapPin className="size-5 text-[#2e8b65]" />
+                  <div>
+                    <p className="text-[14px] font-bold text-[#173f31]">{currentStore}</p>
+                    <p className="text-[11px] text-[#4b7861]">
+                      {storeInfo.distance} · {storeInfo.hours} · {storeInfo.deliveryTime}
+                    </p>
                   </div>
                 </div>
-                <ChevronDown className="size-4 text-[#327255]" />
+                <ChevronDown className="size-5 text-[#2e8b65]" />
               </button>
 
               {homeStoreDropdown && (
@@ -544,17 +597,17 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Search Bar */}
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5">
-              <Search className="size-4 text-muted-foreground" />
+            <div className="mt-4 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <Search className="size-5 text-gray-400" />
               <input
                 value={homeQuery}
                 onChange={(e) => setHomeQuery(e.target.value)}
                 placeholder="Search milk, atta, apples, snacks..."
-                className="flex-1 bg-transparent text-[11px] text-[#173f31] outline-none placeholder:text-muted-foreground"
+                className="flex-1 bg-transparent text-[14px] text-gray-800 outline-none placeholder:text-gray-400"
               />
               {homeQuery.length > 0 && (
                 <button onClick={() => setHomeQuery('')}>
-                  <X className="size-3.5 text-muted-foreground" />
+                  <X className="size-4 text-gray-400" />
                 </button>
               )}
             </div>
@@ -562,28 +615,34 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             {/* grocerAI Shopping Copilot Banner */}
             <div
               onClick={() => setActiveModal('ai')}
-              className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl border border-[#b7d66b] bg-[#f5fbf1] p-3.5 shadow-sm transition-all hover:bg-[#eef8e8]"
+              className="mt-4 flex cursor-pointer items-center justify-between rounded-3xl border border-[#c5e6bc] bg-[#eef8e8] p-4 shadow-sm transition-all hover:bg-[#e4f3db]"
             >
-              <div className="flex-1 pr-3">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="size-4 text-[#1f7956]" />
-                  <span className="text-[12px] font-bold text-[#1f7956]">grocerAI Shopping Copilot</span>
-                  <span className="rounded bg-[#e3f1dc] px-1.5 py-0.5 text-[8px] font-bold text-[#2e8b65]">AI RECIPES</span>
+              <div className="flex items-center gap-4 flex-1">
+                <div className="flex size-10 items-center justify-center rounded-full bg-white text-[#1f7956]">
+                  <Bot className="size-6" />
                 </div>
-                <p className="mt-1 text-[11px] leading-4 text-[#4b7861]">
-                  Ask for dinner recipes, high-protein diet baskets & 1-click cart assembly.
-                </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-bold text-[#173f31]">groceryAI Shopping Copilot</span>
+                    <span className="rounded bg-[#d3ebd3] px-1.5 py-0.5 text-[9px] font-bold text-[#2e8b65]">AI RECIPES</span>
+                  </div>
+                  <p className="text-[12px] text-[#4b7861] mt-0.5">
+                    Ask for dinner recipes, high-protein diet baskets & 1-click cart assembly.
+                  </p>
+                </div>
               </div>
-              <button className="rounded-xl bg-[#164e3b] px-3 py-2 text-[10px] font-bold text-white hover:bg-[#1a5d46]">
+              <button className="rounded-2xl bg-[#164e3b] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#1a5d46]">
                 Ask AI →
               </button>
             </div>
 
             {/* Welcome & Points Card */}
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-6 flex items-center justify-between">
               <div>
-                <h1 className="text-[16px] font-bold text-[#173f31]">Good morning, Arjun</h1>
-                <p className="text-[10px] text-muted-foreground">Fresh stock arrived 10 mins ago</p>
+                <h1 className="text-[22px] font-bold text-[#173f31] flex items-center gap-2">
+                  Good morning, Arjun <span className="text-[20px]">👋</span>
+                </h1>
+                <p className="text-[14px] text-gray-500 mt-1">Fresh stock arrived 10 mins ago</p>
               </div>
               <button
                 onClick={() => {
@@ -591,24 +650,41 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   setActiveModal('cart')
                   showNotice('Code GB120 applied! Check your cart.')
                 }}
-                className="rounded-full bg-[#dff0d8] px-2.5 py-1 text-[10px] font-bold text-[#1f7956] hover:bg-[#cfe7c2]"
+                className="flex items-center gap-1.5 rounded-full bg-[#fdfaf3] px-3 py-1.5 text-[14px] font-bold text-[#173f31] shadow-sm border border-yellow-200 hover:bg-[#fbf4e4]"
               >
-                2,480 pts ★
+                <Star className="size-4 fill-yellow-400 text-yellow-400" />
+                2,460 pts {'>'}
               </button>
             </div>
 
             {/* Category Chips */}
-            <div className="mt-3.5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {shopCategories.map((c) => {
+            <div className="mt-5 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              <button
+                onClick={() => setHomeCategory('All')}
+                className={`whitespace-nowrap rounded-full px-6 py-2.5 text-[14px] font-bold transition-colors ${
+                  homeCategory === 'All' ? 'bg-[#164e3b] text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                All
+              </button>
+              {shopCategories.filter(c => c !== 'All').map((c) => {
                 const active = homeCategory === c
+                let Icon = ShoppingBag
+                if (c === 'Dairy') Icon = Milk
+                if (c === 'Produce') Icon = Apple
+                if (c === 'Staples') Icon = Wheat
+                if (c === 'Bakery') Icon = Croissant
+                if (c === 'Snacks') Icon = Cookie
+                
                 return (
                   <button
                     key={c}
                     onClick={() => setHomeCategory(c)}
-                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors ${
-                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-[#365a4a] hover:bg-[#f6faf3]'
+                    className={`whitespace-nowrap flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
+                    <Icon className={`size-5 ${active ? 'text-white' : c === 'Dairy' ? 'text-blue-500' : c === 'Produce' ? 'text-green-500' : c === 'Staples' ? 'text-orange-400' : 'text-yellow-600'}`} />
                     {c}
                   </button>
                 )
@@ -616,60 +692,71 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Section Header */}
-            <div className="mt-5 flex items-center justify-between">
-              <h2 className="text-[14px] font-bold text-[#173f31]">Picked for you ({homeFiltered.length})</h2>
-              <button onClick={() => setTab('Explore')} className="text-[10px] font-bold text-[#2e8b65] hover:underline">
+            <div className="mt-8 flex items-center justify-between">
+              <h2 className="text-[20px] font-bold text-[#173f31]">Picked for you (14)</h2>
+              <button onClick={() => setTab('Explore')} className="text-[14px] font-bold text-[#164e3b] hover:underline flex items-center gap-1">
                 Explore all →
               </button>
             </div>
 
             {/* Product Grid */}
-            <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {homeFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm hover:shadow-md transition-shadow"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-24 cursor-pointer items-center justify-center rounded-xl ${p.color}`}
+                      className={`relative flex h-36 w-full cursor-pointer items-center justify-center rounded-2xl mb-3`}
                     >
-                      <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-contain transition-transform hover:scale-105 duration-300"
+                        />
+                      ) : (
+                        <ShoppingBag className="size-12 text-gray-300" />
+                      )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5 text-[8px] font-bold text-white">
+                        <span className="absolute left-0 top-0 rounded-full bg-[#164e3b] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
                     </div>
 
-                    <div className="mt-2.5 cursor-pointer" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[11px] font-bold text-[#173f31]">{p.name}</p>
-                      <div className="mt-0.5 flex items-center justify-between text-[10px] text-muted-foreground">
+                    <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
+                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
                         <span>{p.size}</span>
                         {p.rating && (
-                          <span className="flex items-center gap-0.5 text-[#ca8a04] font-semibold">
-                            <Star className="size-2.5 fill-[#ca8a04]" /> {p.rating}
+                          <span className="flex items-center gap-1 font-bold text-yellow-500">
+                            <Star className="size-3.5 fill-yellow-500" /> {p.rating}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2">
-                      <span className="text-[13px] font-bold text-[#173f31]">₹{p.price}</span>
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[20px] font-bold text-[#173f31]">₹{p.price}</span>
+                        {p.discount && <span className="text-[12px] text-gray-400 line-through">₹{Math.round(p.price * 1.15)}</span>}
+                      </div>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-lg bg-[#dff0d8] px-1.5 py-0.5">
+                        <div className="flex items-center rounded-xl border border-gray-200 bg-[#f8faf8] p-1 shadow-sm">
                           <button
                             onClick={() => changeQty(p.name, -1)}
-                            className="px-1 text-[13px] font-bold text-[#21664b] hover:opacity-75"
+                            className="flex size-7 items-center justify-center rounded-lg bg-white text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-gray-50"
                           >
                             −
                           </button>
-                          <span className="min-w-4 text-center text-[11px] font-bold text-[#21664b]">{qty}</span>
+                          <span className="min-w-8 text-center text-[14px] font-bold text-[#164e3b]">{qty}</span>
                           <button
                             onClick={() => changeQty(p.name, 1)}
-                            className="px-1 text-[13px] font-bold text-[#21664b] hover:opacity-75"
+                            className="flex size-7 items-center justify-center rounded-lg bg-[#e3f1dc] text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-[#d5eacb]"
                           >
                             +
                           </button>
@@ -677,9 +764,9 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-lg bg-[#dff0d8] px-2.5 py-1 text-[11px] font-bold text-[#21664b] hover:bg-[#cfe7c2] transition-colors"
+                          className="flex items-center gap-1.5 rounded-xl bg-[#164e3b] px-4 py-2 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-[#124031] active:scale-95"
                         >
-                          + Add
+                          <ShoppingCart className="size-4" /> Add
                         </button>
                       )}
                     </div>
@@ -700,14 +787,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                 setCouponCode('GB120')
                 setActiveModal('cart')
               }}
-              className="mt-5 flex cursor-pointer items-center justify-between rounded-2xl bg-[#164e3b] p-4 text-white shadow-md hover:bg-[#124031] transition-colors"
+              className="mt-6 flex cursor-pointer items-center justify-between rounded-3xl bg-gradient-to-br from-[#164e3b] to-[#0d3024] p-5 text-white shadow-xl hover:-translate-y-1 transition-all"
             >
               <div>
-                <p className="text-[10px] text-[#b5d8b5]">Smart savings</p>
-                <p className="mt-0.5 text-[14px] font-bold">Get ₹120 off your next bill</p>
-                <p className="mt-0.5 text-[10px] text-[#c1dcc6]">Tap to apply promo code GB120</p>
+                <div className="inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-[#c8e6c8] backdrop-blur-md">
+                  Smart savings
+                </div>
+                <p className="mt-1.5 text-[16px] font-extrabold tracking-tight">Get ₹120 off your next bill</p>
+                <p className="mt-1 text-[11px] font-medium text-[#c1dcc6] opacity-80">Tap to apply promo code GB120</p>
               </div>
-              <Trophy className="size-8 text-[#b6d669]" />
+              <div className="flex size-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
+                <Trophy className="size-6 text-[#b6d669] drop-shadow-md" />
+              </div>
             </div>
           </main>
         )}
@@ -716,7 +807,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 2: EXPLORE */}
         {/* ======================================================================= */}
         {tab === 'Explore' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
+          <main className="flex-1 overflow-y-auto px-4 pb-32 pt-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Browse Aisles</p>
               <h1 className="text-[18px] font-bold text-[#173f31]">Explore Store</h1>
@@ -724,29 +815,53 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Search Input */}
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5">
-              <Search className="size-4 text-muted-foreground" />
+            <div className="mt-4 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <Search className="size-5 text-gray-400" />
               <input
                 value={exploreQuery}
                 onChange={(e) => setExploreQuery(e.target.value)}
                 placeholder="Search all items..."
-                className="flex-1 bg-transparent text-[11px] text-[#173f31] outline-none"
+                className="flex-1 bg-transparent text-[14px] text-gray-800 outline-none placeholder:text-gray-400"
               />
+              {exploreQuery.length > 0 && (
+                <button onClick={() => setExploreQuery('')}>
+                  <X className="size-4 text-gray-400" />
+                </button>
+              )}
             </div>
 
             {/* Categories */}
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {shopCategories.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setExploreCategory(c)}
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold ${
-                    exploreCategory === c ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-[#365a4a]'
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+            <div className="mt-5 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              <button
+                onClick={() => setExploreCategory('All')}
+                className={`whitespace-nowrap rounded-full px-6 py-2.5 text-[14px] font-bold transition-colors ${
+                  exploreCategory === 'All' ? 'bg-[#164e3b] text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                All
+              </button>
+              {shopCategories.filter(c => c !== 'All').map((c) => {
+                const active = exploreCategory === c
+                let Icon = ShoppingBag
+                if (c === 'Dairy') Icon = Milk
+                if (c === 'Produce') Icon = Apple
+                if (c === 'Staples') Icon = Wheat
+                if (c === 'Bakery') Icon = Croissant
+                if (c === 'Snacks') Icon = Cookie
+                
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setExploreCategory(c)}
+                    className={`whitespace-nowrap flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className={`size-5 ${active ? 'text-white' : c === 'Dairy' ? 'text-blue-500' : c === 'Produce' ? 'text-green-500' : c === 'Staples' ? 'text-orange-400' : 'text-yellow-600'}`} />
+                    {c}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Sort bar */}
@@ -765,41 +880,74 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
               </button>
             </div>
 
-            {/* Product list */}
-            <div className="mt-3 grid grid-cols-2 gap-2.5">
+            {/* Product Grid */}
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {exploreFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
-                  <div key={p.name} className="flex flex-col justify-between rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm">
+                  <div
+                    key={p.name}
+                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                  >
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-24 cursor-pointer items-center justify-center rounded-xl ${p.color}`}
+                      className={`relative flex h-36 w-full cursor-pointer items-center justify-center rounded-2xl mb-3`}
                     >
-                      <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-contain transition-transform hover:scale-105 duration-300"
+                        />
+                      ) : (
+                        <ShoppingBag className="size-12 text-gray-300" />
+                      )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5 text-[8px] font-bold text-white">
+                        <span className="absolute left-0 top-0 rounded-full bg-[#164e3b] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
                     </div>
-                    <div className="mt-2.5 cursor-pointer" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[11px] font-bold text-[#173f31]">{p.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{p.size} · {p.category}</p>
+
+                    <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
+                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
+                        <span>{p.size} · {p.category}</span>
+                        {p.rating && (
+                          <span className="flex items-center gap-1 font-bold text-yellow-500">
+                            <Star className="size-3.5 fill-yellow-500" /> {p.rating}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-[13px] font-bold text-[#173f31]">₹{p.price}</span>
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[20px] font-bold text-[#173f31]">₹{p.price}</span>
+                        {p.discount && <span className="text-[12px] text-gray-400 line-through">₹{Math.round(p.price * 1.15)}</span>}
+                      </div>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-lg bg-[#dff0d8] px-1.5 py-0.5">
-                          <button onClick={() => changeQty(p.name, -1)} className="px-1 text-[13px] font-bold text-[#21664b]">−</button>
-                          <span className="min-w-4 text-center text-[11px] font-bold text-[#21664b]">{qty}</span>
-                          <button onClick={() => changeQty(p.name, 1)} className="px-1 text-[13px] font-bold text-[#21664b]">+</button>
+                        <div className="flex items-center rounded-xl border border-gray-200 bg-[#f8faf8] p-1 shadow-sm">
+                          <button
+                            onClick={() => changeQty(p.name, -1)}
+                            className="flex size-7 items-center justify-center rounded-lg bg-white text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-gray-50"
+                          >
+                            −
+                          </button>
+                          <span className="min-w-8 text-center text-[14px] font-bold text-[#164e3b]">{qty}</span>
+                          <button
+                            onClick={() => changeQty(p.name, 1)}
+                            className="flex size-7 items-center justify-center rounded-lg bg-[#e3f1dc] text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-[#d5eacb]"
+                          >
+                            +
+                          </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-lg bg-[#dff0d8] px-2.5 py-1 text-[11px] font-bold text-[#21664b]"
+                          className="flex items-center gap-1.5 rounded-xl bg-[#164e3b] px-4 py-2 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-[#124031] active:scale-95"
                         >
-                          + Add
+                          <ShoppingCart className="size-4" /> Add
                         </button>
                       )}
                     </div>
@@ -930,23 +1078,23 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 4: ORDERS */}
         {/* ======================================================================= */}
         {tab === 'Orders' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
+          <main className="flex-1 overflow-y-auto px-6 pb-32 pt-6">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Order History</p>
-              <h1 className="text-[18px] font-bold text-[#173f31]">Your Orders</h1>
-              <p className="text-[11px] text-muted-foreground">Live orders and past receipts from {currentStore}.</p>
+              <p className="text-[14px] font-bold uppercase tracking-wider text-[#2e8b65]">Order History</p>
+              <h1 className="text-[24px] font-bold text-[#173f31]">Your Orders</h1>
+              <p className="mt-1 text-[14px] text-muted-foreground">Live orders and past receipts from {currentStore}.</p>
             </div>
 
             {/* Filter pills */}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-5 flex gap-3">
               {(['All', 'Active', 'Delivered'] as const).map((filter) => {
                 const active = ordersFilter === filter
                 return (
                   <button
                     key={filter}
                     onClick={() => setOrdersFilter(filter)}
-                    className={`rounded-full px-3.5 py-1 text-[11px] font-semibold transition-colors ${
-                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-gray-600'
+                    className={`rounded-full px-5 py-2 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-gray-600 hover:bg-gray-50'
                     }`}
                   >
                     {filter}
@@ -956,56 +1104,56 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Orders list */}
-            <div className="mt-3.5 space-y-3">
+            <div className="mt-6 space-y-4">
               {displayedOrders.map((o) => {
                 const isConfirmed = o.status === 'Confirmed'
                 const isExpanded = expandedOrderId === o.id
                 return (
-                  <div key={o.id} className="rounded-2xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
+                  <div key={o.id} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
                     <div
                       onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
                       className="flex cursor-pointer items-center justify-between"
                     >
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-bold text-[#173f31]">{o.id}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[18px] font-bold text-[#173f31]">{o.id}</span>
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                            className={`rounded-full px-3 py-1 text-[11px] font-bold ${
                               isConfirmed ? 'bg-[#dff0d8] text-[#1f7956]' : 'bg-[#e3f1dc] text-[#2e8b65]'
                             }`}
                           >
                             {o.status}
                           </span>
                         </div>
-                        <p className="mt-1 text-[11px] text-muted-foreground">
-                          {o.date} · {o.items} items · ₹{o.total}
+                        <p className="mt-2 text-[14px] text-gray-500">
+                          {o.date} · {o.items} items · <span className="font-bold text-[#173f31]">₹{o.total}</span>
                         </p>
                       </div>
-                      {isExpanded ? <ChevronUp className="size-4 text-gray-500" /> : <ChevronDown className="size-4 text-gray-500" />}
+                      {isExpanded ? <ChevronUp className="size-6 text-gray-400" /> : <ChevronDown className="size-6 text-gray-400" />}
                     </div>
 
                     {/* Expandable item details */}
                     {isExpanded && (
-                      <div className="mt-3 border-t border-[#f0f2ef] pt-3 animate-in fade-in">
+                      <div className="mt-4 border-t border-[#f0f2ef] pt-4 animate-in fade-in">
                         {isConfirmed ? (
-                          <div className="mb-3 rounded-xl bg-[#e3f1dc] p-3 text-[11px]">
+                          <div className="mb-4 rounded-2xl bg-[#e3f1dc] p-4 text-[14px]">
                             <div className="flex items-center gap-2 font-bold text-[#173f31]">
-                              <PackageCheck className="size-4 text-[#2e8b65]" />
+                              <PackageCheck className="size-5 text-[#2e8b65]" />
                               <span>Order is being packed at {currentStore}</span>
                             </div>
-                            <p className="mt-1 text-[10px] text-[#4b7861]">
+                            <p className="mt-1 text-[13px] text-[#4b7861]">
                               Slot: {o.slot ?? 'In 20 mins'} · Arriving in ~15 mins
                             </p>
                           </div>
                         ) : (
-                          <div className="mb-2 flex items-center gap-2 text-[10px] text-muted-foreground">
-                            <Clock className="size-3" /> Slot: {o.slot ?? 'Delivered'}
+                          <div className="mb-3 flex items-center gap-2 text-[14px] text-muted-foreground">
+                            <Clock className="size-4" /> Slot: {o.slot ?? 'Delivered'}
                           </div>
                         )}
 
                         {o.itemsList && o.itemsList.length > 0 && (
-                          <div className="space-y-1.5 text-[11px]">
-                            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Items Ordered:</p>
+                          <div className="space-y-3 text-[14px]">
+                            <p className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground">Items Ordered:</p>
                             {o.itemsList.map((item, idx) => (
                               <div key={idx} className="flex justify-between text-gray-700">
                                 <span>{item.qty} × {item.name} ({item.size})</span>
@@ -1018,12 +1166,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     )}
 
                     {/* Footer buttons */}
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f0f2ef] pt-3 text-[10px]">
-                      <span className="text-muted-foreground">{currentStore}</span>
+                    <div className="mt-4 flex items-center justify-between border-t border-[#f0f2ef] pt-4 text-[14px]">
+                      <span className="text-gray-500">{currentStore}</span>
                       {isConfirmed ? (
                         <button
                           onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
-                          className="flex items-center gap-1 rounded-lg bg-[#e3f1dc] px-2.5 py-1 font-bold text-[#1f7956]"
+                          className="flex items-center gap-2 rounded-xl bg-[#e3f1dc] px-4 py-2 font-bold text-[#1f7956] hover:bg-[#d5eacb] transition-colors"
                         >
                           <Truck className="size-3" /> Live Tracking
                         </button>
@@ -1228,10 +1376,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </header>
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              <div className={`relative flex h-52 items-center justify-center rounded-3xl ${selectedProduct.color}`}>
-                <ShoppingBag className="size-20 text-[#5b876e]/50" />
+              <div className={`relative flex h-52 items-center justify-center rounded-3xl overflow-hidden bg-white border border-[#f0f2f5] p-4`}>
+                {selectedProduct.image ? (
+                  <img
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
+                    className="h-full w-full object-contain drop-shadow-sm"
+                  />
+                ) : (
+                  <ShoppingBag className="size-20 text-[#5b876e]/50" />
+                )}
                 {selectedProduct.discount && (
-                  <span className="absolute left-4 top-4 rounded-full bg-[#164e3b] px-2.5 py-1 text-[10px] font-bold text-white">
+                  <span className="absolute left-4 top-4 rounded-full bg-[#164e3b] px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
                     {selectedProduct.discount}
                   </span>
                 )}
@@ -1360,24 +1516,20 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             ) : (
               <>
                 <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-                  {/* Free delivery progress */}
-                  <div className="rounded-xl bg-[#e3f1dc] p-3">
-                    <div className="flex justify-between text-[11px] font-semibold text-[#173f31]">
-                      <span>
-                        {cartSubtotal >= FREE_DELIVERY_OVER
-                          ? '🎉 Free delivery unlocked!'
-                          : `Add ₹${FREE_DELIVERY_OVER - cartSubtotal} more for FREE delivery`}
+                  {/* In-Store Self-Checkout Status banner */}
+                  <div className="rounded-xl bg-[#e3f1dc] p-3 border border-[#b7d66b]/60">
+                    <div className="flex justify-between items-center text-[11px] font-bold text-[#173f31]">
+                      <span className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
+                        In-Store Self-Billing Basket
                       </span>
-                      <span className="font-bold text-[#2e8b65]">
-                        {Math.min(100, Math.round((cartSubtotal / FREE_DELIVERY_OVER) * 100))}%
+                      <span className="rounded-full bg-[#164e3b] px-2 py-0.5 text-[9px] font-bold text-white">
+                        🔒 {cartCount} Items Scanned
                       </span>
                     </div>
-                    <div className="mt-2 h-1.5 w-full rounded-full bg-[#c9e4bf] overflow-hidden">
-                      <div
-                        style={{ width: `${Math.min(100, (cartSubtotal / FREE_DELIVERY_OVER) * 100)}%` }}
-                        className="h-full bg-[#2e8b65]"
-                      />
-                    </div>
+                    <p className="mt-1.5 text-[10px] text-[#3d6e52]">
+                      Zero waiting in line! Pay with Razorpay to unlock your Digital Exit Turnstile Gate Pass.
+                    </p>
                   </div>
 
                   {/* Items in cart */}
@@ -1387,8 +1539,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                         key={item.product.name}
                         className="flex items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm"
                       >
-                        <div className={`flex size-12 items-center justify-center rounded-xl ${item.product.color}`}>
-                          <ShoppingBag className="size-5 text-[#5b876e]/60" />
+                        <div className="flex size-14 items-center justify-center rounded-xl overflow-hidden bg-white border border-[#f0f2f5] p-1">
+                          {item.product.image ? (
+                            <img src={item.product.image} alt={item.product.name} className="h-full w-full object-contain" />
+                          ) : (
+                            <ShoppingBag className="size-5 text-[#5b876e]/60" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="truncate text-[12px] font-bold text-[#173f31]">{item.product.name}</p>
@@ -1421,19 +1577,19 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     ))}
                   </div>
 
-                  {/* Delivery slot */}
+                  {/* Exit turnstile gate selector */}
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Select Delivery Slot</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Select Store Exit Gate</p>
                     <div className="mt-2 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                      {deliverySlots.map((s) => (
+                      {['Turnstile Gate 2 (Express)', 'Turnstile Gate 1', 'Main Security Gate'].map((g, idx) => (
                         <button
-                          key={s}
-                          onClick={() => setSelectedSlot(s)}
+                          key={g}
+                          onClick={() => setSelectedSlot(g)}
                           className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors ${
-                            selectedSlot === s ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-gray-700'
+                            idx === 0 ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-gray-700'
                           }`}
                         >
-                          {s}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -1477,51 +1633,40 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     )}
                   </div>
 
-                  {/* Tip delivery partner */}
-                  <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5">
-                    <p className="text-[11px] font-bold text-[#173f31]">Tip delivery partner</p>
-                    <div className="mt-2 flex gap-2">
-                      {[0, 10, 20, 30].map((t) => (
-                        <button
-                          key={t}
-                          onClick={() => setTipAmount(t)}
-                          className={`flex-1 rounded-xl py-1.5 text-[11px] font-bold border ${
-                            tipAmount === t ? 'border-[#164e3b] bg-[#164e3b] text-white' : 'border-[#e5e7eb] bg-[#f9fafb] text-gray-700'
-                          }`}
-                        >
-                          {t === 0 ? 'None' : `₹${t}`}
-                        </button>
-                      ))}
+                  {/* In-Store Express Perks banner */}
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-[11px] text-[#164e3b]">
+                    <div className="flex items-center gap-2 font-bold">
+                      <ShieldCheck className="size-4 text-emerald-600" />
+                      <span>Self-Billing Advantage</span>
                     </div>
+                    <p className="mt-1 text-[10px] text-emerald-700">
+                      Estimated ~15 minutes saved skipping the store billing line. Anti-theft tags automatically deactivated upon payment.
+                    </p>
                   </div>
 
                   {/* Bill details */}
                   <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5 text-[11px] space-y-2">
                     <p className="font-bold text-[#173f31]">Bill breakdown</p>
                     <div className="flex justify-between text-gray-600">
-                      <span>Items total ({cartCount})</span>
+                      <span>Verified items ({cartCount})</span>
                       <span>₹{cartSubtotal}</span>
                     </div>
                     {effectiveCouponDiscount > 0 && (
                       <div className="flex justify-between font-bold text-[#1f7956]">
-                        <span>Coupon savings</span>
+                        <span>Self-checkout coupon discount</span>
                         <span>-₹{effectiveCouponDiscount}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-gray-600">
-                      <span>Delivery charge</span>
-                      <span className={deliveryCost === 0 ? 'font-bold text-[#1f7956]' : ''}>
-                        {deliveryCost === 0 ? 'FREE' : `₹${deliveryCost}`}
-                      </span>
+                      <span>Express Self-Billing Line</span>
+                      <span className="font-bold text-[#1f7956]">FREE (₹0)</span>
                     </div>
-                    {tipAmount > 0 && (
-                      <div className="flex justify-between text-gray-600">
-                        <span>Delivery partner tip</span>
-                        <span>₹{tipAmount}</span>
-                      </div>
-                    )}
+                    <div className="flex justify-between text-gray-600">
+                      <span>Digital Exit Pass Generation</span>
+                      <span className="font-bold text-[#1f7956]">INCLUDED</span>
+                    </div>
                     <div className="border-t border-[#f0f2ef] pt-2 flex justify-between text-[13px] font-bold text-[#173f31]">
-                      <span>To Pay</span>
+                      <span>Total to Pay</span>
                       <span>₹{cartGrandTotal}</span>
                     </div>
                   </div>
@@ -1580,53 +1725,106 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         )}
 
         {/* ======================================================================= */}
-        {/* MODAL 3: ORDER PLACED CONFIRMATION */}
+        {/* MODAL 3: DIGITAL STORE EXIT PASS (SCAN & GO) */}
         {/* ======================================================================= */}
         {activeModal === 'order-placed' && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#fbfdf9] p-6 text-center animate-in fade-in zoom-in-95">
-            <div className="flex size-20 items-center justify-center rounded-full bg-[#dff0d8] shadow-sm">
-              <Check className="size-10 text-[#1f7956]" />
+          <div className="absolute inset-0 z-50 flex flex-col overflow-y-auto bg-[#fbfdf9] p-6 text-center animate-in fade-in zoom-in-95">
+            {/* Security Verified Badge */}
+            <div className="inline-flex items-center gap-1.5 self-center rounded-full border border-emerald-300 bg-emerald-50 px-4 py-1.5 shadow-sm text-emerald-800 text-[11px] font-bold">
+              <ShieldCheck className="size-4 text-emerald-600" />
+              <span>SECURITY VERIFIED · READY TO EXIT</span>
             </div>
 
-            <h2 className="mt-5 text-[22px] font-bold text-[#173f31]">Order Placed!</h2>
+            <h2 className="mt-3 text-[22px] font-extrabold text-[#173f31]">Digital Store Exit Pass</h2>
             <p className="mt-1 text-[12px] text-[#4b7861]">
-              ID: {latestOrderId || '#GB-2501'} · Arriving in ~20 mins
+              {currentStore} · Turnstile Exit #2
             </p>
-            {paidPaymentId && (
-              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-bold text-[#0c2340] border border-blue-200">
+
+            {paidPaymentId ? (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 self-center rounded-full bg-blue-50 px-3.5 py-1 text-[10px] font-bold text-[#0c2340] border border-blue-200">
                 <ShieldCheck className="size-3.5 text-blue-600" />
-                <span>Razorpay Payment Verified: <code className="font-mono text-blue-700">{paidPaymentId}</code></span>
+                <span>Razorpay Verified: <code className="font-mono text-blue-700">{paidPaymentId}</code></span>
+              </div>
+            ) : (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 self-center rounded-full bg-emerald-50 px-3.5 py-1 text-[10px] font-bold text-emerald-800 border border-emerald-200">
+                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <span>Payment Confirmed · Anti-Theft Tag Released</span>
               </div>
             )}
 
-            {/* Live tracker steps */}
-            <div className="mt-6 w-full rounded-2xl border border-[#e5e7eb] bg-white p-4 text-left shadow-sm space-y-3">
-              <p className="text-[12px] font-bold text-[#173f31]">Live delivery status</p>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#2e8b65] text-white">
-                  <Check className="size-4" />
+            {/* High-contrast Digital QR Code Pass */}
+            <div className="mt-5 w-full flex flex-col items-center">
+              <div className="rounded-2xl border-2 border-[#164e3b] bg-white p-5 shadow-md">
+                <div className="relative size-44 flex items-center justify-center rounded-xl bg-white p-2">
+                  <svg width="160" height="160" viewBox="0 0 180 180">
+                    <rect x="10" y="10" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="18" y="18" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="25" y="25" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="124" y="10" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="132" y="18" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="139" y="25" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="10" y="124" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="18" y="132" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="25" y="139" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="66" y="20" width="8" height="8" fill="#164e3b" />
+                    <rect x="82" y="20" width="8" height="8" fill="#164e3b" />
+                    <rect x="98" y="20" width="8" height="8" fill="#164e3b" />
+
+                    <rect x="20" y="66" width="8" height="8" fill="#164e3b" />
+                    <rect x="20" y="82" width="8" height="8" fill="#164e3b" />
+                    <rect x="20" y="98" width="8" height="8" fill="#164e3b" />
+
+                    <rect x="64" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="84" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="84" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="78" y="78" width="24" height="24" rx="6" fill="#b7d66b" />
+                    <path d="M85 90 L88 93 L95 86" stroke="#164e3b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold text-[#173f31]">Order placed</p>
-                  <p className="text-[9px] text-muted-foreground">Confirmed by {currentStore}</p>
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#f0f9f3] px-3 py-1 text-[11px] font-mono font-bold text-[#164e3b]">
+                  <Sparkles className="size-3" />
+                  <span>{latestOrderId || '#GB-PASS-2501'}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#e3f1dc] text-[#2e8b65]">
-                  <PackageCheck className="size-4" />
+              <p className="mt-2 text-[11px] font-medium text-[#4b7861]">
+                Flash this QR code at Optical Exit Turnstiles or show Store Security
+              </p>
+            </div>
+
+            {/* Exit Guide */}
+            <div className="mt-5 w-full rounded-2xl border border-[#d2e8cb] bg-[#f7fbf4] p-4 text-left space-y-2">
+              <p className="text-[12px] font-bold text-[#173f31]">How to exit with Zero Queue:</p>
+              <div className="space-y-2 text-[11px] text-[#305a46]">
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">1</span>
+                  <span>Walk to the express <strong className="text-[#173f31]">Self-Billing Exit Lane</strong>.</span>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold text-[#173f31]">Packing items</p>
-                  <p className="text-[9px] text-[#2e8b65]">Being packed right now</p>
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">2</span>
+                  <span>Point this QR code at the turnstile glass scanner.</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#f3f4f6] text-gray-400">
-                  <Truck className="size-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-gray-400">Out for delivery</p>
-                  <p className="text-[9px] text-muted-foreground">Delivery partner assigned</p>
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">3</span>
+                  <span>Gate automatically unlocks. <strong className="text-[#173f31]">Queue skipped completely!</strong></span>
                 </div>
               </div>
             </div>
@@ -1637,18 +1835,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   setActiveModal('none')
                   setTab('Orders')
                 }}
-                className="w-full rounded-xl bg-[#164e3b] py-3.5 text-[13px] font-bold text-white shadow-md hover:bg-[#124031]"
+                className="w-full rounded-xl bg-[#164e3b] py-3.5 text-[13px] font-bold text-white shadow-md hover:bg-[#124031] transition-colors"
               >
-                Track in My Orders
+                View in Saved Exit Passes
               </button>
               <button
                 onClick={() => {
                   setActiveModal('none')
-                  setTab('Home')
+                  setTab('Scan')
                 }}
-                className="w-full rounded-xl border border-[#e5e7eb] bg-white py-3.5 text-[13px] font-semibold text-[#173f31]"
+                className="w-full rounded-xl border border-[#b7d66b] bg-[#f5fbf1] py-3.5 text-[13px] font-bold text-[#164e3b] hover:bg-[#ebf6e5] transition-colors"
               >
-                Continue shopping
+                Scan More In-Store Items
               </button>
             </div>
           </div>

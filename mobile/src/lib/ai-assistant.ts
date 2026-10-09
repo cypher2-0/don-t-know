@@ -46,7 +46,7 @@ export function getAIResponse(prompt: string): AIMessage {
       id: Math.random().toString(36).substring(7),
       sender: 'assistant',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: `Here's a delicious, chef-crafted **Paneer Makhani & Roti** meal plan! All ingredients are in stock at GreenBasket Indiranagar and ready for instant delivery in 18 mins.`,
+      text: `Here's a delicious, chef-crafted **Paneer Makhani & Roti** meal plan! All ingredients are in stock at GreenBasket Indiranagar (Aisle 1 & 2) and ready for in-store pickup & self-checkout.`,
       recipeMeta: {
         title: 'Quick Restaurant-Style Paneer Makhani',
         prepTime: '20 mins',
@@ -179,7 +179,7 @@ export function getAIResponse(prompt: string): AIMessage {
     (prod) => ({
       product: prod,
       qty: 1,
-      reason: `${prod.category} · In stock with instant delivery`,
+      reason: `${prod.category} · In stock on shelf · Scan barcode to add`,
     }),
   );
 
