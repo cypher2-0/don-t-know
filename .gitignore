@@ -19,3 +19,6 @@ tsconfig.tsbuildinfo
 
 # Cloudflare / OpenNext build output
 .open-next/
+
+# IDE
+.vscode/

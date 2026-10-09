@@ -1,0 +1,3 @@
+# Makes mobile/ its own pnpm workspace root, so the app installs
+# standalone (own lockfile + store) independent of the parent repo.
+packages: []
