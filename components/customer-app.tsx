@@ -32,6 +32,8 @@ import {
   Settings,
   ShieldCheck,
   ShoppingBag,
+  ShoppingBasket,
+  ShoppingCart,
   Sparkles,
   Star,
   Tag,
@@ -39,8 +41,14 @@ import {
   Trophy,
   Truck,
   Users,
+  User,
   X,
   Zap,
+  Milk,
+  Apple,
+  Wheat,
+  Croissant,
+  Cookie,
 } from 'lucide-react'
 
 import {
@@ -494,29 +502,35 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#fbfdf9] font-sans">
-      <div className="relative mx-auto flex min-h-screen w-full max-w-2xl flex-col bg-[#fbfdf9]">
+    <div className="flex w-full flex-col bg-[#fbfdf9] font-sans h-full min-h-screen">
+      <div className="relative mx-auto flex min-h-screen w-full flex-col bg-white">
         {/* App Topbar */}
-        <header className="flex items-center justify-between border-b border-[#f0f3ee] bg-white px-5 pb-3 pt-5">
+        <header className="flex items-center justify-between bg-white px-5 pb-3 pt-5 sticky top-0 z-10">
           <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-xl bg-[#0d4f3c] text-white">
-              <ShoppingBag className="size-4" />
-            </div>
-            <div>
-              <p className="text-[13px] font-bold tracking-tight text-[#123c31]">
-                grocer<span className="text-[#a6c83f]">AI</span>
-              </p>
-              <p className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground">
-                smart customer app
-              </p>
-            </div>
+            <ShoppingBasket className="size-8 text-[#164e3b]" />
+            <span className="text-[22px] font-bold tracking-tight text-[#173f31]">
+              FreshBasket
+            </span>
           </div>
-          <button
-            onClick={onBack}
-            className="rounded-lg border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-1 text-[10px] font-bold text-[#173f31] hover:bg-[#eef2ec] transition-colors"
-          >
-            ← Back to Admin
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setActiveModal('cart')}
+              className="relative text-[#173f31] hover:text-[#164e3b]"
+            >
+              <ShoppingCart className="size-6" />
+              {cartCount > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setTab('Profile')}
+              className="flex size-8 items-center justify-center rounded-full bg-[#e3f1dc] text-[#164e3b]"
+            >
+              <User className="size-5" />
+            </button>
+          </div>
         </header>
 
         {/* Global Floating Notification Toast */}
@@ -535,23 +549,25 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* ======================================================================= */}
         {/* TAB 1: HOME */}
         {/* ======================================================================= */}
+        {/* ======================================================================= */}
         {tab === 'Home' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-3">
+          <main className="flex-1 overflow-y-auto px-5 pb-32 pt-2">
             {/* Store Location Bar */}
             <div className="relative">
               <button
                 onClick={() => setHomeStoreDropdown(!homeStoreDropdown)}
-                className="w-full flex items-center justify-between rounded-2xl bg-[#e3f1dc] p-3.5 text-left transition-colors hover:bg-[#d8edd0]"
+                className="w-full flex items-center justify-between rounded-2xl bg-[#f0f9f4] p-3 text-left transition-colors hover:bg-[#e4f3eb]"
               >
-                <div>
-                  <p className="text-[10px] font-semibold text-[#327255]">Shopping at</p>
-                  <p className="mt-0.5 text-[13px] font-bold text-[#173f31]">{currentStore}</p>
-                  <div className="mt-1 flex items-center gap-1 text-[10px] text-[#4b7861]">
-                    <MapPin className="size-3" />
-                    <span>{storeInfo.distance} · {storeInfo.hours} · {storeInfo.deliveryTime}</span>
+                <div className="flex items-center gap-3">
+                  <MapPin className="size-5 text-[#2e8b65]" />
+                  <div>
+                    <p className="text-[14px] font-bold text-[#173f31]">{currentStore}</p>
+                    <p className="text-[11px] text-[#4b7861]">
+                      {storeInfo.distance} · {storeInfo.hours} · {storeInfo.deliveryTime}
+                    </p>
                   </div>
                 </div>
-                <ChevronDown className="size-4 text-[#327255]" />
+                <ChevronDown className="size-5 text-[#2e8b65]" />
               </button>
 
               {homeStoreDropdown && (
@@ -581,17 +597,17 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Search Bar */}
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5">
-              <Search className="size-4 text-muted-foreground" />
+            <div className="mt-4 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <Search className="size-5 text-gray-400" />
               <input
                 value={homeQuery}
                 onChange={(e) => setHomeQuery(e.target.value)}
                 placeholder="Search milk, atta, apples, snacks..."
-                className="flex-1 bg-transparent text-[11px] text-[#173f31] outline-none placeholder:text-muted-foreground"
+                className="flex-1 bg-transparent text-[14px] text-gray-800 outline-none placeholder:text-gray-400"
               />
               {homeQuery.length > 0 && (
                 <button onClick={() => setHomeQuery('')}>
-                  <X className="size-3.5 text-muted-foreground" />
+                  <X className="size-4 text-gray-400" />
                 </button>
               )}
             </div>
@@ -599,28 +615,34 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             {/* grocerAI Shopping Copilot Banner */}
             <div
               onClick={() => setActiveModal('ai')}
-              className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl border border-[#b7d66b] bg-[#f5fbf1] p-3.5 shadow-sm transition-all hover:bg-[#eef8e8]"
+              className="mt-4 flex cursor-pointer items-center justify-between rounded-3xl border border-[#c5e6bc] bg-[#eef8e8] p-4 shadow-sm transition-all hover:bg-[#e4f3db]"
             >
-              <div className="flex-1 pr-3">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="size-4 text-[#1f7956]" />
-                  <span className="text-[12px] font-bold text-[#1f7956]">grocerAI Shopping Copilot</span>
-                  <span className="rounded bg-[#e3f1dc] px-1.5 py-0.5 text-[8px] font-bold text-[#2e8b65]">AI RECIPES</span>
+              <div className="flex items-center gap-4 flex-1">
+                <div className="flex size-10 items-center justify-center rounded-full bg-white text-[#1f7956]">
+                  <Bot className="size-6" />
                 </div>
-                <p className="mt-1 text-[11px] leading-4 text-[#4b7861]">
-                  Ask for dinner recipes, high-protein diet baskets & 1-click cart assembly.
-                </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-bold text-[#173f31]">groceryAI Shopping Copilot</span>
+                    <span className="rounded bg-[#d3ebd3] px-1.5 py-0.5 text-[9px] font-bold text-[#2e8b65]">AI RECIPES</span>
+                  </div>
+                  <p className="text-[12px] text-[#4b7861] mt-0.5">
+                    Ask for dinner recipes, high-protein diet baskets & 1-click cart assembly.
+                  </p>
+                </div>
               </div>
-              <button className="rounded-xl bg-[#164e3b] px-3 py-2 text-[10px] font-bold text-white hover:bg-[#1a5d46]">
+              <button className="rounded-2xl bg-[#164e3b] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#1a5d46]">
                 Ask AI →
               </button>
             </div>
 
             {/* Welcome & Points Card */}
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-6 flex items-center justify-between">
               <div>
-                <h1 className="text-[16px] font-bold text-[#173f31]">Good morning, Arjun</h1>
-                <p className="text-[10px] text-muted-foreground">Fresh stock arrived 10 mins ago</p>
+                <h1 className="text-[22px] font-bold text-[#173f31] flex items-center gap-2">
+                  Good morning, Arjun <span className="text-[20px]">👋</span>
+                </h1>
+                <p className="text-[14px] text-gray-500 mt-1">Fresh stock arrived 10 mins ago</p>
               </div>
               <button
                 onClick={() => {
@@ -628,24 +650,41 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   setActiveModal('cart')
                   showNotice('Code GB120 applied! Check your cart.')
                 }}
-                className="rounded-full bg-[#dff0d8] px-2.5 py-1 text-[10px] font-bold text-[#1f7956] hover:bg-[#cfe7c2]"
+                className="flex items-center gap-1.5 rounded-full bg-[#fdfaf3] px-3 py-1.5 text-[14px] font-bold text-[#173f31] shadow-sm border border-yellow-200 hover:bg-[#fbf4e4]"
               >
-                2,480 pts ★
+                <Star className="size-4 fill-yellow-400 text-yellow-400" />
+                2,460 pts {'>'}
               </button>
             </div>
 
             {/* Category Chips */}
-            <div className="mt-3.5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {shopCategories.map((c) => {
+            <div className="mt-5 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              <button
+                onClick={() => setHomeCategory('All')}
+                className={`whitespace-nowrap rounded-full px-6 py-2.5 text-[14px] font-bold transition-colors ${
+                  homeCategory === 'All' ? 'bg-[#164e3b] text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                All
+              </button>
+              {shopCategories.filter(c => c !== 'All').map((c) => {
                 const active = homeCategory === c
+                let Icon = ShoppingBag
+                if (c === 'Dairy') Icon = Milk
+                if (c === 'Produce') Icon = Apple
+                if (c === 'Staples') Icon = Wheat
+                if (c === 'Bakery') Icon = Croissant
+                if (c === 'Snacks') Icon = Cookie
+                
                 return (
                   <button
                     key={c}
                     onClick={() => setHomeCategory(c)}
-                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors ${
-                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-[#365a4a] hover:bg-[#f6faf3]'
+                    className={`whitespace-nowrap flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
+                    <Icon className={`size-5 ${active ? 'text-white' : c === 'Dairy' ? 'text-blue-500' : c === 'Produce' ? 'text-green-500' : c === 'Staples' ? 'text-orange-400' : 'text-yellow-600'}`} />
                     {c}
                   </button>
                 )
@@ -653,68 +692,71 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Section Header */}
-            <div className="mt-5 flex items-center justify-between">
-              <h2 className="text-[14px] font-bold text-[#173f31]">Picked for you ({homeFiltered.length})</h2>
-              <button onClick={() => setTab('Explore')} className="text-[10px] font-bold text-[#2e8b65] hover:underline">
+            <div className="mt-8 flex items-center justify-between">
+              <h2 className="text-[20px] font-bold text-[#173f31]">Picked for you (14)</h2>
+              <button onClick={() => setTab('Explore')} className="text-[14px] font-bold text-[#164e3b] hover:underline flex items-center gap-1">
                 Explore all →
               </button>
             </div>
 
             {/* Product Grid */}
-            <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {homeFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-3xl border border-[#e5e7eb]/50 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/5"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-32 cursor-pointer items-center justify-center rounded-2xl overflow-hidden bg-white/80 border border-[#f0f2f5] p-2`}
+                      className={`relative flex h-36 w-full cursor-pointer items-center justify-center rounded-2xl mb-3`}
                     >
                       {p.image ? (
                         <img
                           src={p.image}
                           alt={p.name}
-                          className="h-full w-full object-contain transition-transform hover:scale-110 duration-500 drop-shadow-md"
+                          className="h-full w-full object-contain transition-transform hover:scale-105 duration-300"
                         />
                       ) : (
-                        <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                        <ShoppingBag className="size-12 text-gray-300" />
                       )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#164e3b] to-[#2e8b65] px-2 py-0.5 text-[9px] font-bold tracking-wide text-white shadow-sm">
+                        <span className="absolute left-0 top-0 rounded-full bg-[#164e3b] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
                     </div>
 
-                    <div className="mt-2.5 cursor-pointer" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[11px] font-bold text-[#173f31]">{p.name}</p>
-                      <div className="mt-0.5 flex items-center justify-between text-[10px] text-muted-foreground">
+                    <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
+                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
                         <span>{p.size}</span>
                         {p.rating && (
-                          <span className="flex items-center gap-0.5 text-[#ca8a04] font-semibold">
-                            <Star className="size-2.5 fill-[#ca8a04]" /> {p.rating}
+                          <span className="flex items-center gap-1 font-bold text-yellow-500">
+                            <Star className="size-3.5 fill-yellow-500" /> {p.rating}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2.5">
-                      <span className="text-[14px] font-extrabold text-[#173f31]">₹{p.price}</span>
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[20px] font-bold text-[#173f31]">₹{p.price}</span>
+                        {p.discount && <span className="text-[12px] text-gray-400 line-through">₹{Math.round(p.price * 1.15)}</span>}
+                      </div>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-xl bg-[#dff0d8] p-0.5 shadow-inner">
+                        <div className="flex items-center rounded-xl border border-gray-200 bg-[#f8faf8] p-1 shadow-sm">
                           <button
                             onClick={() => changeQty(p.name, -1)}
-                            className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white"
+                            className="flex size-7 items-center justify-center rounded-lg bg-white text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-gray-50"
                           >
                             −
                           </button>
-                          <span className="min-w-6 text-center text-[12px] font-extrabold text-[#21664b]">{qty}</span>
+                          <span className="min-w-8 text-center text-[14px] font-bold text-[#164e3b]">{qty}</span>
                           <button
                             onClick={() => changeQty(p.name, 1)}
-                            className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white"
+                            className="flex size-7 items-center justify-center rounded-lg bg-[#e3f1dc] text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-[#d5eacb]"
                           >
                             +
                           </button>
@@ -722,9 +764,9 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-xl bg-gradient-to-r from-[#dff0d8] to-[#cbe8c0] px-3 py-1.5 text-[11px] font-bold text-[#21664b] shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95"
+                          className="flex items-center gap-1.5 rounded-xl bg-[#164e3b] px-4 py-2 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-[#124031] active:scale-95"
                         >
-                          + Add
+                          <ShoppingCart className="size-4" /> Add
                         </button>
                       )}
                     </div>
@@ -765,7 +807,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 2: EXPLORE */}
         {/* ======================================================================= */}
         {tab === 'Explore' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
+          <main className="flex-1 overflow-y-auto px-4 pb-32 pt-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Browse Aisles</p>
               <h1 className="text-[18px] font-bold text-[#173f31]">Explore Store</h1>
@@ -773,29 +815,53 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Search Input */}
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-3 py-2.5">
-              <Search className="size-4 text-muted-foreground" />
+            <div className="mt-4 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <Search className="size-5 text-gray-400" />
               <input
                 value={exploreQuery}
                 onChange={(e) => setExploreQuery(e.target.value)}
                 placeholder="Search all items..."
-                className="flex-1 bg-transparent text-[11px] text-[#173f31] outline-none"
+                className="flex-1 bg-transparent text-[14px] text-gray-800 outline-none placeholder:text-gray-400"
               />
+              {exploreQuery.length > 0 && (
+                <button onClick={() => setExploreQuery('')}>
+                  <X className="size-4 text-gray-400" />
+                </button>
+              )}
             </div>
 
             {/* Categories */}
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {shopCategories.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setExploreCategory(c)}
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold ${
-                    exploreCategory === c ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-[#365a4a]'
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+            <div className="mt-5 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              <button
+                onClick={() => setExploreCategory('All')}
+                className={`whitespace-nowrap rounded-full px-6 py-2.5 text-[14px] font-bold transition-colors ${
+                  exploreCategory === 'All' ? 'bg-[#164e3b] text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                All
+              </button>
+              {shopCategories.filter(c => c !== 'All').map((c) => {
+                const active = exploreCategory === c
+                let Icon = ShoppingBag
+                if (c === 'Dairy') Icon = Milk
+                if (c === 'Produce') Icon = Apple
+                if (c === 'Staples') Icon = Wheat
+                if (c === 'Bakery') Icon = Croissant
+                if (c === 'Snacks') Icon = Cookie
+                
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setExploreCategory(c)}
+                    className={`whitespace-nowrap flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className={`size-5 ${active ? 'text-white' : c === 'Dairy' ? 'text-blue-500' : c === 'Produce' ? 'text-green-500' : c === 'Staples' ? 'text-orange-400' : 'text-yellow-600'}`} />
+                    {c}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Sort bar */}
@@ -814,49 +880,74 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
               </button>
             </div>
 
-            {/* Product list */}
-            <div className="mt-3 grid grid-cols-2 gap-2.5">
+            {/* Product Grid */}
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {exploreFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
-                  <div key={p.name} className="flex flex-col justify-between rounded-3xl border border-[#e5e7eb]/50 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/5">
+                  <div
+                    key={p.name}
+                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                  >
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-32 cursor-pointer items-center justify-center rounded-2xl overflow-hidden bg-white/80 border border-[#f0f2f5] p-2`}
+                      className={`relative flex h-36 w-full cursor-pointer items-center justify-center rounded-2xl mb-3`}
                     >
                       {p.image ? (
                         <img
                           src={p.image}
                           alt={p.name}
-                          className="h-full w-full object-contain transition-transform hover:scale-110 duration-500 drop-shadow-md"
+                          className="h-full w-full object-contain transition-transform hover:scale-105 duration-300"
                         />
                       ) : (
-                        <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                        <ShoppingBag className="size-12 text-gray-300" />
                       )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#164e3b] to-[#2e8b65] px-2 py-0.5 text-[9px] font-bold tracking-wide text-white shadow-sm">
+                        <span className="absolute left-0 top-0 rounded-full bg-[#164e3b] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
                     </div>
-                    <div className="mt-2.5 cursor-pointer" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[11px] font-bold text-[#173f31]">{p.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{p.size} · {p.category}</p>
+
+                    <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
+                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
+                        <span>{p.size} · {p.category}</span>
+                        {p.rating && (
+                          <span className="flex items-center gap-1 font-bold text-yellow-500">
+                            <Star className="size-3.5 fill-yellow-500" /> {p.rating}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2.5">
-                      <span className="text-[14px] font-extrabold text-[#173f31]">₹{p.price}</span>
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[20px] font-bold text-[#173f31]">₹{p.price}</span>
+                        {p.discount && <span className="text-[12px] text-gray-400 line-through">₹{Math.round(p.price * 1.15)}</span>}
+                      </div>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-xl bg-[#dff0d8] p-0.5 shadow-inner">
-                          <button onClick={() => changeQty(p.name, -1)} className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white">−</button>
-                          <span className="min-w-6 text-center text-[12px] font-extrabold text-[#21664b]">{qty}</span>
-                          <button onClick={() => changeQty(p.name, 1)} className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white">+</button>
+                        <div className="flex items-center rounded-xl border border-gray-200 bg-[#f8faf8] p-1 shadow-sm">
+                          <button
+                            onClick={() => changeQty(p.name, -1)}
+                            className="flex size-7 items-center justify-center rounded-lg bg-white text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-gray-50"
+                          >
+                            −
+                          </button>
+                          <span className="min-w-8 text-center text-[14px] font-bold text-[#164e3b]">{qty}</span>
+                          <button
+                            onClick={() => changeQty(p.name, 1)}
+                            className="flex size-7 items-center justify-center rounded-lg bg-[#e3f1dc] text-[16px] font-bold text-[#164e3b] shadow-sm transition-colors hover:bg-[#d5eacb]"
+                          >
+                            +
+                          </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-xl bg-gradient-to-r from-[#dff0d8] to-[#cbe8c0] px-3 py-1.5 text-[11px] font-bold text-[#21664b] shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95"
+                          className="flex items-center gap-1.5 rounded-xl bg-[#164e3b] px-4 py-2 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-[#124031] active:scale-95"
                         >
-                          + Add
+                          <ShoppingCart className="size-4" /> Add
                         </button>
                       )}
                     </div>
