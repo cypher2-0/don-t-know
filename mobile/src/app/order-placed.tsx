@@ -1,4 +1,4 @@
-import { Check, Clock, PackageCheck, ShoppingBag, Truck } from 'lucide-react-native';
+import { Check, Clock, PackageCheck, ShieldCheck, ShoppingBag, Truck } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -7,7 +7,7 @@ import { Screen } from '@/components/screen';
 import { storeInfo } from '@/lib/mock-data';
 
 export default function OrderPlacedScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, paymentId } = useLocalSearchParams<{ id: string; paymentId?: string }>();
   const orderId = id ? decodeURIComponent(id) : '';
   const { placedOrders } = useCart();
   const order = placedOrders.find((o) => o.id === orderId) ?? placedOrders[0];
@@ -23,6 +23,15 @@ export default function OrderPlacedScreen() {
         <Text className="mt-1 text-center text-[12px] leading-5 text-[#4b7861]">
           {order?.id ? `ID: ${order.id}` : 'Order confirmed'} · Arriving in ~20 mins
         </Text>
+
+        {paymentId ? (
+          <View className="mt-2.5 flex-row items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1">
+            <ShieldCheck size={13} color="#2563eb" />
+            <Text className="text-[10px] font-bold text-[#0c2340]">
+              Razorpay Verified: <Text className="font-mono text-blue-700">{paymentId}</Text>
+            </Text>
+          </View>
+        ) : null}
 
         {/* Live Delivery Timeline */}
         <View className="mt-6 w-full rounded-2xl border border-[#e5e7eb] bg-white p-4 shadow-sm">

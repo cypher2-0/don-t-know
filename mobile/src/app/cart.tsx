@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useCart } from '@/components/cart-provider';
 import { Screen } from '@/components/screen';
+import { MobileRazorpayModal } from '@/components/razorpay-modal';
 import { deliverySlots, paymentMethods, storeInfo } from '@/lib/mock-data';
 
 const DELIVERY_FEE = 30;
@@ -20,6 +21,7 @@ export default function CartScreen() {
   const [couponApplied, setCouponApplied] = useState('');
   const [tip, setTip] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRazorpay, setShowRazorpay] = useState(false);
   const insets = useSafeAreaInsets();
 
   const delivery = total >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
@@ -52,7 +54,7 @@ export default function CartScreen() {
 
   const selectedPayment = paymentMethods.find((p) => p.id === paymentMethod)?.name ?? 'UPI';
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (paymentId?: string) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     const order = placeOrder({
@@ -62,7 +64,9 @@ export default function CartScreen() {
       tip,
       delivery,
     });
-    router.replace(`/order-placed?id=${encodeURIComponent(order.id)}`);
+    router.replace(
+      `/order-placed?id=${encodeURIComponent(order.id)}${paymentId ? `&paymentId=${encodeURIComponent(paymentId)}` : ''}`
+    );
   };
 
   return (
@@ -354,16 +358,37 @@ export default function CartScreen() {
             className="border-t border-[#e5e7eb] bg-white px-5 pt-3"
             style={{ paddingBottom: Math.max(insets.bottom, 14) + 4 }}>
             <Pressable
-              onPress={handlePlaceOrder}
+              onPress={() => {
+                if (paymentMethod === 'razorpay' || paymentMethod === 'upi' || paymentMethod === 'card') {
+                  setShowRazorpay(true);
+                } else {
+                  handlePlaceOrder();
+                }
+              }}
               disabled={isSubmitting}
-              className="items-center rounded-xl bg-[#164e3b] py-3.5 active:opacity-90">
+              className="items-center rounded-xl bg-[#0c2340] py-3.5 active:opacity-90">
               <Text className="text-[13px] font-bold text-white">
-                {isSubmitting ? 'Placing order…' : `Place order · ₹${grand}`}
+                {isSubmitting
+                  ? 'Placing order…'
+                  : `Pay ₹${grand} · ${paymentMethod === 'razorpay' ? 'Razorpay' : selectedPayment.split(' ')[0]}`}
               </Text>
             </Pressable>
           </View>
         </>
       )}
+
+      <MobileRazorpayModal
+        visible={showRazorpay}
+        amount={grand}
+        orderId={`#GB-${Math.floor(2500 + Math.random() * 900)}`}
+        storeName={storeInfo.name}
+        itemsCount={count}
+        onSuccess={(paymentId) => {
+          setShowRazorpay(false);
+          handlePlaceOrder(paymentId);
+        }}
+        onCancel={() => setShowRazorpay(false)}
+      />
     </Screen>
   );
 }
