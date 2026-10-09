@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Name must match your Cloudflare Pages/Workers project name
   "name": "don-t-know",
+  "account_id": "966c5e0a44897713c7cae3a94e09b670",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-12-30",
   "compatibility_flags": ["nodejs_compat"],
