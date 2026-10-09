@@ -1,11 +1,11 @@
-export type Store = { name: string; city: string; status: 'Healthy' | 'Watch' | 'Critical'; risk: number; sales: string; gap: string; waste: string; stockouts: number; staff: string; reason: string }
+export type Store = { name: string; city: string; status: 'Healthy' | 'Watch' | 'Critical'; risk: number; sales: string; gap: string; waste: string; stockouts: number; staff: string; reason: string; lat: number; lng: number }
 
 export const stores: Store[] = [
-  { name: 'Indiranagar', city: 'Bengaluru', status: 'Healthy', risk: 18, sales: '₹4.82L', gap: '+8.4%', waste: '1.8%', stockouts: 2, staff: '12 / 12', reason: 'Strong sales momentum and healthy inventory coverage.' },
-  { name: 'Koramangala', city: 'Bengaluru', status: 'Watch', risk: 42, sales: '₹3.96L', gap: '-4.2%', waste: '3.9%', stockouts: 6, staff: '10 / 12', reason: 'Waste is elevated and two essential SKUs need replenishment.' },
-  { name: 'Whitefield', city: 'Bengaluru', status: 'Critical', risk: 76, sales: '₹2.84L', gap: '-18.0%', waste: '7.2%', stockouts: 14, staff: '8 / 11', reason: 'Sales are 18% below forecast, with high waste and staff shortage.' },
-  { name: 'Jayanagar', city: 'Bengaluru', status: 'Healthy', risk: 22, sales: '₹4.35L', gap: '+3.1%', waste: '2.1%', stockouts: 3, staff: '11 / 11', reason: 'Consistent performance across sales, staffing, and stock health.' },
-  { name: 'Malleshwaram', city: 'Bengaluru', status: 'Watch', risk: 51, sales: '₹3.42L', gap: '-7.8%', waste: '4.4%', stockouts: 8, staff: '9 / 11', reason: 'Traffic is soft and staff coverage is below the required level.' },
+  { name: 'Indiranagar', city: 'Bengaluru', status: 'Healthy', risk: 18, sales: '₹4.82L', gap: '+8.4%', waste: '1.8%', stockouts: 2, staff: '12 / 12', reason: 'Strong sales momentum and healthy inventory coverage.', lat: 12.9784, lng: 77.6408 },
+  { name: 'Koramangala', city: 'Bengaluru', status: 'Watch', risk: 42, sales: '₹3.96L', gap: '-4.2%', waste: '3.9%', stockouts: 6, staff: '10 / 12', reason: 'Waste is elevated and two essential SKUs need replenishment.', lat: 12.9352, lng: 77.6245 },
+  { name: 'Whitefield', city: 'Bengaluru', status: 'Critical', risk: 76, sales: '₹2.84L', gap: '-18.0%', waste: '7.2%', stockouts: 14, staff: '8 / 11', reason: 'Sales are 18% below forecast, with high waste and staff shortage.', lat: 12.9698, lng: 77.75 },
+  { name: 'Jayanagar', city: 'Bengaluru', status: 'Healthy', risk: 22, sales: '₹4.35L', gap: '+3.1%', waste: '2.1%', stockouts: 3, staff: '11 / 11', reason: 'Consistent performance across sales, staffing, and stock health.', lat: 12.925, lng: 77.5938 },
+  { name: 'Malleshwaram', city: 'Bengaluru', status: 'Watch', risk: 51, sales: '₹3.42L', gap: '-7.8%', waste: '4.4%', stockouts: 8, staff: '9 / 11', reason: 'Traffic is soft and staff coverage is below the required level.', lat: 13.0035, lng: 77.5709 },
 ]
 
 export const expiringProducts = [

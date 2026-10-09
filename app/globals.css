@@ -161,3 +161,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+.store-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+}
+
+.store-marker__dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  transition: all 0.2s ease;
+}
+
+.leaflet-container {
+  font-family: inherit;
+  background: #e8eee6;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px;
+}
