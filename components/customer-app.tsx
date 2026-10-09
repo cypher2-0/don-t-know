@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ArrowUpDown,
   Award,
@@ -81,6 +81,16 @@ const DELIVERY_FEE = 30
 const FREE_DELIVERY_OVER = 499
 
 export default function CustomerApp({ onBack }: { onBack: () => void }) {
+  const [showSplash, setShowSplash] = useState(true)
+
+  // Auto-hide splash screen after 800ms for faster load
+  useEffect(() => {
+    if (showSplash) {
+      const timer = setTimeout(() => setShowSplash(false), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [showSplash])
+
   // Navigation & tabs
   const [tab, setTab] = useState<'Home' | 'Explore' | 'Scan' | 'Orders' | 'Profile'>('Home')
   const [activeModal, setActiveModal] = useState<'none' | 'product' | 'cart' | 'order-placed' | 'ai'>('none')
@@ -456,6 +466,33 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     return true
   })
 
+  if (showSplash) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-[#0d4f3c] to-[#1a6b52] font-sans">
+        <div className="flex flex-col items-center animate-in fade-in zoom-in duration-1000 slide-in-from-bottom-8">
+          <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#ffffff] to-[#f0f8f1] shadow-[0_20px_50px_rgba(0,0,0,0.3)] shadow-[#092b20] transition-transform duration-700 hover:scale-105">
+            <ShoppingBag className="h-16 w-16 text-[#164e3b] drop-shadow-md" />
+            <div className="absolute -bottom-3 -right-3 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#89ac2e] to-[#b6d669] p-3 text-white shadow-xl ring-4 ring-[#1a6b52] animate-[spin_4s_linear_infinite]">
+              <Sparkles className="h-6 w-6" />
+            </div>
+          </div>
+          <h1 className="text-5xl font-black tracking-tighter text-white drop-shadow-lg">
+            grocer<span className="text-[#a6c83f]">AI</span>
+          </h1>
+          <p className="mt-4 text-[13px] font-bold tracking-[0.2em] text-[#d1e8d1] uppercase opacity-90 drop-shadow-sm">
+            the grocery inventory
+          </p>
+        </div>
+        <div className="absolute bottom-16 flex flex-col items-center animate-pulse">
+          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-white/20">
+            <div className="h-full w-1/2 bg-[#a6c83f] rounded-full animate-[bounce_1s_infinite]"></div>
+          </div>
+          <p className="mt-3 text-xs font-semibold text-white/60">Preparing your store...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#fbfdf9] font-sans">
       <div className="relative mx-auto flex min-h-screen w-full max-w-2xl flex-col bg-[#fbfdf9]">
@@ -630,15 +667,23 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm hover:shadow-md transition-shadow"
+                    className="flex flex-col justify-between rounded-3xl border border-[#e5e7eb]/50 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/5"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-24 cursor-pointer items-center justify-center rounded-xl ${p.color}`}
+                      className={`relative flex h-32 cursor-pointer items-center justify-center rounded-2xl overflow-hidden bg-white/80 border border-[#f0f2f5] p-2`}
                     >
-                      <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-contain transition-transform hover:scale-110 duration-500 drop-shadow-md"
+                        />
+                      ) : (
+                        <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5 text-[8px] font-bold text-white">
+                        <span className="absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#164e3b] to-[#2e8b65] px-2 py-0.5 text-[9px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
@@ -656,20 +701,20 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2">
-                      <span className="text-[13px] font-bold text-[#173f31]">₹{p.price}</span>
+                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2.5">
+                      <span className="text-[14px] font-extrabold text-[#173f31]">₹{p.price}</span>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-lg bg-[#dff0d8] px-1.5 py-0.5">
+                        <div className="flex items-center rounded-xl bg-[#dff0d8] p-0.5 shadow-inner">
                           <button
                             onClick={() => changeQty(p.name, -1)}
-                            className="px-1 text-[13px] font-bold text-[#21664b] hover:opacity-75"
+                            className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white"
                           >
                             −
                           </button>
-                          <span className="min-w-4 text-center text-[11px] font-bold text-[#21664b]">{qty}</span>
+                          <span className="min-w-6 text-center text-[12px] font-extrabold text-[#21664b]">{qty}</span>
                           <button
                             onClick={() => changeQty(p.name, 1)}
-                            className="px-1 text-[13px] font-bold text-[#21664b] hover:opacity-75"
+                            className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white"
                           >
                             +
                           </button>
@@ -677,7 +722,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-lg bg-[#dff0d8] px-2.5 py-1 text-[11px] font-bold text-[#21664b] hover:bg-[#cfe7c2] transition-colors"
+                          className="rounded-xl bg-gradient-to-r from-[#dff0d8] to-[#cbe8c0] px-3 py-1.5 text-[11px] font-bold text-[#21664b] shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95"
                         >
                           + Add
                         </button>
@@ -700,14 +745,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                 setCouponCode('GB120')
                 setActiveModal('cart')
               }}
-              className="mt-5 flex cursor-pointer items-center justify-between rounded-2xl bg-[#164e3b] p-4 text-white shadow-md hover:bg-[#124031] transition-colors"
+              className="mt-6 flex cursor-pointer items-center justify-between rounded-3xl bg-gradient-to-br from-[#164e3b] to-[#0d3024] p-5 text-white shadow-xl hover:-translate-y-1 transition-all"
             >
               <div>
-                <p className="text-[10px] text-[#b5d8b5]">Smart savings</p>
-                <p className="mt-0.5 text-[14px] font-bold">Get ₹120 off your next bill</p>
-                <p className="mt-0.5 text-[10px] text-[#c1dcc6]">Tap to apply promo code GB120</p>
+                <div className="inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-[#c8e6c8] backdrop-blur-md">
+                  Smart savings
+                </div>
+                <p className="mt-1.5 text-[16px] font-extrabold tracking-tight">Get ₹120 off your next bill</p>
+                <p className="mt-1 text-[11px] font-medium text-[#c1dcc6] opacity-80">Tap to apply promo code GB120</p>
               </div>
-              <Trophy className="size-8 text-[#b6d669]" />
+              <div className="flex size-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
+                <Trophy className="size-6 text-[#b6d669] drop-shadow-md" />
+              </div>
             </div>
           </main>
         )}
@@ -770,14 +819,22 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
               {exploreFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
-                  <div key={p.name} className="flex flex-col justify-between rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm">
+                  <div key={p.name} className="flex flex-col justify-between rounded-3xl border border-[#e5e7eb]/50 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-900/5">
                     <div
                       onClick={() => openProductDetail(p)}
-                      className={`relative flex h-24 cursor-pointer items-center justify-center rounded-xl ${p.color}`}
+                      className={`relative flex h-32 cursor-pointer items-center justify-center rounded-2xl overflow-hidden bg-white/80 border border-[#f0f2f5] p-2`}
                     >
-                      <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-contain transition-transform hover:scale-110 duration-500 drop-shadow-md"
+                        />
+                      ) : (
+                        <ShoppingBag className="size-8 text-[#5b876e]/50" />
+                      )}
                       {p.discount && (
-                        <span className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5 text-[8px] font-bold text-white">
+                        <span className="absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#164e3b] to-[#2e8b65] px-2 py-0.5 text-[9px] font-bold tracking-wide text-white shadow-sm">
                           {p.discount}
                         </span>
                       )}
@@ -786,18 +843,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                       <p className="truncate text-[11px] font-bold text-[#173f31]">{p.name}</p>
                       <p className="text-[10px] text-muted-foreground">{p.size} · {p.category}</p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-[13px] font-bold text-[#173f31]">₹{p.price}</span>
+                    <div className="mt-3 flex items-center justify-between border-t border-[#f5f7f4] pt-2.5">
+                      <span className="text-[14px] font-extrabold text-[#173f31]">₹{p.price}</span>
                       {qty > 0 ? (
-                        <div className="flex items-center rounded-lg bg-[#dff0d8] px-1.5 py-0.5">
-                          <button onClick={() => changeQty(p.name, -1)} className="px-1 text-[13px] font-bold text-[#21664b]">−</button>
-                          <span className="min-w-4 text-center text-[11px] font-bold text-[#21664b]">{qty}</span>
-                          <button onClick={() => changeQty(p.name, 1)} className="px-1 text-[13px] font-bold text-[#21664b]">+</button>
+                        <div className="flex items-center rounded-xl bg-[#dff0d8] p-0.5 shadow-inner">
+                          <button onClick={() => changeQty(p.name, -1)} className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white">−</button>
+                          <span className="min-w-6 text-center text-[12px] font-extrabold text-[#21664b]">{qty}</span>
+                          <button onClick={() => changeQty(p.name, 1)} className="rounded-lg bg-white/50 px-2 text-[14px] font-bold text-[#21664b] transition-colors hover:bg-white">+</button>
                         </div>
                       ) : (
                         <button
                           onClick={() => addToCart(p, 1)}
-                          className="rounded-lg bg-[#dff0d8] px-2.5 py-1 text-[11px] font-bold text-[#21664b]"
+                          className="rounded-xl bg-gradient-to-r from-[#dff0d8] to-[#cbe8c0] px-3 py-1.5 text-[11px] font-bold text-[#21664b] shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95"
                         >
                           + Add
                         </button>
@@ -1228,10 +1285,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </header>
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              <div className={`relative flex h-52 items-center justify-center rounded-3xl ${selectedProduct.color}`}>
-                <ShoppingBag className="size-20 text-[#5b876e]/50" />
+              <div className={`relative flex h-52 items-center justify-center rounded-3xl overflow-hidden bg-white border border-[#f0f2f5] p-4`}>
+                {selectedProduct.image ? (
+                  <img
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
+                    className="h-full w-full object-contain drop-shadow-sm"
+                  />
+                ) : (
+                  <ShoppingBag className="size-20 text-[#5b876e]/50" />
+                )}
                 {selectedProduct.discount && (
-                  <span className="absolute left-4 top-4 rounded-full bg-[#164e3b] px-2.5 py-1 text-[10px] font-bold text-white">
+                  <span className="absolute left-4 top-4 rounded-full bg-[#164e3b] px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
                     {selectedProduct.discount}
                   </span>
                 )}
@@ -1387,8 +1452,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                         key={item.product.name}
                         className="flex items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm"
                       >
-                        <div className={`flex size-12 items-center justify-center rounded-xl ${item.product.color}`}>
-                          <ShoppingBag className="size-5 text-[#5b876e]/60" />
+                        <div className="flex size-14 items-center justify-center rounded-xl overflow-hidden bg-white border border-[#f0f2f5] p-1">
+                          {item.product.image ? (
+                            <img src={item.product.image} alt={item.product.name} className="h-full w-full object-contain" />
+                          ) : (
+                            <ShoppingBag className="size-5 text-[#5b876e]/60" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="truncate text-[12px] font-bold text-[#173f31]">{item.product.name}</p>

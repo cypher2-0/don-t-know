@@ -1,5 +1,5 @@
 import { ShoppingBag, Star } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import type { CustomerProduct } from '@/lib/mock-data';
@@ -19,8 +19,16 @@ export function ProductCard({
     <Pressable
       onPress={() => router.push(`/product/${encodeURIComponent(product.name)}`)}
       className="mb-3 w-[48%] rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm active:opacity-95">
-      <View className={`relative h-24 items-center justify-center rounded-xl ${product.color}`}>
-        <ShoppingBag size={36} color="#5b876e" opacity={0.5} />
+      <View className="relative h-28 items-center justify-center rounded-xl overflow-hidden bg-white border border-[#f0f2f5] p-2">
+        {product.image ? (
+          <Image
+            source={{ uri: product.image }}
+            className="h-full w-full"
+            resizeMode="contain"
+          />
+        ) : (
+          <ShoppingBag size={36} color="#5b876e" opacity={0.5} />
+        )}
         {product.discount ? (
           <View className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5">
             <Text className="text-[8px] font-bold text-white">{product.discount}</Text>

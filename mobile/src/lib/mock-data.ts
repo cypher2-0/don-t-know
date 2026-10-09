@@ -8,23 +8,24 @@ export type CustomerProduct = {
   discount?: string;
   unit?: string;
   barcode: string;
+  image?: string;
 };
 
 export const customerProducts: CustomerProduct[] = [
-  { name: 'Amul Taaza Milk', size: '500 ml', price: 28, category: 'Dairy', color: 'bg-emerald-100', rating: 4.8, barcode: '8901262010053' },
-  { name: 'Fresh Paneer', size: '200 g', price: 95, category: 'Dairy', color: 'bg-slate-100', rating: 4.7, barcode: '8901262020106' },
-  { name: 'Amul Salted Butter', size: '100 g', price: 58, category: 'Dairy', color: 'bg-yellow-100', rating: 4.9, barcode: '8901262030013' },
-  { name: 'Organic Bananas', size: '500 g (3-4 pcs)', price: 42, category: 'Produce', color: 'bg-lime-100', rating: 4.6, discount: '15% OFF', barcode: '8901000100012' },
-  { name: 'Shimla Royal Apples', size: '4 pcs (~600 g)', price: 140, category: 'Produce', color: 'bg-rose-100', rating: 4.9, barcode: '8901000100029' },
-  { name: 'Hybrid Tomatoes', size: '1 kg', price: 34, category: 'Produce', color: 'bg-red-100', rating: 4.5, barcode: '8901000100036' },
-  { name: 'Aashirvaad Atta', size: '5 kg', price: 310, category: 'Staples', color: 'bg-amber-100', rating: 4.8, barcode: '8901725181222' },
-  { name: 'India Gate Basmati Rice', size: '1 kg', price: 125, category: 'Staples', color: 'bg-amber-50', rating: 4.7, barcode: '8901140001019' },
-  { name: 'Fortune Sunflower Oil', size: '1 L pouch', price: 145, category: 'Staples', color: 'bg-yellow-50', rating: 4.6, barcode: '8906007280014' },
-  { name: 'Harvest Gold Bread', size: '400 g', price: 45, category: 'Bakery', color: 'bg-orange-100', rating: 4.7, barcode: '8906014430013' },
-  { name: 'The Baker\'s Dozen Sourdough', size: '250 g', price: 110, category: 'Bakery', color: 'bg-orange-50', rating: 4.8, barcode: '8908011223344' },
-  { name: "Lay's Classic Salted", size: '50 g', price: 20, category: 'Snacks', color: 'bg-yellow-200', rating: 4.5, barcode: '8901491101837' },
-  { name: 'Haldiram\'s Aloo Bhujia', size: '200 g', price: 55, category: 'Snacks', color: 'bg-amber-200', rating: 4.8, barcode: '8904004400123' },
-  { name: 'Dark Fantasy Choco Fills', size: '75 g', price: 40, category: 'Snacks', color: 'bg-stone-200', rating: 4.9, discount: '10% OFF', barcode: '8901725132019' },
+  { name: 'Amul Taaza Milk', size: '500 ml', price: 28, category: 'Dairy', color: 'bg-emerald-50', rating: 4.8, barcode: '8901262010053', image: 'https://cdn.grofers.com/da/cms-assets/cms/product/52173fba-2d70-40f9-adae-eb4e22696b4f.jpg' },
+  { name: 'Fresh Paneer', size: '200 g', price: 95, category: 'Dairy', color: 'bg-slate-50', rating: 4.7, barcode: '8901262020106', image: 'https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=1080/da/cms-assets/cms/product/7a1700ee-dd38-49cf-b34e-171ff84ac0e7.png' },
+  { name: 'Amul Salted Butter', size: '100 g', price: 58, category: 'Dairy', color: 'bg-yellow-50', rating: 4.9, barcode: '8901262030013', image: 'https://cdn.grofers.com/app/images/products/sliding_image/160a.jpg' },
+  { name: 'Organic Bananas', size: '500 g (3-4 pcs)', price: 42, category: 'Produce', color: 'bg-lime-50', rating: 4.6, discount: '15% OFF', barcode: '8901000100012', image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500&auto=format&fit=crop&q=80' },
+  { name: 'Shimla Royal Apples', size: '4 pcs (~600 g)', price: 140, category: 'Produce', color: 'bg-rose-50', rating: 4.9, barcode: '8901000100029', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&auto=format&fit=crop&q=80' },
+  { name: 'Hybrid Tomatoes', size: '1 kg', price: 34, category: 'Produce', color: 'bg-red-50', rating: 4.5, barcode: '8901000100036', image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80' },
+  { name: 'Aashirvaad Atta', size: '5 kg', price: 310, category: 'Staples', color: 'bg-amber-50', rating: 4.8, barcode: '8901725181222', image: 'https://cdn.grofers.com/app/images/products/sliding_image/3472a.jpg' },
+  { name: 'India Gate Basmati Rice', size: '1 kg', price: 125, category: 'Staples', color: 'bg-amber-50', rating: 4.7, barcode: '8901140001019', image: 'https://cdn.grofers.com/app/images/products/sliding_image/484931a.jpg' },
+  { name: 'Fortune Sunflower Oil', size: '1 L pouch', price: 145, category: 'Staples', color: 'bg-yellow-50', rating: 4.6, barcode: '8906007280014', image: 'https://cdn.grofers.com/app/images/products/sliding_image/24194a.jpg' },
+  { name: 'Harvest Gold Bread', size: '400 g', price: 45, category: 'Bakery', color: 'bg-orange-50', rating: 4.7, barcode: '8906014430013', image: 'https://cdn.grofers.com/app/images/products/sliding_image/311a.jpg' },
+  { name: 'The Baker\'s Dozen Sourdough', size: '250 g', price: 110, category: 'Bakery', color: 'bg-orange-50', rating: 4.8, barcode: '8908011223344', image: 'https://cdn.grofers.com/app/images/products/sliding_image/477439a.jpg' },
+  { name: "Lay's Classic Salted", size: '50 g', price: 20, category: 'Snacks', color: 'bg-yellow-50', rating: 4.5, barcode: '8901491101837', image: 'https://cdn.zeptonow.com/production/ik-seo/cms/product_variant/3670956d-0b8c-424e-8cef-1ab5e4e12527/Lay-s-Classic-Salted-Potato-Chips-Combo.jpg' },
+  { name: 'Haldiram\'s Aloo Bhujia', size: '200 g', price: 55, category: 'Snacks', color: 'bg-amber-50', rating: 4.8, barcode: '8904004400123', image: 'https://cdn.grofers.com/app/images/products/sliding_image/277a.jpg' },
+  { name: 'Dark Fantasy Choco Fills', size: '75 g', price: 40, category: 'Snacks', color: 'bg-stone-50', rating: 4.9, discount: '10% OFF', barcode: '8901725132019', image: 'https://cdn.grofers.com/app/images/products/sliding_image/11438a.jpg' },
 ];
 
 export const paymentMethods = [
