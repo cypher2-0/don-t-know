@@ -28,33 +28,34 @@ export const customerProducts: CustomerProduct[] = [
 ];
 
 export const paymentMethods = [
-  { id: 'razorpay', name: 'Razorpay Secure (UPI/Cards)', subtitle: 'GPay, PhonePe, Paytm, Visa, RuPay', badge: 'RECOMMENDED' },
+  { id: 'razorpay', name: 'Razorpay Instant UPI & Cards', subtitle: 'GPay, PhonePe, Paytm, RuPay · Instant Exit Pass', badge: 'FASTEST EXIT' },
   { id: 'upi', name: 'Direct UPI App', subtitle: 'Google Pay, PhonePe, BHIM', badge: null },
-  { id: 'cod', name: 'Cash on Delivery', subtitle: 'Pay via cash or QR at doorstep', badge: null },
   { id: 'card', name: 'Credit / Debit Card', subtitle: 'Visa, Mastercard, RuPay', badge: null },
-  { id: 'wallet', name: 'GreenBasket Wallet', subtitle: 'Balance: ₹2,480 pts (₹248 val)', badge: null },
+  { id: 'wallet', name: 'GreenBasket Loyalty Wallet', subtitle: 'Balance: ₹2,480 pts (₹248 val)', badge: null },
+  { id: 'cash_desk', name: 'Pay at Express Security Gate', subtitle: 'Pay cash directly at exit turnstile desk', badge: null },
 ];
 
 export const shopCategories = ['All', 'Dairy', 'Produce', 'Staples', 'Bakery', 'Snacks'];
 
 export const storeInfo = {
-  name: 'GreenBasket · Indiranagar',
-  distance: '1.2 km away',
-  hours: 'Open until 10 PM',
+  name: 'GreenBasket Express · Indiranagar',
+  distance: 'In-Store (Aisle 2 Beacon)',
+  hours: 'Open until 11 PM',
   address: '4th Main Rd, Indiranagar, Bengaluru 560038',
-  deliveryTime: '15-20 mins',
+  deliveryTime: '0 Min Wait (Skip the Line)',
+  exitGate: 'Express Turnstile Gate 2',
 };
 
-export const deliverySlots = ['In 20 mins', '6 – 8 PM', '8 – 10 PM', 'Tomorrow morning (7 – 9 AM)'];
+export const deliverySlots = ['Instant Exit Pass', 'Valid for 30 mins'];
 
 export const pastOrders = [
   {
-    id: '#GB-2481',
+    id: '#GB-PASS-2481',
     date: '12 May',
     items: 4,
     total: 742,
-    status: 'Delivered',
-    slot: 'Delivered in 18 mins',
+    status: 'Exit Cleared',
+    slot: 'Scanned & paid at Turnstile 2',
     itemsList: [
       { name: 'Aashirvaad Atta', qty: 1, price: 310, size: '5 kg' },
       { name: 'India Gate Basmati Rice', qty: 2, price: 125, size: '1 kg' },
@@ -63,12 +64,12 @@ export const pastOrders = [
     ],
   },
   {
-    id: '#GB-2398',
+    id: '#GB-PASS-2398',
     date: '8 May',
     items: 3,
     total: 486,
-    status: 'Delivered',
-    slot: 'Delivered in 22 mins',
+    status: 'Exit Cleared',
+    slot: 'Scanned & paid at Turnstile 1',
     itemsList: [
       { name: 'Fresh Paneer', qty: 2, price: 95, size: '200 g' },
       { name: 'Shimla Royal Apples', qty: 1, price: 140, size: '4 pcs' },
@@ -76,12 +77,12 @@ export const pastOrders = [
     ],
   },
   {
-    id: '#GB-2311',
+    id: '#GB-PASS-2311',
     date: '2 May',
     items: 6,
     total: 1290,
-    status: 'Delivered',
-    slot: 'Delivered in 15 mins',
+    status: 'Exit Cleared',
+    slot: 'Self-Billing Express',
     itemsList: [
       { name: 'Aashirvaad Atta', qty: 2, price: 310, size: '5 kg' },
       { name: 'India Gate Basmati Rice', qty: 3, price: 125, size: '1 kg' },

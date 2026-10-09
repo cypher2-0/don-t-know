@@ -40,19 +40,19 @@ export default function OrdersScreen() {
     <Screen>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}>
         <PageHeader
-          eyebrow="Your history"
-          title="Orders"
-          desc={`Tracking and past receipts from ${storeInfo.name}.`}
+          eyebrow="In-Store Self-Checkout"
+          title="Exit Passes & Bills"
+          desc={`Digital receipts and gate clearance passes for ${storeInfo.name}.`}
         />
 
         {/* Filter Pills */}
         <View className="mt-4 flex-row gap-2">
-          {(['All', 'Active', 'Delivered'] as const).map((tab) => {
-            const active = filter === tab;
+          {(['All', 'Active Passes', 'Past Receipts'] as const).map((tab) => {
+            const active = filter === (tab === 'Active Passes' ? 'Active' : tab === 'Past Receipts' ? 'Delivered' : 'All');
             return (
               <Pressable
                 key={tab}
-                onPress={() => setFilter(tab)}
+                onPress={() => setFilter(tab === 'Active Passes' ? 'Active' : tab === 'Past Receipts' ? 'Delivered' : 'All')}
                 className={`rounded-full border px-4 py-1.5 ${active ? 'border-[#164e3b] bg-[#164e3b]' : 'border-[#e5e7eb] bg-white'}`}>
                 <Text
                   className={`text-[11px] font-semibold ${active ? 'text-white' : 'text-[#4b5563]'}`}>
@@ -109,18 +109,18 @@ export default function OrdersScreen() {
                         <View className="flex-row items-center gap-2">
                           <PackageCheck size={14} color="#2e8b65" />
                           <Text className="text-[11px] font-bold text-[#173f31]">
-                            Order is being packed at {storeInfo.name}
+                            Gate Exit Pass Active at {storeInfo.name}
                           </Text>
                         </View>
                         <Text className="mt-1 text-[10px] text-[#4b7861]">
-                          Slot: {order.slot ?? 'In 20 mins'} · Estimated arrival ~15 mins
+                          Status: Security tag cleared · Turnstile #2 optical scanner ready
                         </Text>
                       </View>
                     ) : (
                       <View className="mb-3 flex-row items-center gap-2 rounded-xl bg-[#f9fafb] p-2.5">
                         <Clock size={12} color="#6b7280" />
                         <Text className="text-[10px] text-[#6b7280]">
-                          Slot: {order.slot ?? 'Express Delivery'}
+                          Type: In-Store Self-Checkout · {order.slot ?? 'Express Exit'}
                         </Text>
                       </View>
                     )}
@@ -128,7 +128,7 @@ export default function OrdersScreen() {
                     {order.itemsList && order.itemsList.length > 0 && (
                       <View className="mb-2">
                         <Text className="text-[10px] font-bold uppercase tracking-wider text-[#9ca3af]">
-                          Items in this order:
+                          Scanned Basket Items:
                         </Text>
                         {order.itemsList.map((item, idx) => (
                           <View key={idx} className="mt-1.5 flex-row items-center justify-between">
@@ -151,11 +151,10 @@ export default function OrdersScreen() {
                   {confirmed ? (
                     <Pressable
                       hitSlop={8}
-                      onPress={() => setExpandedId(isExpanded ? null : order.id)}
-                      className="flex-row items-center gap-1 rounded-lg bg-[#e3f1dc] px-2.5 py-1">
-                      <Truck size={12} color="#1f7956" />
-                      <Text className="text-[10px] font-bold text-[#1f7956]">
-                        {isExpanded ? 'Hide Tracker' : 'Live Tracking'}
+                      onPress={() => router.push({ pathname: '/order-placed', params: { id: order.id } })}
+                      className="flex-row items-center gap-1 rounded-lg bg-[#164e3b] px-3 py-1.5">
+                      <Text className="text-[10px] font-bold text-white">
+                        Show Exit Pass QR →
                       </Text>
                     </Pressable>
                   ) : (
@@ -164,7 +163,7 @@ export default function OrdersScreen() {
                       onPress={() => handleReorder(order)}
                       className="flex-row items-center gap-1 rounded-lg bg-[#dff0d8] px-2.5 py-1">
                       <RotateCcw size={11} color="#21664b" />
-                      <Text className="text-[10px] font-bold text-[#21664b]">Reorder</Text>
+                      <Text className="text-[10px] font-bold text-[#21664b]">Re-scan items</Text>
                     </Pressable>
                   )}
                 </View>

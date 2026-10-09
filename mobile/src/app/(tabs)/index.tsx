@@ -79,21 +79,55 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Store Location Bar */}
+        {/* In-Store Location Beacon Card */}
         <Pressable
           onPress={handleStorePress}
           className="mt-2 flex-row items-center justify-between rounded-2xl bg-[#e3f1dc] p-4 active:opacity-90">
           <View className="flex-1 pr-3">
-            <Text className="text-[10px] font-semibold text-[#327255]">Shopping at</Text>
-            <Text className="mt-1 text-[14px] font-bold text-[#173f31]">{activeStore}</Text>
+            <View className="flex-row items-center gap-1.5">
+              <View className="size-2 rounded-full bg-emerald-600" />
+              <Text className="text-[10px] font-bold tracking-wider text-[#327255]">STORE BEACON CONNECTED</Text>
+            </View>
+            <Text className="mt-1 text-[15px] font-extrabold text-[#173f31]">{activeStore}</Text>
             <View className="mt-1 flex-row items-center gap-1">
               <MapPin size={12} color="#4b7861" />
               <Text className="text-[10px] text-[#4b7861]">
-                {storeInfo.distance} · {storeInfo.hours} · {storeInfo.deliveryTime}
+                {storeInfo.distance} · {storeInfo.exitGate} · 0 Min Wait
               </Text>
             </View>
           </View>
           <ChevronDown size={16} color="#327255" />
+        </Pressable>
+
+        {/* Premier In-Store "Scan & Go" Hero Action Banner */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/scan')}
+          className="mt-3 overflow-hidden rounded-2xl border-2 border-[#164e3b] bg-[#164e3b] p-4 shadow-md active:opacity-95">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1 pr-3">
+              <View className="flex-row items-center gap-1.5">
+                <View className="rounded-md bg-[#b7d66b] px-2 py-0.5">
+                  <Text className="text-[9px] font-extrabold uppercase text-[#173f31]">
+                    SKIP THE LINE
+                  </Text>
+                </View>
+                <Text className="text-[10px] font-bold text-[#b7d66b]">SELF-BILLING APP</Text>
+              </View>
+
+              <Text className="mt-2 text-[16px] font-extrabold leading-5 text-white">
+                Scan Shelf Barcode & Walk Out
+              </Text>
+              <Text className="mt-1 text-[11px] text-[#c7dfd2]">
+                Pick item → Scan barcode → Pay via Razorpay UPI → Flash Exit QR pass
+              </Text>
+
+              <View className="mt-3 self-start flex-row items-center gap-2 rounded-xl bg-[#b7d66b] px-4 py-2">
+                <Text className="text-[12px] font-extrabold text-[#173f31]">
+                  📷 Open Barcode Scanner →
+                </Text>
+              </View>
+            </View>
+          </View>
         </Pressable>
 
         {/* Search Bar with Clear Button */}
@@ -102,7 +136,7 @@ export default function HomeScreen() {
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Search for milk, atta, apples, snacks..."
+            placeholder="Search shelf items, atta, dairy, fruits..."
             placeholderTextColor="#6b7280"
             className="flex-1 p-0 text-[12px] text-[#173f31]"
           />
@@ -120,10 +154,10 @@ export default function HomeScreen() {
           <View className="flex-1 pr-3">
             <View className="flex-row items-center gap-1.5">
               <Sparkles size={14} color="#1f7956" />
-              <Text className="text-[12px] font-bold text-[#1f7956]">grocerAI Shopping Copilot</Text>
+              <Text className="text-[12px] font-bold text-[#1f7956]">In-Store Smart Shopping AI</Text>
             </View>
             <Text className="mt-1 text-[11px] leading-4 text-[#4b7861]">
-              Ask for recipes, budget meal plans & 1-tap cart building
+              Locate shelf aisles, compare unit prices & check stock instantly
             </Text>
           </View>
           <View className="rounded-xl bg-[#164e3b] px-3 py-2">
