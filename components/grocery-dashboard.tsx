@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, Bell, Box, ChevronDown, Clock3, CloudSun, FileText, Grid2X2, MapPin, Menu, MoreHorizontal, Search, Settings, ShoppingBag, Store, Trophy, Users, X } from 'lucide-react'
-import { activity, categories, customerProducts, expiringProducts, hourlySales, navItems, products, riskTone, salesData, stores } from '@/lib/mock-data'
+import { AlertTriangle, ArrowDownRight, ArrowLeft, ArrowUpRight, Bell, Box, ChevronDown, Clock3, CloudSun, FileText, Grid2X2, Lightbulb, MapPin, Menu, Minus, MoreHorizontal, Search, Settings, ShoppingBag, Sparkles, Store, TrendingDown, TrendingUp, Trophy, Users, X } from 'lucide-react'
+import { activity, categories, customerProducts, expiringProducts, fastMoversPerStore, formatINR, hourlySales, navItems, products, riskTone, salesData, storeExpiringItems, stores, storeWastageTrend, teamPerStore, wastageDaily, wastedProducts } from '@/lib/mock-data'
+import type { Store as StoreType } from '@/lib/mock-data'
 
 type View = 'overview' | 'stores' | 'sales' | 'inventory' | 'waste' | 'incidents' | 'rankings'
 const iconMap: Record<string, React.ElementType> = { grid: Grid2X2, store: Store, chart: FileText, box: Box, clock: Clock3, alert: AlertTriangle, trophy: Trophy }
@@ -20,9 +21,298 @@ function Topbar({ onMenu, onCustomer }: { onMenu: () => void; onCustomer: () => 
 function TrendChart() { const max = 6.5; return <div className="relative h-[190px] pt-3"><div className="absolute inset-0 flex flex-col justify-between pb-7 pt-2">{['₹6L','₹4L','₹2L','₹0'].map(x => <div key={x} className="flex items-center gap-2"><span className="w-7 text-[9px] text-muted-foreground">{x}</span><div className="h-px flex-1 bg-[#edf1ed]" /></div>)}</div><div className="absolute bottom-7 left-9 right-1 flex h-[145px] items-end gap-2 sm:gap-4">{salesData.map((item, i) => <div key={item.day} className="relative flex h-full flex-1 items-end gap-0.5"><div className="w-1/2 rounded-t-sm bg-[#cfe7c2]" style={{ height: `${item.forecast / max * 100}%` }} /><div className="w-1/2 rounded-t-sm bg-[#2e8b65]" style={{ height: `${item.actual / max * 100}%` }} /><span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground">{item.day}</span></div>)}</div></div> }
 const StoreMap = dynamic(() => import('@/components/store-map'), { ssr: false, loading: () => <div className="h-[230px] animate-pulse rounded-xl bg-[#edf4e9]" /> })
 
-function Overview({ setView }: { setView: (v: View) => void }) { const [selectedStore, setSelectedStore] = useState(2); const [alertDismissed, setAlertDismissed] = useState<number[]>([]); return <div className="flex flex-col gap-5"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-[11px] font-semibold text-[#2e8b65]">Tuesday, 14 May 2024</p><h1 className="mt-1 text-[25px] font-bold tracking-tight text-[#143d31]">Good morning, Ananya</h1><p className="mt-1 text-[12px] text-muted-foreground">Here&apos;s what&apos;s happening across your grocery network.</p></div><button className="flex items-center gap-2 rounded-xl border bg-white px-3.5 py-2.5 text-[11px] font-semibold text-foreground shadow-sm"><Clock3 className="size-3.5 text-muted-foreground" /> Last 7 days <ChevronDown className="size-3.5" /></button></div><div className="grid grid-cols-2 gap-3 xl:grid-cols-4"><Kpi label="Total sales today" value="₹19.4L" note="Across 10 stores" icon={ShoppingBag} /><Kpi label="Sales vs forecast" value="+6.8%" note="₹1.2L above target" icon={ArrowUpRight} /><Kpi label="Inventory value" value="₹2.84Cr" note="+2.1% from yesterday" icon={Box} /><Kpi label="Potential waste" value="₹42,680" note="12 products at risk" icon={AlertTriangle} tone="amber" positive={false} /></div><div className="grid gap-5 xl:grid-cols-[1.05fr_1fr]"><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Store health map</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Live operational status by location</p></div><button className="rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold text-muted-foreground">Filters <ChevronDown className="ml-1 inline size-3" /></button></div><StoreMap selected={selectedStore} onSelect={setSelectedStore} /><div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground"><span className="flex items-center gap-1.5"><StatusDot tone="healthy" /> Healthy <b className="text-foreground">6</b></span><span className="flex items-center gap-1.5"><StatusDot tone="warning" /> Watch <b className="text-foreground">3</b></span><span className="flex items-center gap-1.5"><StatusDot tone="critical" /> Critical <b className="text-foreground">1</b></span><button onClick={() => setView('stores')} className="ml-auto font-semibold text-[#287450]">View all stores →</button></div></section><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-1 flex items-start justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Sales performance</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Actual vs forecast · All stores</p></div><div className="flex gap-3 text-[10px] text-muted-foreground"><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#2e8b65]" />Actual</span><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#cfe7c2]" />Forecast</span></div></div><div className="mt-1 flex items-baseline gap-2"><span className="text-xl font-bold text-[#163f32]">₹28.6L</span><Spark /></div><TrendChart /></section></div><div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]"><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Store risk overview</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Explainable AI risk scoring</p></div><button onClick={() => setView('rankings')} className="text-[10px] font-bold text-[#287450]">See rankings →</button></div><div className="overflow-x-auto"><table className="w-full min-w-[540px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-2 font-semibold">Store</th><th className="pb-2 font-semibold">Risk score</th><th className="pb-2 font-semibold">Sales gap</th><th className="pb-2 font-semibold">Status</th><th className="pb-2 font-semibold">Action</th></tr></thead><tbody>{stores.slice().sort((a,b) => b.risk-a.risk).slice(0, 4).map(store => <tr key={store.name} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold text-[#21483c]">{store.name}<span className="ml-2 text-[9px] font-normal text-muted-foreground">{store.city}</span></td><td className="py-3"><span className="text-[11px] font-bold">{store.risk}</span><span className="ml-1 text-[9px] text-muted-foreground">/100</span></td><td className={`py-3 text-[11px] font-semibold ${store.gap.startsWith('-') ? 'text-red-500' : 'text-emerald-600'}`}>{store.gap}</td><td className="py-3"><span className="flex items-center gap-1.5 text-[10px]"><StatusDot tone={riskTone(store.status)} />{store.status}</span></td><td className="py-3"><button className="rounded-md border px-2 py-1 text-[9px] font-semibold">Review</button></td></tr>)}</tbody></table></div></section><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Critical alerts</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Needs your attention today</p></div><span className="rounded-md bg-red-50 px-2 py-1 text-[10px] font-bold text-red-600">{4 - alertDismissed.length} active</span></div><div className="flex flex-col gap-3">{activity.map((item, i) => !alertDismissed.includes(i) && <div key={item[1]} className="flex items-start gap-2.5"><div className="mt-0.5"><StatusDot tone={item[3]} /></div><div className="min-w-0 flex-1"><p className="text-[11px] font-semibold text-[#21483c]">{item[1]}</p><p className="mt-0.5 truncate text-[10px] text-muted-foreground">{item[2]}</p></div><button onClick={() => setAlertDismissed([...alertDismissed, i])} className="text-[9px] font-semibold text-muted-foreground hover:text-foreground">Dismiss</button></div>)}</div></section></div></div> }
+function WastageChangeBadge({ change }: { change: number }) {
+  const up = change > 1
+  const down = change < -1
+  const cls = up ? 'bg-red-50 text-red-600' : down ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+  const Icon = up ? TrendingUp : down ? TrendingDown : Minus
+  return <span className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold ${cls}`}><Icon className="size-3.5" />{change >= 0 ? '+' : ''}{change.toFixed(1)}%</span>
+}
+function Overview({ setView }: { setView: (v: View) => void }) { const [selectedStore, setSelectedStore] = useState(2); const [alertDismissed, setAlertDismissed] = useState<number[]>([]); return <div className="flex flex-col gap-5"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-[11px] font-semibold text-[#2e8b65]">Tuesday, 14 May 2024</p><h1 className="mt-1 text-[25px] font-bold tracking-tight text-[#143d31]">Good morning, Ananya</h1><p className="mt-1 text-[12px] text-muted-foreground">Here&apos;s what&apos;s happening across your grocery network.</p></div><button className="flex items-center gap-2 rounded-xl border bg-white px-3.5 py-2.5 text-[11px] font-semibold text-foreground shadow-sm"><Clock3 className="size-3.5 text-muted-foreground" /> Last 7 days <ChevronDown className="size-3.5" /></button></div><div className="grid grid-cols-2 gap-3 xl:grid-cols-4"><Kpi label="Total sales today" value="₹19.4L" note="Across 10 stores" icon={ShoppingBag} /><Kpi label="Sales vs forecast" value="+6.8%" note="₹1.2L above target" icon={ArrowUpRight} /><Kpi label="Inventory value" value="₹2.84Cr" note="+2.1% from yesterday" icon={Box} /><Kpi label="Potential waste" value="₹42,680" note="12 products at risk" icon={AlertTriangle} tone="amber" positive={false} /></div><div className="grid gap-5 xl:grid-cols-[1.05fr_1fr]"><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Store health map</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Live operational status by location</p></div><button className="rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold text-muted-foreground">Filters <ChevronDown className="ml-1 inline size-3" /></button></div><StoreMap selected={selectedStore} onSelect={setSelectedStore} /><div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground"><span className="flex items-center gap-1.5"><StatusDot tone="healthy" /> Healthy <b className="text-foreground">6</b></span><span className="flex items-center gap-1.5"><StatusDot tone="warning" /> Watch <b className="text-foreground">3</b></span><span className="flex items-center gap-1.5"><StatusDot tone="critical" /> Critical <b className="text-foreground">1</b></span><button onClick={() => setView('stores')} className="ml-auto font-semibold text-[#287450]">View all stores →</button></div></section><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-1 flex items-start justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Sales performance</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Actual vs forecast · All stores</p></div><div className="flex gap-3 text-[10px] text-muted-foreground"><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#2e8b65]" />Actual</span><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#cfe7c2]" />Forecast</span></div></div><div className="mt-1 flex items-baseline gap-2"><span className="text-xl font-bold text-[#163f32]">₹28.6L</span><Spark /></div><TrendChart /></section></div><WastageCard /><div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]"><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Store risk overview</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Explainable AI risk scoring</p></div><button onClick={() => setView('rankings')} className="text-[10px] font-bold text-[#287450]">See rankings →</button></div><div className="overflow-x-auto"><table className="w-full min-w-[540px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-2 font-semibold">Store</th><th className="pb-2 font-semibold">Risk score</th><th className="pb-2 font-semibold">Sales gap</th><th className="pb-2 font-semibold">Status</th><th className="pb-2 font-semibold">Action</th></tr></thead><tbody>{stores.slice().sort((a,b) => b.risk-a.risk).slice(0, 4).map(store => <tr key={store.name} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold text-[#21483c]">{store.name}<span className="ml-2 text-[9px] font-normal text-muted-foreground">{store.city}</span></td><td className="py-3"><span className="text-[11px] font-bold">{store.risk}</span><span className="ml-1 text-[9px] text-muted-foreground">/100</span></td><td className={`py-3 text-[11px] font-semibold ${store.gap.startsWith('-') ? 'text-red-500' : 'text-emerald-600'}`}>{store.gap}</td><td className="py-3"><span className="flex items-center gap-1.5 text-[10px]"><StatusDot tone={riskTone(store.status)} />{store.status}</span></td><td className="py-3"><button className="rounded-md border px-2 py-1 text-[9px] font-semibold">Review</button></td></tr>)}</tbody></table></div></section><section className="rounded-2xl border bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]"><div className="mb-4 flex items-center justify-between"><div><h2 className="text-[14px] font-bold text-[#163f32]">Critical alerts</h2><p className="mt-0.5 text-[10px] text-muted-foreground">Needs your attention today</p></div><span className="rounded-md bg-red-50 px-2 py-1 text-[10px] font-bold text-red-600">{4 - alertDismissed.length} active</span></div><div className="flex flex-col gap-3">{activity.map((item, i) => !alertDismissed.includes(i) && <div key={item[1]} className="flex items-start gap-2.5"><div className="mt-0.5"><StatusDot tone={item[3]} /></div><div className="min-w-0 flex-1"><p className="text-[11px] font-semibold text-[#21483c]">{item[1]}</p><p className="mt-0.5 truncate text-[10px] text-muted-foreground">{item[2]}</p></div><button onClick={() => setAlertDismissed([...alertDismissed, i])} className="text-[9px] font-semibold text-muted-foreground hover:text-foreground">Dismiss</button></div>)}</div></section></div></div> }
 
-function DataPage({ view }: { view: View }) { const [query, setQuery] = useState(''); const [selectedCategory, setSelectedCategory] = useState('All items'); const [discounted, setDiscounted] = useState<string[]>([]); const filteredProducts = products.filter(p => p[0].toLowerCase().includes(query.toLowerCase()) && (selectedCategory === 'All items' || p[1] === selectedCategory)); if (view === 'waste') return <div className="flex flex-col gap-5"><PageTitle title="Waste & expiry" eyebrow="Loss prevention" desc="Turn expiring inventory into recovered revenue before it becomes waste." /><div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><Kpi label="Potential waste value" value="₹42,680" note="Across 12 products" icon={AlertTriangle} tone="amber" positive={false} /><Kpi label="Saved through actions" value="₹18,240" note="This month" icon={ArrowDownRight} /><Kpi label="Expiring today" value="4" note="Across 3 stores" icon={Clock3} tone="red" positive={false} /><Kpi label="Recovery rate" value="72.4%" note="+8.2% vs last month" icon={ArrowUpRight} /></div><section className="rounded-2xl border bg-white p-4"><div className="mb-4"><h2 className="text-[14px] font-bold text-[#163f32]">AI expiry recommendations</h2><p className="mt-1 text-[10px] text-muted-foreground">Actions are never recommended for expired or unsafe products.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Product</th><th className="pb-3">Store</th><th className="pb-3">Qty at risk</th><th className="pb-3">Expiry</th><th className="pb-3">Value</th><th className="pb-3">AI action</th></tr></thead><tbody>{expiringProducts.map(p => <tr key={p.product} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold">{p.product}</td><td className="py-3 text-[11px] text-muted-foreground">{p.store}</td><td className="py-3 text-[11px]">{p.qty} units</td><td className="py-3 text-[10px] text-red-600">{p.expiry}</td><td className="py-3 text-[11px] font-semibold">{p.cost}</td><td className="py-3">{discounted.includes(p.product) ? <span className="text-[10px] font-bold text-emerald-600">Action applied</span> : <button onClick={() => setDiscounted([...discounted, p.product])} className="rounded-lg bg-[#e3f1dc] px-2.5 py-1.5 text-[10px] font-bold text-[#246b4e]">{p.action}</button>}</td></tr>)}</tbody></table></div></section></div>; return <div className="flex flex-col gap-5"><PageTitle title={view === 'rankings' ? 'Store rankings' : view === 'inventory' ? 'Central inventory' : view === 'sales' ? 'Sales analytics' : 'Stores'} eyebrow="Operations" desc={view === 'rankings' ? 'A transparent view of where the network needs attention.' : 'Monitor chain-wide performance and operational health.'} /><div className="flex flex-wrap gap-2"><div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border bg-white px-3 py-2"><Search className="size-4 text-muted-foreground" /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search stores or products..." className="w-full bg-transparent text-xs outline-none" /></div>{view === 'inventory' && <div className="flex gap-1 overflow-x-auto rounded-xl border bg-white p-1">{categories.slice(0, 4).map(c => <button key={c} onClick={() => setSelectedCategory(c)} className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[10px] font-semibold ${selectedCategory === c ? 'bg-[#dff0d8] text-[#21664b]' : 'text-muted-foreground'}`}>{c}</button>)}</div>}<button className="rounded-xl border bg-white px-3 py-2 text-[10px] font-semibold">Export report</button></div><section className="rounded-2xl border bg-white p-4"><div className="overflow-x-auto">{view === 'inventory' ? <table className="w-full min-w-[700px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Product</th><th className="pb-3">Category</th><th className="pb-3">Price</th><th className="pb-3">In stock</th><th className="pb-3">Min. threshold</th><th className="pb-3">Status</th></tr></thead><tbody>{filteredProducts.map(p => <tr key={p[0]} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold">{p[0]}</td><td className="py-3 text-[11px] text-muted-foreground">{p[1]}</td><td className="py-3 text-[11px]">{p[2]}</td><td className="py-3 text-[11px] font-semibold">{p[3]}</td><td className="py-3 text-[11px] text-muted-foreground">{p[4]}</td><td className="py-3"><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${Number(p[3]) <= Number(p[4]) ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>{Number(p[3]) <= Number(p[4]) ? 'Low stock' : 'Healthy'}</span></td></tr>)}</tbody></table> : <table className="w-full min-w-[620px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Rank</th><th className="pb-3">Store</th><th className="pb-3">Risk score</th><th className="pb-3">Sales gap</th><th className="pb-3">Waste</th><th className="pb-3">AI explanation</th></tr></thead><tbody>{stores.slice().sort((a,b) => view === 'rankings' ? b.risk-a.risk : a.name.localeCompare(b.name)).filter(s => s.name.toLowerCase().includes(query.toLowerCase())).map((s, i) => <tr key={s.name} className="border-b last:border-0"><td className="py-3 text-[11px] font-bold text-muted-foreground">{String(i+1).padStart(2,'0')}</td><td className="py-3 text-[11px] font-semibold">{s.name}</td><td className="py-3"><span className="font-bold">{s.risk}</span><span className="text-[10px] text-muted-foreground"> / 100</span></td><td className={`py-3 text-[11px] font-semibold ${s.gap.startsWith('-') ? 'text-red-500' : 'text-emerald-600'}`}>{s.gap}</td><td className="py-3 text-[11px]">{s.waste}</td><td className="max-w-[250px] py-3 text-[10px] text-muted-foreground">{s.reason}</td></tr>)}</tbody></table>}</div></section></div> }
+function WastageTrendChart({ data, increasing }: { data: { label: string; value: number }[]; increasing: boolean }) {
+  const w = 560, h = 160, padX = 34, padY = 18
+  const values = data.map(d => d.value)
+  const min = Math.min(...values), max = Math.max(...values), span = max - min || 1
+  const x = (i: number) => padX + (i * (w - padX * 2)) / Math.max(1, data.length - 1)
+  const y = (v: number) => h - padY - ((v - min) / span) * (h - padY * 2)
+  const pts = data.map((d, i) => `${x(i).toFixed(1)},${y(d.value).toFixed(1)}`).join(' ')
+  const stroke = increasing ? '#ef4444' : '#10b981'
+  return <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label="Daily wastage percentage over 14 days"><defs><linearGradient id="wasteArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={stroke} stopOpacity="0.18" /><stop offset="100%" stopColor={stroke} stopOpacity="0" /></linearGradient></defs>{[0, 0.5, 1].map(f => { const gy = padY + f * (h - padY * 2); const gv = max - f * span; return <g key={f}><line x1={padX} y1={gy} x2={w - padX} y2={gy} stroke="#edf1ed" strokeWidth="1" /><text x={padX - 6} y={gy + 3} textAnchor="end" fontSize="9" fill="#94a3b8">{gv.toFixed(1)}%</text></g> })}<polygon points={`${padX},${h - padY} ${pts} ${w - padX},${h - padY}`} fill="url(#wasteArea)" /><polyline points={pts} fill="none" stroke={stroke} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />{data.map((d, i) => <circle key={i} cx={x(i)} cy={y(d.value)} r={i === data.length - 1 ? 4 : 2.5} fill="#fff" stroke={stroke} strokeWidth="2" />)}{data.map((d, i) => (i % 3 === 0 || i === data.length - 1) ? <text key={d.label} x={x(i)} y={h - 3} textAnchor="middle" fontSize="9" fill="#94a3b8">{d.label}</text> : null)}</svg>
+}
+
+function WastageCard() {
+  const [open, setOpen] = useState(false)
+  const current = wastageDaily.slice(-14)
+  const previous = wastageDaily.slice(-28, -14)
+  const sum = (arr: typeof wastageDaily, k: 'wastedCost' | 'salesRevenue') => arr.reduce((t, d) => t + d[k], 0)
+  const curCost = sum(current, 'wastedCost'), curSales = sum(current, 'salesRevenue')
+  const prevCost = sum(previous, 'wastedCost'), prevSales = sum(previous, 'salesRevenue')
+  const pct = curSales ? (curCost / curSales) * 100 : 0
+  const prevPct = prevSales ? (prevCost / prevSales) * 100 : 0
+  const change = prevPct ? ((pct - prevPct) / prevPct) * 100 : 0
+  const increasing = change > 1
+  const decreasing = change < -1
+  const series = current.map(d => ({ label: d.date, value: d.salesRevenue ? (d.wastedCost / d.salesRevenue) * 100 : 0 }))
+  const tracked = wastedProducts.map(p => ({ ...p, cost: p.qty * p.unitCost }))
+  const trackedTotal = tracked.reduce((t, p) => t + p.cost, 0)
+  const topProduct = tracked.slice().sort((a, b) => b.cost - a.cost)[0]
+  const storeTotals = Object.entries(tracked.reduce<Record<string, number>>((m, p) => { m[p.store] = (m[p.store] || 0) + p.cost; return m }, {})).sort((a, b) => b[1] - a[1])
+  const topStore = storeTotals[0]
+  const firstHalf = series.slice(0, 7).reduce((t, d) => t + d.value, 0) / 7
+  const secondHalf = series.slice(7).reduce((t, d) => t + d.value, 0) / 7
+  const recommendations = [
+    `Apply 30–50% clearance discounts on ${expiringProducts[0].product} at ${expiringProducts[0].store} before it expires (${expiringProducts[0].expiry}).`,
+    `${increasing ? 'Reduce' : 'Maintain'} upcoming order quantity for ${topProduct.product} by ~20% at ${topProduct.store}.`,
+    `Transfer surplus stock from ${topStore[0]} to a higher-demand store to recover margin before expiry.`,
+    `Tighten replenishment thresholds for dairy and bakery, where spoilage is trending ${increasing ? 'up' : 'down'}.`,
+  ]
+  const insight = `Wastage is ${pct.toFixed(2)}% of sales over the last 14 days, ${increasing ? 'up' : decreasing ? 'down' : 'flat'} ${Math.abs(change).toFixed(1)}% vs the previous 14 days. ${topStore[0]} accounts for the largest share of tracked waste (${formatINR(topStore[1])}), led by ${topProduct.product} (${topProduct.qty} units, ${formatINR(topProduct.cost)}). Week-two average (${secondHalf.toFixed(2)}%) is ${secondHalf > firstHalf ? 'above' : 'below'} week-one (${firstHalf.toFixed(2)}%), aligning with ${expiringProducts.length} products nearing expiry and softer sales at watch-list stores. Likely drivers: overstocking on perishables and discounts applied too late.`
+  return <section className="rounded-2xl border border-border/80 bg-white p-4 shadow-[0_2px_12px_rgba(15,59,45,0.03)]">
+    <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <div className="flex items-center gap-2">
+          <h2 className="text-[14px] font-bold text-[#163f32]">Wastage % of Sales — 14 Days</h2>
+          <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">SIMULATED</span>
+        </div>
+        <p className="mt-0.5 text-[10px] text-muted-foreground">Cost value of wasted goods ÷ total sales revenue · daily trend</p>
+      </div>
+      <button onClick={() => setOpen(true)} className="rounded-xl bg-[#123f31] px-3.5 py-2 text-[11px] font-semibold text-white hover:bg-[#1d5a45]">Investigate Wastage</button>
+    </div>
+    <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
+      <div className="flex flex-col gap-3">
+        <div className="rounded-xl border border-border/70 bg-[#fafcfa] p-3.5">
+          <p className="text-[11px] font-medium text-muted-foreground">Current wastage</p>
+          <div className="mt-1 flex items-center gap-2"><span className="text-[28px] font-bold tracking-tight text-[#173d32]">{pct.toFixed(2)}%</span><WastageChangeBadge change={change} /></div>
+          <p className="mt-1 text-[10px] text-muted-foreground">{increasing ? 'Higher than previous 14 days' : decreasing ? 'Lower than previous 14 days' : 'In line with previous 14 days'}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-border/70 p-3">
+            <p className="text-[10px] font-medium text-muted-foreground">Total wastage value</p>
+            <p className="mt-1 text-[15px] font-bold text-[#173d32]">{formatINR(curCost)}</p>
+          </div>
+          <div className="rounded-xl border border-border/70 p-3">
+            <p className="text-[10px] font-medium text-muted-foreground">Previous 14 days</p>
+            <p className="mt-1 text-[15px] font-bold text-[#173d32]">{prevPct.toFixed(2)}%</p>
+          </div>
+        </div>
+      </div>
+      <div className="rounded-xl border border-border/70 p-3">
+        <div className="mb-1 flex items-center justify-between">
+          <p className="text-[11px] font-semibold text-[#21483c]">Daily wastage % (14 days)</p>
+          <span className={`text-[10px] font-bold ${increasing ? 'text-red-500' : decreasing ? 'text-emerald-600' : 'text-slate-400'}`}>{increasing ? 'Upward trend' : decreasing ? 'Downward trend' : 'No significant change'}</span>
+        </div>
+        <WastageTrendChart data={series} increasing={increasing} />
+      </div>
+    </div>
+    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="rounded-xl border border-[#d9ead0] bg-[#f2f9ee] p-3.5">
+        <div className="mb-1.5 flex items-center gap-2"><Sparkles className="size-4 text-[#2e8b65]" /><p className="text-[11px] font-bold text-[#174c3a]">AI insight</p></div>
+        <p className="text-[10px] leading-5 text-[#4b7861]">{insight}</p>
+      </div>
+      <div className="rounded-xl border border-border/70 p-3.5">
+        <div className="mb-2 flex items-center gap-2"><Lightbulb className="size-4 text-amber-500" /><p className="text-[11px] font-bold text-[#21483c]">Recommended actions</p></div>
+        <ul className="flex flex-col gap-1.5">{recommendations.map(r => <li key={r} className="flex gap-2 text-[10px] leading-4 text-muted-foreground"><span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#2e8b65]" />{r}</li>)}</ul>
+      </div>
+    </div>
+    {open && <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-6" onClick={() => setOpen(false)}>
+      <div className="max-h-[88vh] w-full max-w-3xl overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-start justify-between border-b border-border/80 p-4">
+          <div>
+            <h3 className="text-[15px] font-bold text-[#163f32]">Wastage breakdown</h3>
+            <p className="mt-0.5 text-[10px] text-muted-foreground">Tracked waste events · {formatINR(trackedTotal)} of {formatINR(curCost)} total · 14-day window</p>
+          </div>
+          <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 hover:bg-muted"><X className="size-4" /></button>
+        </div>
+        <div className="max-h-[60vh] overflow-y-auto p-4">
+          <div className="mb-3 flex flex-wrap gap-2">{storeTotals.map(([store, total]) => <span key={store} className="rounded-lg bg-[#eef5e9] px-2.5 py-1 text-[10px] font-semibold text-[#287450]">{store} · {formatINR(total)}</span>)}</div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-left">
+              <thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-2 font-semibold">Product</th><th className="pb-2 font-semibold">Store</th><th className="pb-2 font-semibold">Qty</th><th className="pb-2 font-semibold">Unit cost</th><th className="pb-2 font-semibold">Cost value</th><th className="pb-2 font-semibold">Reason</th></tr></thead>
+              <tbody>{tracked.slice().sort((a, b) => b.cost - a.cost).map(p => <tr key={p.product + p.store} className="border-b last:border-0"><td className="py-2.5 text-[11px] font-semibold text-[#21483c]">{p.product}</td><td className="py-2.5 text-[11px] text-muted-foreground">{p.store}</td><td className="py-2.5 text-[11px]">{p.qty}</td><td className="py-2.5 text-[11px]">{formatINR(p.unitCost)}</td><td className="py-2.5 text-[11px] font-semibold text-red-500">{formatINR(p.cost)}</td><td className="py-2.5 text-[10px] text-muted-foreground">{p.reason}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>}
+  </section>
+}
+
+
+function StoreDetailView({ store, onBack }: { store: StoreType; onBack: () => void }) {
+  const fastMovers = fastMoversPerStore[store.name] || []
+  const expiring = storeExpiringItems[store.name] || []
+  const team = teamPerStore[store.name] || []
+  const wastageTrend = storeWastageTrend[store.name] || []
+  const totalExpiryCost = expiring.reduce((t, p) => t + p.cost, 0)
+  const rostered = team.length
+  const onShiftCount = team.filter(m => m.status === 'On shift').length
+  const lateCount = team.filter(m => m.status === 'Late').length
+  const shortCount = rostered - onShiftCount - lateCount
+  const sopFails = lateCount > 0 ? lateCount : 0
+  const currentWastage = wastageTrend.length > 0 ? wastageTrend[wastageTrend.length - 1].value : 0
+  const prevAvg = wastageTrend.length > 7 ? wastageTrend.slice(0, 7).reduce((t, p) => t + p.value, 0) / 7 : currentWastage
+  const wastageChange = prevAvg > 0 ? ((currentWastage - prevAvg) / prevAvg) * 100 : 0
+
+  // Mini wastage chart
+  const wData = wastageTrend
+  const wW = 200, wH = 80, wPadX = 4, wPadY = 8
+  const wVals = wData.map(d => d.value)
+  const wMin = Math.min(...wVals) - 0.5, wMax = Math.max(...wVals) + 0.5, wSpan = wMax - wMin || 1
+  const wX = (i: number) => wPadX + (i * (wW - wPadX * 2)) / Math.max(1, wData.length - 1)
+  const wY = (v: number) => wH - wPadY - ((v - wMin) / wSpan) * (wH - wPadY * 2)
+  const wPts = wData.map((d, i) => `${wX(i).toFixed(1)},${wY(d.value).toFixed(1)}`).join(' ')
+  const isIncreasing = wastageChange > 1
+  const wStroke = isIncreasing ? '#ef4444' : '#10b981'
+
+  return <div className="flex flex-col gap-5">
+    <div className="flex items-center gap-3">
+      <button onClick={onBack} className="flex size-9 items-center justify-center rounded-xl border bg-white hover:bg-muted transition-colors">
+        <ArrowLeft className="size-4 text-[#21483c]" />
+      </button>
+      <div>
+        <p className="text-[11px] font-semibold text-[#2e8b65]">Operations</p>
+        <h1 className="text-[22px] font-bold tracking-tight text-[#143d31]">{store.name}</h1>
+        <p className="text-[11px] text-muted-foreground">{store.city} · {store.status} · Risk score {store.risk}/100</p>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <span className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold ${store.status === 'Critical' ? 'bg-red-50 text-red-600' : store.status === 'Watch' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+          <StatusDot tone={riskTone(store.status)} />{store.status}
+        </span>
+      </div>
+    </div>
+
+    {/* 4-panel grid matching the second image */}
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+      {/* Panel 1: Fast movers at risk */}
+      <section className="rounded-2xl border border-border/80 bg-white shadow-[0_2px_12px_rgba(15,59,45,0.03)]">
+        <div className="border-b border-border/60 px-4 py-3">
+          <h2 className="text-[13px] font-bold text-[#163f32]">Fast movers at risk</h2>
+          <p className="mt-0.5 text-[9px] text-muted-foreground">days_of_cover = on_hand ÷ avg_daily_sales</p>
+        </div>
+        <div className="max-h-[340px] overflow-y-auto px-4 py-2">
+          {fastMovers.map((item, i) => (
+            <div key={i} className="flex items-center justify-between border-b border-border/40 py-2.5 last:border-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="truncate text-[11px] font-semibold text-[#21483c]">{item.product}</span>
+                {item.latePO && <span className="shrink-0 flex items-center gap-1 rounded px-1.5 py-0.5 bg-red-50 text-[8px] font-bold text-red-500"><Clock3 className="size-2.5" />late PO</span>}
+              </div>
+              <span className={`shrink-0 ml-2 text-[11px] font-bold ${item.daysOfCover === 'OUT' ? 'rounded bg-red-50 px-2 py-0.5 text-red-600' : 'text-[#21483c]'}`}>
+                {item.daysOfCover === 'OUT' ? 'OUT' : `${item.daysOfCover.toFixed(1)}d`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Panel 2: Expiring before it sells */}
+      <section className="rounded-2xl border border-border/80 bg-white shadow-[0_2px_12px_rgba(15,59,45,0.03)]">
+        <div className="border-b border-border/60 px-4 py-3">
+          <h2 className="text-[13px] font-bold text-[#163f32]">Expiring before it sells</h2>
+          <p className="mt-0.5 text-[9px] text-muted-foreground">{formatINR(totalExpiryCost)} at cost in the next 48 hrs</p>
+        </div>
+        <div className="max-h-[340px] overflow-y-auto px-4 py-2">
+          {expiring.map((item, i) => (
+            <div key={i} className="flex items-center justify-between border-b border-border/40 py-2.5 last:border-0">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[11px] font-semibold text-[#21483c]">{item.product}</p>
+                <p className="text-[9px] text-muted-foreground">{item.category} · {item.units} units</p>
+              </div>
+              <div className="shrink-0 text-right ml-3">
+                <p className="text-[12px] font-bold text-[#21483c]">{formatINR(item.cost)}</p>
+                <p className="text-[9px] text-muted-foreground">{item.hoursLeft}h left</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Panel 3: Team today */}
+      <section className="rounded-2xl border border-border/80 bg-white shadow-[0_2px_12px_rgba(15,59,45,0.03)]">
+        <div className="border-b border-border/60 px-4 py-3">
+          <h2 className="text-[13px] font-bold text-[#163f32]">Team today</h2>
+          <p className="mt-0.5 text-[9px] text-muted-foreground">
+            {onShiftCount + lateCount} of {rostered} rostered · {shortCount > 0 ? `${shortCount} short` : 'full'} · {sopFails} SOP fails this week
+          </p>
+        </div>
+        <div className="max-h-[340px] overflow-y-auto px-4 py-2">
+          {team.map((member, i) => (
+            <div key={i} className="flex items-center gap-3 border-b border-border/40 py-2.5 last:border-0">
+              <div className={`flex size-8 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${member.status === 'Late' ? 'bg-amber-100 text-amber-700' : member.status === 'Off' ? 'bg-slate-100 text-slate-500' : 'bg-[#d5e4d3] text-[#28644d]'}`}>
+                {member.initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[11px] font-semibold text-[#21483c]">{member.name}</p>
+                <p className="text-[9px] text-muted-foreground">{member.role} · {member.shift}</p>
+              </div>
+              <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-bold ${
+                member.status === 'On shift' ? 'bg-emerald-50 text-emerald-600' :
+                member.status === 'Late' ? 'bg-amber-50 text-amber-600' :
+                'bg-slate-100 text-slate-500'
+              }`}>{member.status}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Panel 4: Wastage % of sales · 14 days */}
+      <section className="rounded-2xl border border-border/80 bg-white shadow-[0_2px_12px_rgba(15,59,45,0.03)]">
+        <div className="border-b border-border/60 px-4 py-3">
+          <h2 className="text-[13px] font-bold text-[#163f32]">Wastage % of sales · 14 days</h2>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-[11px] font-medium text-muted-foreground">Now</span>
+            <span className="text-[16px] font-bold text-[#173d32]">{currentWastage.toFixed(1)}%</span>
+            <span className={`text-[10px] font-bold ${isIncreasing ? 'text-red-500' : 'text-emerald-600'}`}>
+              {wastageChange >= 0 ? '+' : ''}{wastageChange.toFixed(0)}% vs last fortnight
+            </span>
+          </div>
+        </div>
+        <div className="px-4 py-3">
+          {/* Grid lines and labels */}
+          <div className="relative">
+            <div className="flex flex-col gap-0">
+              {[wMax, (wMax + wMin) / 2, wMin].map((val, idx) => (
+                <div key={idx} className="flex items-center gap-1" style={{ height: idx === 1 ? `${wH / 2}px` : '0px', marginTop: idx === 0 ? '0' : 'auto' }}>
+                  <span className="w-6 text-[8px] text-muted-foreground text-right">{val.toFixed(0)}%</span>
+                </div>
+              ))}
+            </div>
+            <svg viewBox={`0 0 ${wW} ${wH}`} className="w-full" style={{ marginTop: '-10px' }}>
+              {/* Dashed average line */}
+              <line x1={wPadX} y1={wY(prevAvg)} x2={wW - wPadX} y2={wY(prevAvg)} stroke="#94a3b8" strokeWidth="1" strokeDasharray="4 3" />
+              {/* Area fill */}
+              <polygon points={`${wPadX},${wH - wPadY} ${wPts} ${wW - wPadX},${wH - wPadY}`} fill={isIncreasing ? 'rgba(239,68,68,0.08)' : 'rgba(16,185,129,0.08)'} />
+              {/* Line */}
+              <polyline points={wPts} fill="none" stroke={wStroke} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+              {/* Dots */}
+              {wData.map((d, i) => <circle key={i} cx={wX(i)} cy={wY(d.value)} r={i === wData.length - 1 ? 3.5 : 2} fill="#fff" stroke={wStroke} strokeWidth="1.5" />)}
+            </svg>
+          </div>
+          {/* Wastage summary stats */}
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-lg bg-[#fafcfa] p-2">
+              <p className="text-[9px] text-muted-foreground">Store waste</p>
+              <p className="text-[13px] font-bold text-[#173d32]">{store.waste}</p>
+            </div>
+            <div className="rounded-lg bg-[#fafcfa] p-2">
+              <p className="text-[9px] text-muted-foreground">Sales gap</p>
+              <p className={`text-[13px] font-bold ${store.gap.startsWith('-') ? 'text-red-500' : 'text-emerald-600'}`}>{store.gap}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    {/* AI insight for this store */}
+    <div className="rounded-2xl border border-[#d9ead0] bg-[#f2f9ee] p-4">
+      <div className="mb-1.5 flex items-center gap-2"><Sparkles className="size-4 text-[#2e8b65]" /><p className="text-[11px] font-bold text-[#174c3a]">AI insight for {store.name}</p></div>
+      <p className="text-[10px] leading-5 text-[#4b7861]">{store.reason} {fastMovers.filter(f => f.daysOfCover === 'OUT').length > 0 ? `${fastMovers.filter(f => f.daysOfCover === 'OUT').length} fast-moving products are currently out of stock. ` : ''}Wastage is at {store.waste} of sales. {expiring.length} product${expiring.length !== 1 ? 's' : ''} worth {formatINR(totalExpiryCost)} expiring in the next 48 hours need immediate action. Team coverage is {onShiftCount + lateCount} of {rostered} with {lateCount > 0 ? `${lateCount} late arrival${lateCount > 1 ? 's' : ''}` : 'full attendance'}.</p>
+    </div>
+  </div>
+}
+
+function DataPage({ view }: { view: View }) { const [query, setQuery] = useState(''); const [selectedCategory, setSelectedCategory] = useState('All items'); const [discounted, setDiscounted] = useState<string[]>([]); const [selectedStore, setSelectedStore] = useState<StoreType | null>(null); const filteredProducts = products.filter(p => p[0].toLowerCase().includes(query.toLowerCase()) && (selectedCategory === 'All items' || p[1] === selectedCategory)); if (selectedStore && (view === 'stores' || view === 'rankings')) return <StoreDetailView store={selectedStore} onBack={() => setSelectedStore(null)} />; if (view === 'waste') return <div className="flex flex-col gap-5"><PageTitle title="Waste & expiry" eyebrow="Loss prevention" desc="Turn expiring inventory into recovered revenue before it becomes waste." /><div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><Kpi label="Potential waste value" value="₹42,680" note="Across 12 products" icon={AlertTriangle} tone="amber" positive={false} /><Kpi label="Saved through actions" value="₹18,240" note="This month" icon={ArrowDownRight} /><Kpi label="Expiring today" value="4" note="Across 3 stores" icon={Clock3} tone="red" positive={false} /><Kpi label="Recovery rate" value="72.4%" note="+8.2% vs last month" icon={ArrowUpRight} /></div><section className="rounded-2xl border bg-white p-4"><div className="mb-4"><h2 className="text-[14px] font-bold text-[#163f32]">AI expiry recommendations</h2><p className="mt-1 text-[10px] text-muted-foreground">Actions are never recommended for expired or unsafe products.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Product</th><th className="pb-3">Store</th><th className="pb-3">Qty at risk</th><th className="pb-3">Expiry</th><th className="pb-3">Value</th><th className="pb-3">AI action</th></tr></thead><tbody>{expiringProducts.map(p => <tr key={p.product} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold">{p.product}</td><td className="py-3 text-[11px] text-muted-foreground">{p.store}</td><td className="py-3 text-[11px]">{p.qty} units</td><td className="py-3 text-[10px] text-red-600">{p.expiry}</td><td className="py-3 text-[11px] font-semibold">{p.cost}</td><td className="py-3">{discounted.includes(p.product) ? <span className="text-[10px] font-bold text-emerald-600">Action applied</span> : <button onClick={() => setDiscounted([...discounted, p.product])} className="rounded-lg bg-[#e3f1dc] px-2.5 py-1.5 text-[10px] font-bold text-[#246b4e]">{p.action}</button>}</td></tr>)}</tbody></table></div></section></div>; return <div className="flex flex-col gap-5"><PageTitle title={view === 'rankings' ? 'Store rankings' : view === 'inventory' ? 'Central inventory' : view === 'sales' ? 'Sales analytics' : 'Stores'} eyebrow="Operations" desc={view === 'rankings' ? 'A transparent view of where the network needs attention.' : 'Monitor chain-wide performance and operational health.'} /><div className="flex flex-wrap gap-2"><div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border bg-white px-3 py-2"><Search className="size-4 text-muted-foreground" /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search stores or products..." className="w-full bg-transparent text-xs outline-none" /></div>{view === 'inventory' && <div className="flex gap-1 overflow-x-auto rounded-xl border bg-white p-1">{categories.slice(0, 4).map(c => <button key={c} onClick={() => setSelectedCategory(c)} className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[10px] font-semibold ${selectedCategory === c ? 'bg-[#dff0d8] text-[#21664b]' : 'text-muted-foreground'}`}>{c}</button>)}</div>}<button className="rounded-xl border bg-white px-3 py-2 text-[10px] font-semibold">Export report</button></div><section className="rounded-2xl border bg-white p-4"><div className="overflow-x-auto">{view === 'inventory' ? <table className="w-full min-w-[700px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Product</th><th className="pb-3">Category</th><th className="pb-3">Price</th><th className="pb-3">In stock</th><th className="pb-3">Min. threshold</th><th className="pb-3">Status</th></tr></thead><tbody>{filteredProducts.map(p => <tr key={p[0]} className="border-b last:border-0"><td className="py-3 text-[11px] font-semibold">{p[0]}</td><td className="py-3 text-[11px] text-muted-foreground">{p[1]}</td><td className="py-3 text-[11px]">{p[2]}</td><td className="py-3 text-[11px] font-semibold">{p[3]}</td><td className="py-3 text-[11px] text-muted-foreground">{p[4]}</td><td className="py-3"><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${Number(p[3]) <= Number(p[4]) ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>{Number(p[3]) <= Number(p[4]) ? 'Low stock' : 'Healthy'}</span></td></tr>)}</tbody></table> : <table className="w-full min-w-[620px] text-left"><thead><tr className="border-b text-[9px] uppercase tracking-wider text-muted-foreground"><th className="pb-3">Rank</th><th className="pb-3">Store</th><th className="pb-3">Risk score</th><th className="pb-3">Sales gap</th><th className="pb-3">Waste</th><th className="pb-3">AI explanation</th></tr></thead><tbody>{stores.slice().sort((a,b) => view === 'rankings' ? b.risk-a.risk : a.name.localeCompare(b.name)).filter(s => s.name.toLowerCase().includes(query.toLowerCase())).map((s, i) => <tr key={s.name} onClick={() => setSelectedStore(s)} className="border-b last:border-0 cursor-pointer hover:bg-[#f4f9f1] transition-colors"><td className="py-3 text-[11px] font-bold text-muted-foreground">{String(i+1).padStart(2,'0')}</td><td className="py-3 text-[11px] font-semibold text-[#287450] underline decoration-[#287450]/30">{s.name}</td><td className="py-3"><span className="font-bold">{s.risk}</span><span className="text-[10px] text-muted-foreground"> / 100</span></td><td className={`py-3 text-[11px] font-semibold ${s.gap.startsWith('-') ? 'text-red-500' : 'text-emerald-600'}`}>{s.gap}</td><td className="py-3 text-[11px]">{s.waste}</td><td className="max-w-[250px] py-3 text-[10px] text-muted-foreground">{s.reason}</td></tr>)}</tbody></table>}</div></section></div> }
 function PageTitle({ title, eyebrow, desc }: { title: string; eyebrow: string; desc: string }) { return <div><p className="text-[11px] font-semibold text-[#2e8b65]">{eyebrow}</p><h1 className="mt-1 text-[25px] font-bold tracking-tight text-[#143d31]">{title}</h1><p className="mt-1 text-[12px] text-muted-foreground">{desc}</p></div> }
 
 function CustomerApp({ onBack }: { onBack: () => void }) { const [cart, setCart] = useState(2); const [tab, setTab] = useState('Home'); return <div className="flex min-h-screen items-center justify-center bg-[#eef3ed] p-0 sm:p-6"><div className="relative flex min-h-screen w-full max-w-[430px] flex-col bg-[#fbfdf9] shadow-2xl sm:min-h-[850px] sm:rounded-[32px] sm:overflow-hidden"><div className="flex items-center justify-between px-5 pb-3 pt-6"><Logo /><button onClick={onBack} className="rounded-lg border bg-white px-2 py-1 text-[10px] font-semibold">Admin</button></div><main className="flex-1 overflow-y-auto px-5 pb-24"><div className="mt-2 flex items-center justify-between rounded-2xl bg-[#e3f1dc] p-4"><div><p className="text-[10px] font-semibold text-[#327255]">Shopping at</p><p className="mt-1 text-[14px] font-bold text-[#173f31]">GreenBasket · Indiranagar</p><p className="mt-1 flex items-center gap-1 text-[10px] text-[#4b7861]"><MapPin className="size-3" /> 1.2 km away · Open until 10 PM</p></div><ChevronDown className="size-4 text-[#327255]" /></div><div className="mt-4 flex items-center gap-2 rounded-xl border bg-white px-3 py-3"><Search className="size-4 text-muted-foreground" /><span className="text-xs text-muted-foreground">Search for milk, atta, snacks...</span></div><div className="mt-6 flex items-center justify-between"><h1 className="text-lg font-bold text-[#173f31]">Good morning, Arjun</h1><span className="text-[10px] font-bold text-[#2e8b65]">2,480 pts</span></div><div className="mt-4 flex gap-3 overflow-x-auto">{['All', 'Dairy', 'Staples', 'Bakery', 'Snacks'].map(c => <button key={c} className="whitespace-nowrap rounded-full border bg-white px-3.5 py-2 text-[10px] font-semibold text-[#365a4a] first:bg-[#164e3b] first:text-white">{c}</button>)}</div><div className="mt-6 flex items-center justify-between"><h2 className="text-[15px] font-bold text-[#173f31]">Picked for you</h2><button className="text-[10px] font-bold text-[#2e8b65]">See all</button></div><div className="mt-3 grid grid-cols-2 gap-3">{customerProducts.map((p, i) => <div key={p.name} className="rounded-2xl border bg-white p-3"><div className={`flex h-24 items-center justify-center rounded-xl ${p.color}`}><ShoppingBag className="size-9 text-[#5b876e]/50" /></div><p className="mt-3 text-[11px] font-bold text-[#173f31]">{p.name}</p><p className="mt-1 text-[10px] text-muted-foreground">{p.size} · In stock</p><div className="mt-3 flex items-center justify-between"><span className="text-sm font-bold">₹{p.price}</span><button onClick={() => setCart(cart + 1)} className="flex size-7 items-center justify-center rounded-lg bg-[#dff0d8] text-lg font-medium text-[#21664b]">+</button></div></div>)}</div><div className="mt-6 rounded-2xl bg-[#164e3b] p-4 text-white"><div className="flex items-center justify-between"><div><p className="text-[10px] text-[#b5d8b5]">Smart savings</p><p className="mt-1 text-[14px] font-bold">Get ₹120 off your next bill</p><p className="mt-1 text-[10px] text-[#c1dcc6]">Use your 2,480 loyalty points</p></div><Trophy className="size-8 text-[#b6d669]" /></div></div></main><nav className="absolute bottom-0 left-0 right-0 flex justify-around border-t bg-white/95 px-3 py-3 backdrop-blur">{['Home', 'Explore', 'Scan', 'Orders', 'Profile'].map(item => <button key={item} onClick={() => setTab(item)} className={`flex flex-col items-center gap-1 text-[9px] font-semibold ${tab === item ? 'text-[#1f7956]' : 'text-muted-foreground'}`}><span className="flex size-7 items-center justify-center rounded-lg">{item === 'Home' ? <Grid2X2 className="size-4" /> : item === 'Scan' ? <Box className="size-4" /> : item === 'Orders' ? <FileText className="size-4" /> : item === 'Profile' ? <Users className="size-4" /> : <Search className="size-4" />}</span>{item}{item === 'Scan' && <i className="absolute bottom-8 size-12 rounded-full border-4 border-white bg-[#b7d66b]" />}</button>)}</nav>{cart > 2 && <div className="absolute bottom-20 left-4 right-4 flex items-center justify-between rounded-xl bg-[#173f31] px-4 py-3 text-white shadow-lg"><span className="text-xs font-semibold">{cart} items in cart</span><button className="text-[10px] font-bold text-[#d0efad]">View cart →</button></div>}</div></div> }

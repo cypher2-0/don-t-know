@@ -15,6 +15,7 @@ node_modules
 .next/
 .DS_Store
 *.tsbuildinfo
+tsconfig.tsbuildinfo
 
 # Cloudflare / OpenNext build output
 .open-next/
