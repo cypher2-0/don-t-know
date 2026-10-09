@@ -36,6 +36,7 @@ export const customerProducts = [
   { name: 'Amul Taaza Milk', size: '500 ml', price: 28, category: 'Dairy', color: 'bg-emerald-100' },
   { name: 'Aashirvaad Atta', size: '5 kg', price: 310, category: 'Staples', color: 'bg-amber-100' },
   { name: 'Fresh Paneer', size: '200 g', price: 95, category: 'Dairy', color: 'bg-slate-100' },
+  { name: 'Harvest Gold Bread', size: '400 g', price: 45, category: 'Bakery', color: 'bg-orange-100' },
   { name: 'Lay’s Classic', size: '50 g', price: 20, category: 'Snacks', color: 'bg-yellow-100' },
 ]
 
