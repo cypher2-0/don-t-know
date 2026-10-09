@@ -1,28 +1,30 @@
-import { useState } from 'react';
-import { ArrowUpDown, Search } from 'lucide-react-native';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { useState } from "react";
+import { ArrowUpDown, Search } from "lucide-react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
 
-import { CartPill } from '@/components/cart-pill';
-import { CategoryChips } from '@/components/category-chips';
-import { PageHeader } from '@/components/page-header';
-import { ProductCard } from '@/components/product-card';
-import { Screen } from '@/components/screen';
-import { customerProducts } from '@/lib/mock-data';
+import { CartPill } from "@/components/cart-pill";
+import { CategoryChips } from "@/components/category-chips";
+import { PageHeader } from "@/components/page-header";
+import { ProductCard } from "@/components/product-card";
+import { Screen } from "@/components/screen";
+import { customerProducts } from "@/lib/mock-data";
 
 export default function ExploreScreen() {
-  const [category, setCategory] = useState('All');
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'rating'>('featured');
+  const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "rating">(
+    "featured",
+  );
 
   let filtered = customerProducts.filter(
     (p) =>
-      (category === 'All' || p.category === category) &&
+      (category === "All" || p.category === category) &&
       p.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
 
-  if (sortBy === 'price-asc') {
+  if (sortBy === "price-asc") {
     filtered = [...filtered].sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'rating') {
+  } else if (sortBy === "rating") {
     filtered = [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
   }
 
@@ -30,7 +32,8 @@ export default function ExploreScreen() {
     <Screen>
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}>
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+      >
         <PageHeader
           eyebrow="Browse aisles"
           title="Explore"
@@ -57,22 +60,27 @@ export default function ExploreScreen() {
         {/* Sort & Count Header */}
         <View className="mt-5 flex-row items-center justify-between">
           <Text className="text-[12px] font-bold text-[#173f31]">
-            {filtered.length} {filtered.length === 1 ? 'item' : 'items'} found
+            {filtered.length} {filtered.length === 1 ? "item" : "items"} found
           </Text>
           <View className="flex-row items-center gap-2">
             <ArrowUpDown size={12} color="#6b7280" />
             <Text
               onPress={() =>
                 setSortBy((prev) =>
-                  prev === 'featured' ? 'price-asc' : prev === 'price-asc' ? 'rating' : 'featured',
+                  prev === "featured"
+                    ? "price-asc"
+                    : prev === "price-asc"
+                      ? "rating"
+                      : "featured",
                 )
               }
-              className="text-[11px] font-semibold text-[#2e8b65]">
-              {sortBy === 'featured'
-                ? 'Featured'
-                : sortBy === 'price-asc'
-                  ? 'Price: Low ↑'
-                  : 'Top Rated ★'}
+              className="text-[11px] font-semibold text-[#2e8b65]"
+            >
+              {sortBy === "featured"
+                ? "Featured"
+                : sortBy === "price-asc"
+                  ? "Price: Low ↑"
+                  : "Top Rated ★"}
             </Text>
           </View>
         </View>
