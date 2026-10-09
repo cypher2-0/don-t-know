@@ -269,6 +269,25 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
 
   const getItemQty = (name: string) => cartItems.find((i) => i.product.name === name)?.qty ?? 0
 
+  const sendTelemetryEvent = (event: {
+    type: 'CART_ADD' | 'CART_REMOVE' | 'ORDER_PLACED' | 'BARCODE_SCAN' | 'SEARCH' | 'STORE_SWITCH'
+    productName?: string
+    quantity?: number
+    orderId?: string
+    orderTotal?: number
+    details?: string
+  }) => {
+    fetch('/api/telemetry/event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...event,
+        storeName: currentStore,
+        details: event.details || `${event.type}: ${event.productName || ''}`,
+      }),
+    }).catch(() => {})
+  }
+
   const addToCart = (product: Product, qty = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.product.name === product.name)
@@ -279,6 +298,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
       }
       return [...prev, { product, qty }]
     })
+    sendTelemetryEvent({
+      type: 'CART_ADD',
+      productName: product.name,
+      quantity: qty,
+      details: `Customer added ${qty}x ${product.name} to cart`,
+    })
     showNotice(`Added ${qty} × ${product.name} to cart`)
   }
 
@@ -288,10 +313,22 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         .map((i) => (i.product.name === name ? { ...i, qty: i.qty + delta } : i))
         .filter((i) => i.qty > 0),
     )
+    sendTelemetryEvent({
+      type: delta > 0 ? 'CART_ADD' : 'CART_REMOVE',
+      productName: name,
+      quantity: Math.abs(delta),
+      details: `Customer updated ${name} qty by ${delta > 0 ? '+' : ''}${delta}`,
+    })
   }
 
   const removeItem = (name: string) => {
     setCartItems((prev) => prev.filter((i) => i.product.name !== name))
+    sendTelemetryEvent({
+      type: 'CART_REMOVE',
+      productName: name,
+      quantity: 1,
+      details: `Customer removed ${name} from cart`,
+    })
   }
 
   const handlePlaceOrder = () => {
@@ -313,6 +350,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     }
     setPlacedOrdersList([newOrder, ...placedOrdersList])
     setLatestOrderId(orderId)
+    sendTelemetryEvent({
+      type: 'ORDER_PLACED',
+      orderId,
+      orderTotal: cartGrandTotal,
+      quantity: cartCount,
+      details: `Customer completed checkout for Order ${orderId} (${cartCount} items, ₹${cartGrandTotal})`,
+    })
     setCartItems([])
     setCouponDiscount(0)
     setAppliedCoupon('')
