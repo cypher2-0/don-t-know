@@ -1,9 +1,9 @@
-import '../global.css';
+import "../global.css";
 
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-import { CartProvider } from '@/components/cart-provider';
+import { CartProvider } from "@/components/cart-provider";
 
 export default function RootLayout() {
   return (
@@ -12,15 +12,16 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#fbfdf9' },
-        }}>
+          contentStyle: { backgroundColor: "#fbfdf9" },
+        }}
+      >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="ai-assistant" options={{ presentation: 'card' }} />
+        <Stack.Screen name="ai-assistant" options={{ presentation: "card" }} />
         <Stack.Screen name="product/[id]" />
-        <Stack.Screen name="cart" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="cart" options={{ presentation: "modal" }} />
         <Stack.Screen
           name="order-placed"
-          options={{ presentation: 'modal', gestureEnabled: false }}
+          options={{ presentation: "modal", gestureEnabled: false }}
         />
       </Stack>
     </CartProvider>

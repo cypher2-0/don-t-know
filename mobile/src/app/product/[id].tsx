@@ -1,7 +1,7 @@
 import { Check, ChevronLeft, Clock3, MapPin, Minus, Plus, ShoppingBag, Star } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useCart } from '@/components/cart-provider';
@@ -65,8 +65,16 @@ export default function ProductScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}>
-        <View className={`relative h-60 items-center justify-center rounded-3xl ${product.color}`}>
-          <ShoppingBag size={72} color="#5b876e" opacity={0.5} />
+        <View className="relative h-60 items-center justify-center rounded-3xl bg-white border border-[#f0f2f5] p-4">
+          {product.image ? (
+            <Image
+              source={{ uri: product.image }}
+              className="h-full w-full"
+              resizeMode="contain"
+            />
+          ) : (
+            <ShoppingBag size={72} color="#5b876e" opacity={0.5} />
+          )}
           {product.discount && (
             <View className="absolute left-4 top-4 rounded-full bg-[#164e3b] px-2.5 py-1">
               <Text className="text-[10px] font-bold text-white">{product.discount}</Text>
