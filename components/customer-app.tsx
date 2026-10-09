@@ -51,6 +51,7 @@ import {
   shopCategories,
   storeInfo,
 } from '@/lib/mock-data'
+import RazorpayCheckoutModal from '@/components/razorpay-checkout'
 
 type Product = (typeof customerProducts)[0]
 
@@ -85,6 +86,9 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
   const [activeModal, setActiveModal] = useState<'none' | 'product' | 'cart' | 'order-placed' | 'ai'>('none')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [latestOrderId, setLatestOrderId] = useState<string>('')
+  const [showRazorpay, setShowRazorpay] = useState(false)
+  const [paidPaymentId, setPaidPaymentId] = useState<string | null>(null)
+  const [paymentMode, setPaymentMode] = useState<'razorpay' | 'cod'>('razorpay')
 
   // AI Copilot state
   const [aiInput, setAiInput] = useState('')
@@ -331,7 +335,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     })
   }
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (paymentId?: string) => {
     if (cartItems.length === 0) return
     const orderId = `#GB-${2501 + placedOrdersList.length}`
     const newOrder: OrderRecord = {
@@ -350,12 +354,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     }
     setPlacedOrdersList([newOrder, ...placedOrdersList])
     setLatestOrderId(orderId)
+    if (paymentId) setPaidPaymentId(paymentId)
     sendTelemetryEvent({
       type: 'ORDER_PLACED',
       orderId,
       orderTotal: cartGrandTotal,
       quantity: cartCount,
-      details: `Customer completed checkout for Order ${orderId} (${cartCount} items, ₹${cartGrandTotal})`,
+      details: `Customer completed ${paymentId ? `Razorpay (${paymentId})` : 'COD'} checkout for Order ${orderId} (${cartCount} items, ₹${cartGrandTotal})`,
     })
     setCartItems([])
     setCouponDiscount(0)
@@ -1522,12 +1527,51 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   </div>
                 </div>
 
-                <div className="border-t border-[#e5e7eb] bg-white p-4">
+                <div className="border-t border-[#e5e7eb] bg-white p-4 space-y-2.5">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-[11px] font-bold text-gray-700">Payment method:</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setPaymentMode('razorpay')}
+                        className={`rounded-lg px-2.5 py-1 text-[10px] font-bold flex items-center gap-1 transition-all ${
+                          paymentMode === 'razorpay'
+                            ? 'bg-[#0c2340] text-white shadow-xs'
+                            : 'border border-gray-200 bg-gray-50 text-gray-600'
+                        }`}
+                      >
+                        <span className="text-[#3395ff] font-extrabold text-xs">R</span> Razorpay
+                      </button>
+                      <button
+                        onClick={() => setPaymentMode('cod')}
+                        className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
+                          paymentMode === 'cod'
+                            ? 'bg-[#164e3b] text-white shadow-xs'
+                            : 'border border-gray-200 bg-gray-50 text-gray-600'
+                        }`}
+                      >
+                        COD
+                      </button>
+                    </div>
+                  </div>
+
                   <button
-                    onClick={handlePlaceOrder}
-                    className="w-full rounded-xl bg-[#164e3b] py-3.5 text-[13px] font-bold text-white hover:bg-[#124031] transition-colors"
+                    onClick={() => {
+                      if (paymentMode === 'razorpay') {
+                        setShowRazorpay(true)
+                      } else {
+                        handlePlaceOrder()
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0c2340] py-3.5 text-[13px] font-bold text-white hover:bg-[#153459] transition-all shadow-md cursor-pointer"
                   >
-                    Place order · ₹{cartGrandTotal}
+                    {paymentMode === 'razorpay' ? (
+                      <>
+                        <span className="text-[#3395ff] font-extrabold text-sm">R</span>
+                        <span>Pay with Razorpay · ₹{cartGrandTotal}</span>
+                      </>
+                    ) : (
+                      <span>Place Order (Cash on Delivery) · ₹{cartGrandTotal}</span>
+                    )}
                   </button>
                 </div>
               </>
@@ -1548,6 +1592,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             <p className="mt-1 text-[12px] text-[#4b7861]">
               ID: {latestOrderId || '#GB-2501'} · Arriving in ~20 mins
             </p>
+            {paidPaymentId && (
+              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-bold text-[#0c2340] border border-blue-200">
+                <ShieldCheck className="size-3.5 text-blue-600" />
+                <span>Razorpay Payment Verified: <code className="font-mono text-blue-700">{paidPaymentId}</code></span>
+              </div>
+            )}
 
             {/* Live tracker steps */}
             <div className="mt-6 w-full rounded-2xl border border-[#e5e7eb] bg-white p-4 text-left shadow-sm space-y-3">
@@ -1757,6 +1807,20 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
               </div>
             </div>
           </div>
+        )}
+        {/* Razorpay Checkout Modal */}
+        {showRazorpay && (
+          <RazorpayCheckoutModal
+            amount={cartGrandTotal}
+            orderId={`#GB-${2501 + placedOrdersList.length}`}
+            storeName={currentStore}
+            itemsCount={cartCount}
+            onSuccess={(paymentId) => {
+              setShowRazorpay(false)
+              handlePlaceOrder(paymentId)
+            }}
+            onCancel={() => setShowRazorpay(false)}
+          />
         )}
       </div>
     </div>
