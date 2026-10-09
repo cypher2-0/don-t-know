@@ -85,8 +85,8 @@ type OrderRecord = {
   itemsList?: PlacedOrderItem[]
 }
 
-const DELIVERY_FEE = 30
-const FREE_DELIVERY_OVER = 499
+const DELIVERY_FEE = 0
+const FREE_DELIVERY_OVER = 0
 
 export default function CustomerApp({ onBack }: { onBack: () => void }) {
   const [showSplash, setShowSplash] = useState(true)
@@ -1516,24 +1516,20 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             ) : (
               <>
                 <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-                  {/* Free delivery progress */}
-                  <div className="rounded-xl bg-[#e3f1dc] p-3">
-                    <div className="flex justify-between text-[11px] font-semibold text-[#173f31]">
-                      <span>
-                        {cartSubtotal >= FREE_DELIVERY_OVER
-                          ? '🎉 Free delivery unlocked!'
-                          : `Add ₹${FREE_DELIVERY_OVER - cartSubtotal} more for FREE delivery`}
+                  {/* In-Store Self-Checkout Status banner */}
+                  <div className="rounded-xl bg-[#e3f1dc] p-3 border border-[#b7d66b]/60">
+                    <div className="flex justify-between items-center text-[11px] font-bold text-[#173f31]">
+                      <span className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
+                        In-Store Self-Billing Basket
                       </span>
-                      <span className="font-bold text-[#2e8b65]">
-                        {Math.min(100, Math.round((cartSubtotal / FREE_DELIVERY_OVER) * 100))}%
+                      <span className="rounded-full bg-[#164e3b] px-2 py-0.5 text-[9px] font-bold text-white">
+                        🔒 {cartCount} Items Scanned
                       </span>
                     </div>
-                    <div className="mt-2 h-1.5 w-full rounded-full bg-[#c9e4bf] overflow-hidden">
-                      <div
-                        style={{ width: `${Math.min(100, (cartSubtotal / FREE_DELIVERY_OVER) * 100)}%` }}
-                        className="h-full bg-[#2e8b65]"
-                      />
-                    </div>
+                    <p className="mt-1.5 text-[10px] text-[#3d6e52]">
+                      Zero waiting in line! Pay with Razorpay to unlock your Digital Exit Turnstile Gate Pass.
+                    </p>
                   </div>
 
                   {/* Items in cart */}
@@ -1581,19 +1577,19 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     ))}
                   </div>
 
-                  {/* Delivery slot */}
+                  {/* Exit turnstile gate selector */}
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Select Delivery Slot</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Select Store Exit Gate</p>
                     <div className="mt-2 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                      {deliverySlots.map((s) => (
+                      {['Turnstile Gate 2 (Express)', 'Turnstile Gate 1', 'Main Security Gate'].map((g, idx) => (
                         <button
-                          key={s}
-                          onClick={() => setSelectedSlot(s)}
+                          key={g}
+                          onClick={() => setSelectedSlot(g)}
                           className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold transition-colors ${
-                            selectedSlot === s ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-gray-700'
+                            idx === 0 ? 'bg-[#164e3b] text-white' : 'border border-[#e5e7eb] bg-white text-gray-700'
                           }`}
                         >
-                          {s}
+                          {g}
                         </button>
                       ))}
                     </div>
@@ -1637,51 +1633,40 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     )}
                   </div>
 
-                  {/* Tip delivery partner */}
-                  <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5">
-                    <p className="text-[11px] font-bold text-[#173f31]">Tip delivery partner</p>
-                    <div className="mt-2 flex gap-2">
-                      {[0, 10, 20, 30].map((t) => (
-                        <button
-                          key={t}
-                          onClick={() => setTipAmount(t)}
-                          className={`flex-1 rounded-xl py-1.5 text-[11px] font-bold border ${
-                            tipAmount === t ? 'border-[#164e3b] bg-[#164e3b] text-white' : 'border-[#e5e7eb] bg-[#f9fafb] text-gray-700'
-                          }`}
-                        >
-                          {t === 0 ? 'None' : `₹${t}`}
-                        </button>
-                      ))}
+                  {/* In-Store Express Perks banner */}
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-[11px] text-[#164e3b]">
+                    <div className="flex items-center gap-2 font-bold">
+                      <ShieldCheck className="size-4 text-emerald-600" />
+                      <span>Self-Billing Advantage</span>
                     </div>
+                    <p className="mt-1 text-[10px] text-emerald-700">
+                      Estimated ~15 minutes saved skipping the store billing line. Anti-theft tags automatically deactivated upon payment.
+                    </p>
                   </div>
 
                   {/* Bill details */}
                   <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5 text-[11px] space-y-2">
                     <p className="font-bold text-[#173f31]">Bill breakdown</p>
                     <div className="flex justify-between text-gray-600">
-                      <span>Items total ({cartCount})</span>
+                      <span>Verified items ({cartCount})</span>
                       <span>₹{cartSubtotal}</span>
                     </div>
                     {effectiveCouponDiscount > 0 && (
                       <div className="flex justify-between font-bold text-[#1f7956]">
-                        <span>Coupon savings</span>
+                        <span>Self-checkout coupon discount</span>
                         <span>-₹{effectiveCouponDiscount}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-gray-600">
-                      <span>Delivery charge</span>
-                      <span className={deliveryCost === 0 ? 'font-bold text-[#1f7956]' : ''}>
-                        {deliveryCost === 0 ? 'FREE' : `₹${deliveryCost}`}
-                      </span>
+                      <span>Express Self-Billing Line</span>
+                      <span className="font-bold text-[#1f7956]">FREE (₹0)</span>
                     </div>
-                    {tipAmount > 0 && (
-                      <div className="flex justify-between text-gray-600">
-                        <span>Delivery partner tip</span>
-                        <span>₹{tipAmount}</span>
-                      </div>
-                    )}
+                    <div className="flex justify-between text-gray-600">
+                      <span>Digital Exit Pass Generation</span>
+                      <span className="font-bold text-[#1f7956]">INCLUDED</span>
+                    </div>
                     <div className="border-t border-[#f0f2ef] pt-2 flex justify-between text-[13px] font-bold text-[#173f31]">
-                      <span>To Pay</span>
+                      <span>Total to Pay</span>
                       <span>₹{cartGrandTotal}</span>
                     </div>
                   </div>
@@ -1740,53 +1725,106 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         )}
 
         {/* ======================================================================= */}
-        {/* MODAL 3: ORDER PLACED CONFIRMATION */}
+        {/* MODAL 3: DIGITAL STORE EXIT PASS (SCAN & GO) */}
         {/* ======================================================================= */}
         {activeModal === 'order-placed' && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#fbfdf9] p-6 text-center animate-in fade-in zoom-in-95">
-            <div className="flex size-20 items-center justify-center rounded-full bg-[#dff0d8] shadow-sm">
-              <Check className="size-10 text-[#1f7956]" />
+          <div className="absolute inset-0 z-50 flex flex-col overflow-y-auto bg-[#fbfdf9] p-6 text-center animate-in fade-in zoom-in-95">
+            {/* Security Verified Badge */}
+            <div className="inline-flex items-center gap-1.5 self-center rounded-full border border-emerald-300 bg-emerald-50 px-4 py-1.5 shadow-sm text-emerald-800 text-[11px] font-bold">
+              <ShieldCheck className="size-4 text-emerald-600" />
+              <span>SECURITY VERIFIED · READY TO EXIT</span>
             </div>
 
-            <h2 className="mt-5 text-[22px] font-bold text-[#173f31]">Order Placed!</h2>
+            <h2 className="mt-3 text-[22px] font-extrabold text-[#173f31]">Digital Store Exit Pass</h2>
             <p className="mt-1 text-[12px] text-[#4b7861]">
-              ID: {latestOrderId || '#GB-2501'} · Arriving in ~20 mins
+              {currentStore} · Turnstile Exit #2
             </p>
-            {paidPaymentId && (
-              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-bold text-[#0c2340] border border-blue-200">
+
+            {paidPaymentId ? (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 self-center rounded-full bg-blue-50 px-3.5 py-1 text-[10px] font-bold text-[#0c2340] border border-blue-200">
                 <ShieldCheck className="size-3.5 text-blue-600" />
-                <span>Razorpay Payment Verified: <code className="font-mono text-blue-700">{paidPaymentId}</code></span>
+                <span>Razorpay Verified: <code className="font-mono text-blue-700">{paidPaymentId}</code></span>
+              </div>
+            ) : (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 self-center rounded-full bg-emerald-50 px-3.5 py-1 text-[10px] font-bold text-emerald-800 border border-emerald-200">
+                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <span>Payment Confirmed · Anti-Theft Tag Released</span>
               </div>
             )}
 
-            {/* Live tracker steps */}
-            <div className="mt-6 w-full rounded-2xl border border-[#e5e7eb] bg-white p-4 text-left shadow-sm space-y-3">
-              <p className="text-[12px] font-bold text-[#173f31]">Live delivery status</p>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#2e8b65] text-white">
-                  <Check className="size-4" />
+            {/* High-contrast Digital QR Code Pass */}
+            <div className="mt-5 w-full flex flex-col items-center">
+              <div className="rounded-2xl border-2 border-[#164e3b] bg-white p-5 shadow-md">
+                <div className="relative size-44 flex items-center justify-center rounded-xl bg-white p-2">
+                  <svg width="160" height="160" viewBox="0 0 180 180">
+                    <rect x="10" y="10" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="18" y="18" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="25" y="25" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="124" y="10" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="132" y="18" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="139" y="25" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="10" y="124" width="46" height="46" rx="6" fill="#164e3b" />
+                    <rect x="18" y="132" width="30" height="30" rx="3" fill="#ffffff" />
+                    <rect x="25" y="139" width="16" height="16" rx="2" fill="#164e3b" />
+
+                    <rect x="66" y="20" width="8" height="8" fill="#164e3b" />
+                    <rect x="82" y="20" width="8" height="8" fill="#164e3b" />
+                    <rect x="98" y="20" width="8" height="8" fill="#164e3b" />
+
+                    <rect x="20" y="66" width="8" height="8" fill="#164e3b" />
+                    <rect x="20" y="82" width="8" height="8" fill="#164e3b" />
+                    <rect x="20" y="98" width="8" height="8" fill="#164e3b" />
+
+                    <rect x="64" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="84" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="64" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="84" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="84" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="104" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="64" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="104" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="124" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+                    <rect x="144" y="124" width="12" height="12" rx="2" fill="#164e3b" />
+
+                    <rect x="78" y="78" width="24" height="24" rx="6" fill="#b7d66b" />
+                    <path d="M85 90 L88 93 L95 86" stroke="#164e3b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold text-[#173f31]">Order placed</p>
-                  <p className="text-[9px] text-muted-foreground">Confirmed by {currentStore}</p>
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#f0f9f3] px-3 py-1 text-[11px] font-mono font-bold text-[#164e3b]">
+                  <Sparkles className="size-3" />
+                  <span>{latestOrderId || '#GB-PASS-2501'}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#e3f1dc] text-[#2e8b65]">
-                  <PackageCheck className="size-4" />
+              <p className="mt-2 text-[11px] font-medium text-[#4b7861]">
+                Flash this QR code at Optical Exit Turnstiles or show Store Security
+              </p>
+            </div>
+
+            {/* Exit Guide */}
+            <div className="mt-5 w-full rounded-2xl border border-[#d2e8cb] bg-[#f7fbf4] p-4 text-left space-y-2">
+              <p className="text-[12px] font-bold text-[#173f31]">How to exit with Zero Queue:</p>
+              <div className="space-y-2 text-[11px] text-[#305a46]">
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">1</span>
+                  <span>Walk to the express <strong className="text-[#173f31]">Self-Billing Exit Lane</strong>.</span>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold text-[#173f31]">Packing items</p>
-                  <p className="text-[9px] text-[#2e8b65]">Being packed right now</p>
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">2</span>
+                  <span>Point this QR code at the turnstile glass scanner.</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-[#f3f4f6] text-gray-400">
-                  <Truck className="size-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-gray-400">Out for delivery</p>
-                  <p className="text-[9px] text-muted-foreground">Delivery partner assigned</p>
+                <div className="flex items-start gap-2">
+                  <span className="flex size-4.5 items-center justify-center rounded-full bg-[#164e3b] text-white text-[9px] font-bold">3</span>
+                  <span>Gate automatically unlocks. <strong className="text-[#173f31]">Queue skipped completely!</strong></span>
                 </div>
               </div>
             </div>
@@ -1797,18 +1835,18 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                   setActiveModal('none')
                   setTab('Orders')
                 }}
-                className="w-full rounded-xl bg-[#164e3b] py-3.5 text-[13px] font-bold text-white shadow-md hover:bg-[#124031]"
+                className="w-full rounded-xl bg-[#164e3b] py-3.5 text-[13px] font-bold text-white shadow-md hover:bg-[#124031] transition-colors"
               >
-                Track in My Orders
+                View in Saved Exit Passes
               </button>
               <button
                 onClick={() => {
                   setActiveModal('none')
-                  setTab('Home')
+                  setTab('Scan')
                 }}
-                className="w-full rounded-xl border border-[#e5e7eb] bg-white py-3.5 text-[13px] font-semibold text-[#173f31]"
+                className="w-full rounded-xl border border-[#b7d66b] bg-[#f5fbf1] py-3.5 text-[13px] font-bold text-[#164e3b] hover:bg-[#ebf6e5] transition-colors"
               >
-                Continue shopping
+                Scan More In-Store Items
               </button>
             </div>
           </div>

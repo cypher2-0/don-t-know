@@ -11,9 +11,9 @@ export async function GET(request: Request) {
 
   // Demo mode: Check mock data first
   const product = customerProducts.find(
-    (p) =>
+    (p: any) =>
       p.barcode === barcode ||
-      p.barcode.includes(barcode) ||
+      (p.barcode && p.barcode.includes(barcode)) ||
       p.name.toLowerCase().includes(barcode.toLowerCase()),
   );
 

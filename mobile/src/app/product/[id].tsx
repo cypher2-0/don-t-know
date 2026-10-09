@@ -112,12 +112,14 @@ export default function ProductScreen() {
         <View className="mt-4 gap-2.5 rounded-2xl border border-[#e5e7eb] bg-white p-4">
           <View className="flex-row items-center gap-2.5">
             <Clock3 size={14} color="#2e8b65" />
-            <Text className="text-[11px] text-[#374151]">Delivery in 20 mins · free over ₹499</Text>
+            <Text className="text-[11px] font-semibold text-[#173f31]">
+              Location: {product.aisle || 'Aisle 1 · Store Shelf'}
+            </Text>
           </View>
           <View className="flex-row items-center gap-2.5">
             <MapPin size={14} color="#2e8b65" />
             <Text className="text-[11px] text-[#374151]">
-              {storeInfo.name} · {storeInfo.distance}
+              {storeInfo.name} · Barcode: {product.barcode}
             </Text>
           </View>
         </View>
