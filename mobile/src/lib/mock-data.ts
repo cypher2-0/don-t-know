@@ -28,8 +28,9 @@ export const customerProducts: CustomerProduct[] = [
 ];
 
 export const paymentMethods = [
-  { id: 'upi', name: 'UPI (GPay / PhonePe / Paytm)', subtitle: 'Fastest · Instant refund', badge: 'RECOMMENDED' },
-  { id: 'cod', name: 'Cash on Delivery', subtitle: 'Pay via cash or UPI at delivery', badge: null },
+  { id: 'razorpay', name: 'Razorpay Secure (UPI/Cards)', subtitle: 'GPay, PhonePe, Paytm, Visa, RuPay', badge: 'RECOMMENDED' },
+  { id: 'upi', name: 'Direct UPI App', subtitle: 'Google Pay, PhonePe, BHIM', badge: null },
+  { id: 'cod', name: 'Cash on Delivery', subtitle: 'Pay via cash or QR at doorstep', badge: null },
   { id: 'card', name: 'Credit / Debit Card', subtitle: 'Visa, Mastercard, RuPay', badge: null },
   { id: 'wallet', name: 'GreenBasket Wallet', subtitle: 'Balance: ₹2,480 pts (₹248 val)', badge: null },
 ];
