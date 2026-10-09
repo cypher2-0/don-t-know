@@ -9,6 +9,7 @@ export type CustomerProduct = {
   unit?: string;
   barcode: string;
   aisle?: string;
+  image?: any;
 };
 
 export const customerProducts: CustomerProduct[] = [
