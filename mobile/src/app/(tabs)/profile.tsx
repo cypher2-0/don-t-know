@@ -45,24 +45,24 @@ export default function ProfileScreen() {
     }
     if (label === "Saved addresses") {
       Alert.alert(
-        "Saved delivery addresses",
-        "• Home (Default): 4th Main Rd, Indiranagar, Bengaluru 560038\n• Office: Ground Floor, EcoSpace Tech Park, Bengaluru 560103",
-        [{ text: "Add new address" }, { text: "Done", style: "cancel" }],
+        "Favorite Store Outlets",
+        "• Primary: GreenBasket Express · Indiranagar (Aisle 2 Beacon)\n• Secondary: GreenBasket Superstore · Koramangala",
+        [{ text: "Switch Store" }, { text: "Done", style: "cancel" }],
       );
       return;
     }
     if (label === "Payment methods") {
       Alert.alert(
-        "Saved payment methods",
-        "• UPI: arjun@okhdfcbank (Default)\n• Card: HDFC Millennia Visa ending in 4821\n• Cash on Delivery available",
-        [{ text: "Add Payment Method" }, { text: "Done", style: "cancel" }],
+        "In-Store Payment Methods",
+        "• Razorpay UPI: arjun@okhdfcbank (Default)\n• Card: HDFC Millennia Visa ending in 4821\n• Express Exit Turnstile Cash Desk",
+        [{ text: "Manage Methods" }, { text: "Done", style: "cancel" }],
       );
       return;
     }
     if (label === "Notifications") {
       Alert.alert(
         "Notifications",
-        "Push notifications for order arrival and flash deals are enabled.",
+        "Digital exit pass generation and flash shelf markdown notifications are enabled.",
       );
       return;
     }

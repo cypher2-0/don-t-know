@@ -20,11 +20,11 @@ export function CartPill() {
             <Text className="text-[12px] font-bold text-white">
               {count} {count === 1 ? 'item' : 'items'} · ₹{total}
             </Text>
-            <Text className="text-[9px] text-[#bbf7d0]">Free delivery on orders over ₹499</Text>
+            <Text className="text-[9px] text-[#bbf7d0]">🔒 In-Store Basket · Skip the billing line</Text>
           </View>
         </View>
         <View className="rounded-xl bg-[#2e8b65] px-3 py-1.5">
-          <Text className="text-[11px] font-bold text-white">View cart →</Text>
+          <Text className="text-[11px] font-bold text-white">Self-Checkout →</Text>
         </View>
       </Pressable>
     </View>
