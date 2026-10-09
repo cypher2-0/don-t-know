@@ -17,7 +17,7 @@ import { CategoryChips } from '@/components/category-chips';
 import { Logo } from '@/components/logo';
 import { ProductCard } from '@/components/product-card';
 import { Screen } from '@/components/screen';
-import { customerProducts, storeInfo } from '@/lib/mock-data';
+import { customerProducts, storeInfo, storesList } from '@/lib/mock-data';
 
 export default function HomeScreen() {
   const [query, setQuery] = useState('');
@@ -38,12 +38,17 @@ export default function HomeScreen() {
   };
 
   const handleStorePress = () => {
-    Alert.alert('Select store location', 'Choose your nearby GreenBasket outlet:', [
-      { text: 'GreenBasket · Indiranagar (Current)', onPress: () => setActiveStore('GreenBasket · Indiranagar') },
-      { text: 'GreenBasket · Koramangala (3.4 km)', onPress: () => setActiveStore('GreenBasket · Koramangala') },
-      { text: 'GreenBasket · HSR Layout (5.1 km)', onPress: () => setActiveStore('GreenBasket · HSR Layout') },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    Alert.alert(
+      'Select Store Location',
+      'Choose the store you are currently inside:',
+      [
+        ...storesList.map((s) => ({
+          text: s.name,
+          onPress: () => setActiveStore(s.name),
+        })),
+        { text: 'Cancel', style: 'cancel' },
+      ],
+    );
   };
 
   const handleRewardPress = () => {
