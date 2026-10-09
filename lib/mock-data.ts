@@ -60,22 +60,6 @@ export const customerProducts = [
   { barcode: '8901058812435', name: 'Tropicana Orange Juice', size: '1 L', price: 120, category: 'Beverages', color: 'bg-orange-100', rating: 4.5 },
   { barcode: '8901058812442', name: "Kellogg's Corn Flakes", size: '475 g', price: 180, category: 'Breakfast', color: 'bg-yellow-100', rating: 4.8 },
   { barcode: '8901725013790', name: 'Bingo! Mad Angles', size: '60 g', price: 20, category: 'Snacks', color: 'bg-orange-200', rating: 4.8 },
-=======
-  { name: 'Amul Taaza Milk', size: '500 ml', price: 28, category: 'Dairy', color: 'bg-emerald-100', rating: 4.8, image: '/images/products/milk.jpg' },
-  { name: 'Fresh Paneer', size: '200 g', price: 95, category: 'Dairy', color: 'bg-slate-100', rating: 4.7, image: '/images/products/paneer.jpg' },
-  { name: 'Amul Salted Butter', size: '100 g', price: 58, category: 'Dairy', color: 'bg-yellow-100', rating: 4.9, image: '/images/products/butter.jpg' },
-  { name: 'Organic Bananas', size: '500 g', price: 42, category: 'Produce', color: 'bg-lime-100', rating: 4.6, discount: '15% OFF', image: '/images/products/bananas.jpg' },
-  { name: 'Shimla Royal Apples', size: '4 pcs', price: 140, category: 'Produce', color: 'bg-rose-100', rating: 4.9, image: '/images/products/apples.jpg' },
-  { name: 'Hybrid Tomatoes', size: '1 kg', price: 34, category: 'Produce', color: 'bg-red-100', rating: 4.5, image: '/images/products/tomatoes.jpg' },
-  { name: 'Aashirvaad Atta', size: '5 kg', price: 310, category: 'Staples', color: 'bg-amber-100', rating: 4.8, image: 'https://www.bigbasket.com/media/uploads/p/l/126906_8-aashirvaad-atta-whole-wheat.jpg' },
-  { name: 'India Gate Basmati Rice', size: '1 kg', price: 125, category: 'Staples', color: 'bg-amber-50', rating: 4.7, image: 'https://www.bigbasket.com/media/uploads/p/l/241600_7-india-gate-basmati-rice-feast-rozzana.jpg' },
-  { name: 'Fortune Sunflower Oil', size: '1 L pouch', price: 145, category: 'Staples', color: 'bg-yellow-50', rating: 4.6, image: '/images/products/oil.jpg' },
-  { name: 'Harvest Gold Bread', size: '400 g', price: 45, category: 'Bakery', color: 'bg-orange-100', rating: 4.7, image: '/images/products/bread.jpg' },
-  { name: "The Baker's Dozen Sourdough", size: '250 g', price: 110, category: 'Bakery', color: 'bg-orange-50', rating: 4.8, image: '/images/products/sourdough.jpg' },
-  { name: "Lay's Classic Salted", size: '50 g', price: 20, category: 'Snacks', color: 'bg-yellow-200', rating: 4.5, image: '/images/products/chips.jpg' },
-  { name: "Haldiram's Aloo Bhujia", size: '200 g', price: 55, category: 'Snacks', color: 'bg-amber-200', rating: 4.8, image: '/images/products/bhujia.jpg' },
-  { name: 'Dark Fantasy Choco Fills', size: '75 g', price: 40, category: 'Snacks', color: 'bg-stone-200', rating: 4.9, discount: '10% OFF', image: '/images/products/choco-fills.jpg' },
->>>>>>> origin/main
 ]
 
 

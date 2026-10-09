@@ -61,9 +61,9 @@ export default function ScanScreen() {
     return () => loop.stop();
   }, [laserAnim]);
 
-  const triggerScan = (product: CustomerProduct) => {
+  const triggerScan = async (productOrBarcode: CustomerProduct | string) => {
+    if (isScanning) return;
     setIsScanning(true);
-<<<<<<< HEAD
     setScanMessage("Processing...");
 
     try {
@@ -103,14 +103,10 @@ export default function ScanScreen() {
       setScanMessage("Error scanning product");
     }
 
-=======
-    setScanMessage('Beep! Barcode detected');
->>>>>>> origin/main
     setTimeout(() => {
-      setScannedProduct(product);
       setIsScanning(false);
       setScanMessage(null);
-    }, 450);
+    }, 1500);
   };
 
   const simulateRandomScan = () => {
