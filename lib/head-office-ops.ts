@@ -15,6 +15,8 @@ export type StoreUrgencyRanking = {
   estimatedDailyMarginLoss: number
   lat: number
   lng: number
+  managerName: string
+  managerPhone: string
 }
 
 export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
@@ -25,7 +27,7 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     city: 'Bengaluru East',
     urgencyScore: 88,
     tier: 'Tier 1: Immediate Intervention',
-    primaryIssue: 'Perishables expiry hazard + high-velocity bread stockout + freezer breach',
+    primaryIssue: 'Perishables expiry hazard + high-velocity bread stockout + chiller breach',
     expiryRiskValue: 5457,
     stockoutSkus: 14,
     shrinkageAnomaly: '+6.2°C thermal breach on Chiller 2',
@@ -33,6 +35,8 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     estimatedDailyMarginLoss: 38400,
     lat: 12.9698,
     lng: 77.75,
+    managerName: 'Arjun Nambiar',
+    managerPhone: '+91 98450 21456',
   },
   {
     rank: 2,
@@ -49,6 +53,8 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     estimatedDailyMarginLoss: 16200,
     lat: 12.9352,
     lng: 77.6245,
+    managerName: 'Priya Sharma',
+    managerPhone: '+91 98861 88321',
   },
   {
     rank: 3,
@@ -65,6 +71,8 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     estimatedDailyMarginLoss: 12800,
     lat: 13.0035,
     lng: 77.5709,
+    managerName: 'Karthik Rao',
+    managerPhone: '+91 94480 33129',
   },
   {
     rank: 4,
@@ -77,10 +85,12 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     expiryRiskValue: 820,
     stockoutSkus: 3,
     shrinkageAnomaly: 'Nominal (<0.5%)',
-    rosterGap: '100% attendance',
+    rosterGap: '100% attendance (10/10)',
     estimatedDailyMarginLoss: 3200,
     lat: 12.925,
     lng: 77.5938,
+    managerName: 'Deepa Hegde',
+    managerPhone: '+91 97412 55904',
   },
   {
     rank: 5,
@@ -97,6 +107,8 @@ export const headOfficeStoreRankings: StoreUrgencyRanking[] = [
     estimatedDailyMarginLoss: 1800,
     lat: 12.9784,
     lng: 77.6408,
+    managerName: 'Sanjay Verma',
+    managerPhone: '+91 99001 77218',
   },
 ]
 
@@ -108,24 +120,18 @@ export type ConnectedProblem = {
   timeWindow: string
   affectedItems: string
   atRiskValue: number
-
-  // Signal connection (NOT just a KPI list!)
   signals: {
     domain: string
     signalText: string
     severityScore: string
   }[]
   causalSynthesis: string
-
-  // Recommended actions across all 4 categories
   actions: {
     replenishment: string
     markdown: string
     wastageFix: string
     taskOrEscalation: string
   }
-
-  // Interactive simulated action specification
   simulation: {
     actionTitle: string
     actionType: 'markdown' | 'replenishment' | 'maintenance'
@@ -140,6 +146,842 @@ export type ConnectedProblem = {
   }
 }
 
+// 5-Vector Root Cause Correlation Models
+export type VectorType = 'Sales' | 'Footfall' | 'Wastage' | 'Staffing' | 'Deliveries'
+
+export type StoreCorrelationProfile = {
+  storeName: string
+  overallCorrelationScore: number // 0-100 indicating degree of systemic coupling
+  vectors: {
+    vector: VectorType
+    label: string
+    actual: string
+    benchmark: string
+    divergence: number // e.g. -32 for -32%
+    status: 'Severe' | 'Elevated' | 'Healthy'
+    evidence: string
+    keyMetric: string
+  }[]
+  correlations: {
+    driverVector: VectorType
+    impactedVector: VectorType
+    correlationCoefficient: number // 0.0 - 1.0
+    synthesis: string
+  }[]
+  causalTimeline: {
+    time: string
+    vector: VectorType
+    event: string
+    impactDescription: string
+    severity: 'red' | 'amber' | 'blue'
+  }[]
+}
+
+export const storeCorrelationProfiles: Record<string, StoreCorrelationProfile> = {
+  Whitefield: {
+    storeName: 'Whitefield',
+    overallCorrelationScore: 92,
+    vectors: [
+      {
+        vector: 'Sales',
+        label: 'Sales Velocity',
+        actual: '₹1,84,000 / day',
+        benchmark: '₹2,40,000 target',
+        divergence: -23.3,
+        status: 'Severe',
+        evidence: 'Breakfast rush surged 3.4x but collapsed after 9:30 AM due to empty bread shelves and milk expiry panic.',
+        keyMetric: '-₹56,000 Sales Gap',
+      },
+      {
+        vector: 'Footfall',
+        label: 'Footfall & Weather',
+        actual: '1,280 walk-ins',
+        benchmark: '1,880 forecast',
+        divergence: -31.9,
+        status: 'Severe',
+        evidence: 'Sunday unseasonal cloudburst created severe waterlogging on ITPL Main Rd; walk-ins dropped 32%.',
+        keyMetric: '-31.9% Traffic Deficit',
+      },
+      {
+        vector: 'Wastage',
+        label: 'Wastage & Spoilage',
+        actual: '₹5,457 at-risk',
+        benchmark: '< ₹1,200 threshold',
+        divergence: 354.8,
+        status: 'Severe',
+        evidence: '48 units Amul milk aging at T-6h; Chiller 2 logged +6.2°C thermal breach softening 146 frozen packets.',
+        keyMetric: '3.5x Waste Ceiling',
+      },
+      {
+        vector: 'Staffing',
+        label: 'Staffing Coverage',
+        actual: '8 / 11 associates',
+        benchmark: '11 on active shift',
+        divergence: -27.3,
+        status: 'Severe',
+        evidence: '3 associates absent; backroom inbound staging was unmanaged, delaying shelf replenishment by 3.5 hrs.',
+        keyMetric: '72.7% Roster Fill',
+      },
+      {
+        vector: 'Deliveries',
+        label: 'Inbound Deliveries',
+        actual: '4.5 hrs delayed',
+        benchmark: 'On-time (07:00 AM)',
+        divergence: -85.0,
+        status: 'Severe',
+        evidence: 'Harvest Gold bread truck broke down at Hoskote depot. Reached at 11:30 AM instead of 07:00 AM.',
+        keyMetric: '+270 min Logistics Delay',
+      },
+    ],
+    correlations: [
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.94,
+        synthesis: 'Vendor truck breakdown directly caused 14 high-velocity breakfast stockouts, triggering ₹4,200/hr lost basket margin.',
+      },
+      {
+        driverVector: 'Footfall',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.88,
+        synthesis: 'Unseasonal rain lowered Sunday milk turnover by 32%, turning standing order surplus into an imminent 48-unit T-6h spoilage crisis.',
+      },
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Deliveries',
+        correlationCoefficient: 0.82,
+        synthesis: '72% associate coverage created a backroom bottleneck; even after delivery arrived, items stayed un-shelved for 75 minutes.',
+      },
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.79,
+        synthesis: 'Lack of supervisor floor rounds missed the open Chiller 2 door seal for over 2 hours during shift handoff.',
+      },
+    ],
+    causalTimeline: [
+      {
+        time: '03:15 AM',
+        vector: 'Wastage',
+        event: 'Chiller Unit 2 Door Seal Unlatched',
+        impactDescription: 'Temp climbs from -18°C to +6.8°C for 140 min; condensation softens 146 frozen packs.',
+        severity: 'red',
+      },
+      {
+        time: '06:30 AM',
+        vector: 'Staffing',
+        event: 'Morning Roll-Call Shortage',
+        impactDescription: '3 associates call in sick; 8 on floor leaving backroom staging unmanned.',
+        severity: 'amber',
+      },
+      {
+        time: '07:10 AM',
+        vector: 'Deliveries',
+        event: 'Vendor Truck Mechanical Failure',
+        impactDescription: 'PO #8412 bread delivery stranded at Hoskote; dispatch ETA pushed to 11:30 AM.',
+        severity: 'red',
+      },
+      {
+        time: '08:30 AM',
+        vector: 'Sales',
+        event: 'Peak Breakfast Rush Stockout',
+        impactDescription: 'Bread stock completely depleted; 3.4x velocity surge converts into zero basket sales.',
+        severity: 'red',
+      },
+      {
+        time: '11:00 AM',
+        vector: 'Footfall',
+        event: 'Sunday Downpour Dampening Traffic',
+        impactDescription: 'Rain reduces footfall by 32%; 48 units of fresh milk age without organic sales.',
+        severity: 'amber',
+      },
+    ],
+  },
+  Koramangala: {
+    storeName: 'Koramangala',
+    overallCorrelationScore: 71,
+    vectors: [
+      {
+        vector: 'Sales',
+        label: 'Sales Velocity',
+        actual: '₹2,65,000 / day',
+        benchmark: '₹2,90,000 target',
+        divergence: -8.6,
+        status: 'Elevated',
+        evidence: 'Healthy staples sales offset by sluggish dairy turnover and student weekend departures.',
+        keyMetric: '-₹25,000 Sales Gap',
+      },
+      {
+        vector: 'Footfall',
+        label: 'Footfall & Weather',
+        actual: '2,140 walk-ins',
+        benchmark: '2,450 forecast',
+        divergence: -12.7,
+        status: 'Elevated',
+        evidence: 'University long weekend caused student apartment cluster vacancy; local footfall down 13%.',
+        keyMetric: '-12.7% Footfall Dip',
+      },
+      {
+        vector: 'Wastage',
+        label: 'Wastage & Spoilage',
+        actual: '₹3,400 at-risk',
+        benchmark: '< ₹1,500 threshold',
+        divergence: 126.7,
+        status: 'Elevated',
+        evidence: '32 loaves Harvest Gold Bread and 18 butter packs nearing 24h expiry window.',
+        keyMetric: '2.3x Waste Buffer',
+      },
+      {
+        vector: 'Staffing',
+        label: 'Staffing Coverage',
+        actual: '10 / 12 associates',
+        benchmark: '12 on active shift',
+        divergence: -16.7,
+        status: 'Elevated',
+        evidence: '2 associates took unscheduled concurrent break during midday floor audit.',
+        keyMetric: '83.3% Coverage',
+      },
+      {
+        vector: 'Deliveries',
+        label: 'Inbound Deliveries',
+        actual: '1.2 hrs delayed',
+        benchmark: 'On-time',
+        divergence: -24.0,
+        status: 'Elevated',
+        evidence: 'City peak traffic delayed morning replenishment truck from central distribution center.',
+        keyMetric: '+72 min Delay',
+      },
+    ],
+    correlations: [
+      {
+        driverVector: 'Footfall',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.86,
+        synthesis: 'Unanticipated student holiday departures reduced bread and butter velocity by 44%.',
+      },
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.73,
+        synthesis: 'Midday stock replenishment delay caused temporary out-of-stock on premium dairy lines.',
+      },
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.68,
+        synthesis: 'Concurrent breaks resulted in delayed markdown sticker placement on Bay 2 dairy.',
+      },
+      {
+        driverVector: 'Sales',
+        impactedVector: 'Deliveries',
+        correlationCoefficient: 0.62,
+        synthesis: 'Static automated reorders failed to flex down for predictable academic holidays.',
+      },
+    ],
+    causalTimeline: [
+      {
+        time: '07:30 AM',
+        vector: 'Deliveries',
+        event: 'Morning Inbound Traffic Delay',
+        impactDescription: 'Delivery van delayed by 72 mins on Hosur Road flyover.',
+        severity: 'amber',
+      },
+      {
+        time: '10:00 AM',
+        vector: 'Footfall',
+        event: 'Student Cluster Vacancy Recognized',
+        impactDescription: 'Store footfall down 13%; morning milk and bread movement stagnant.',
+        severity: 'amber',
+      },
+      {
+        time: '01:30 PM',
+        vector: 'Staffing',
+        event: 'Unsynchronized Floor Breaks',
+        impactDescription: 'Floor coverage dips to 83%; clearance tagging postponed.',
+        severity: 'blue',
+      },
+      {
+        time: '04:00 PM',
+        vector: 'Wastage',
+        event: 'Dairy Stock Crosses T-24h Buffer',
+        impactDescription: '32 loaves and 18 butter packs enter high-risk waste category.',
+        severity: 'amber',
+      },
+    ],
+  },
+  Malleshwaram: {
+    storeName: 'Malleshwaram',
+    overallCorrelationScore: 58,
+    vectors: [
+      {
+        vector: 'Sales',
+        label: 'Sales Velocity',
+        actual: '₹2,10,000 / day',
+        benchmark: '₹2,35,000 target',
+        divergence: -10.6,
+        status: 'Elevated',
+        evidence: 'Staples and spices robust; frozen food velocity lagging behind plan.',
+        keyMetric: '-₹25,000 Gap',
+      },
+      {
+        vector: 'Footfall',
+        label: 'Footfall & Weather',
+        actual: '1,720 walk-ins',
+        benchmark: '1,900 forecast',
+        divergence: -9.5,
+        status: 'Healthy',
+        evidence: 'Normal footfall with slight evening dip around temple peak hours.',
+        keyMetric: '-9.5% Footfall',
+      },
+      {
+        vector: 'Wastage',
+        label: 'Wastage & Spoilage',
+        actual: '₹2,750 at-risk',
+        benchmark: '< ₹1,200 threshold',
+        divergence: 129.2,
+        status: 'Elevated',
+        evidence: 'Slow-moving frozen nuggets and packaged paneer near manufacturer date.',
+        keyMetric: '2.3x Waste Limit',
+      },
+      {
+        vector: 'Staffing',
+        label: 'Staffing Coverage',
+        actual: '10 / 11 associates',
+        benchmark: '11 on active shift',
+        divergence: -9.1,
+        status: 'Healthy',
+        evidence: 'Single late arrival; floor coverage well maintained.',
+        keyMetric: '90.9% Coverage',
+      },
+      {
+        vector: 'Deliveries',
+        label: 'Inbound Deliveries',
+        actual: '25 min delay',
+        benchmark: 'On-time',
+        divergence: -5.0,
+        status: 'Healthy',
+        evidence: 'Minor dock queue at Malleshwaram 8th Cross back-alley entrance.',
+        keyMetric: '+25 min Delay',
+      },
+    ],
+    correlations: [
+      {
+        driverVector: 'Sales',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.81,
+        synthesis: 'Low local customer adoption of frozen ready-to-eat products causing shelf staleness.',
+      },
+      {
+        driverVector: 'Footfall',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.65,
+        synthesis: 'Evening traffic concentrated on fresh produce rather than high-margin packaged food.',
+      },
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Staffing',
+        correlationCoefficient: 0.42,
+        synthesis: 'Dock congestion briefly occupies warehouse clerk.',
+      },
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.38,
+        synthesis: 'Routine rotation audit kept wastage contained compared to Whitefield.',
+      },
+    ],
+    causalTimeline: [
+      {
+        time: '08:00 AM',
+        vector: 'Deliveries',
+        event: 'Morning Dock Arrival',
+        impactDescription: 'Inbound goods checked in smoothly with minor 25 min delay.',
+        severity: 'blue',
+      },
+      {
+        time: '12:00 PM',
+        vector: 'Wastage',
+        event: 'Frozen Inventory Audit',
+        impactDescription: 'Identified 8 SKUs of slow-moving frozen snacks requiring promotional bundling.',
+        severity: 'amber',
+      },
+    ],
+  },
+  Jayanagar: {
+    storeName: 'Jayanagar',
+    overallCorrelationScore: 28,
+    vectors: [
+      {
+        vector: 'Sales',
+        label: 'Sales Velocity',
+        actual: '₹3,20,000 / day',
+        benchmark: '₹3,15,000 target',
+        divergence: 1.6,
+        status: 'Healthy',
+        evidence: 'Exceeding sales targets across fresh vegetables, pulses, and organic milk.',
+        keyMetric: '+₹5,000 Above Plan',
+      },
+      {
+        vector: 'Footfall',
+        label: 'Footfall & Weather',
+        actual: '2,650 walk-ins',
+        benchmark: '2,500 forecast',
+        divergence: 6.0,
+        status: 'Healthy',
+        evidence: 'Strong loyal customer turnout during morning 7-10 AM walking hours.',
+        keyMetric: '+6.0% Footfall Beat',
+      },
+      {
+        vector: 'Wastage',
+        label: 'Wastage & Spoilage',
+        actual: '₹820 at-risk',
+        benchmark: '< ₹1,500 threshold',
+        divergence: -45.3,
+        status: 'Healthy',
+        evidence: 'Perishable greens trim waste minimal; disciplined morning FIFO rotation.',
+        keyMetric: 'Well Within Limits',
+      },
+      {
+        vector: 'Staffing',
+        label: 'Staffing Coverage',
+        actual: '10 / 10 associates',
+        benchmark: '10 on active shift',
+        divergence: 0.0,
+        status: 'Healthy',
+        evidence: '100% on-time attendance and prompt shift changeovers.',
+        keyMetric: '100% Coverage',
+      },
+      {
+        vector: 'Deliveries',
+        label: 'Inbound Deliveries',
+        actual: 'On-time (06:45 AM)',
+        benchmark: '07:00 AM',
+        divergence: 15.0,
+        status: 'Healthy',
+        evidence: 'Early delivery allowed complete pre-opening staging before doors opened.',
+        keyMetric: '15 min Ahead of SLA',
+      },
+    ],
+    correlations: [
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.91,
+        synthesis: 'Strict FIFO rotation by full staff contingent directly drove a 45% waste reduction.',
+      },
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.88,
+        synthesis: 'Early staging ensured 100% on-shelf availability for the critical morning crowd.',
+      },
+      {
+        driverVector: 'Footfall',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.85,
+        synthesis: 'High footfall conversion supported by full shelves and zero out-of-stocks.',
+      },
+      {
+        driverVector: 'Wastage',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.22,
+        synthesis: 'Minimal markdown intervention needed to maintain high retail margins.',
+      },
+    ],
+    causalTimeline: [
+      {
+        time: '06:45 AM',
+        vector: 'Deliveries',
+        event: 'Inbound PO Staged Early',
+        impactDescription: 'Fresh produce unboxed and shelved 15 mins before store opening.',
+        severity: 'blue',
+      },
+      {
+        time: '07:00 AM',
+        vector: 'Staffing',
+        event: '100% Roster Checked In',
+        impactDescription: 'All 10 team members in place for opening rush.',
+        severity: 'blue',
+      },
+    ],
+  },
+  Indiranagar: {
+    storeName: 'Indiranagar',
+    overallCorrelationScore: 19,
+    vectors: [
+      {
+        vector: 'Sales',
+        label: 'Sales Velocity',
+        actual: '₹3,95,000 / day',
+        benchmark: '₹3,70,000 target',
+        divergence: 6.8,
+        status: 'Healthy',
+        evidence: 'Top performing store in the network; high basket size driven by premium items and scan & go.',
+        keyMetric: '+₹25,000 Beat',
+      },
+      {
+        vector: 'Footfall',
+        label: 'Footfall & Weather',
+        actual: '3,420 walk-ins',
+        benchmark: '3,200 forecast',
+        divergence: 6.9,
+        status: 'Healthy',
+        evidence: 'Dense urban traffic and 100-feet road commercial activity.',
+        keyMetric: '+6.9% Footfall',
+      },
+      {
+        vector: 'Wastage',
+        label: 'Wastage & Spoilage',
+        actual: '₹640 at-risk',
+        benchmark: '< ₹1,800 threshold',
+        divergence: -64.4,
+        status: 'Healthy',
+        evidence: 'Excellent stock velocity; excess safety buffer available to assist sister stores.',
+        keyMetric: 'Lowest Chain Waste',
+      },
+      {
+        vector: 'Staffing',
+        label: 'Staffing Coverage',
+        actual: '12 / 12 associates',
+        benchmark: '12 on active shift',
+        divergence: 0.0,
+        status: 'Healthy',
+        evidence: 'Full team active with cross-trained customer assistance and turnstile checkout escorts.',
+        keyMetric: '100% Staffing',
+      },
+      {
+        vector: 'Deliveries',
+        label: 'Inbound Deliveries',
+        actual: 'On-time',
+        benchmark: '06:30 AM',
+        divergence: 0.0,
+        status: 'Healthy',
+        evidence: 'Direct priority routing from primary distribution hub.',
+        keyMetric: 'On Time SLA 100%',
+      },
+    ],
+    correlations: [
+      {
+        driverVector: 'Sales',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.95,
+        synthesis: 'High turnover rate liquidates stock before any product enters the T-48h aging window.',
+      },
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Sales',
+        correlationCoefficient: 0.90,
+        synthesis: 'Reliable supplier routing supports seamless safety buffer replenishment.',
+      },
+      {
+        driverVector: 'Staffing',
+        impactedVector: 'Footfall',
+        correlationCoefficient: 0.75,
+        synthesis: 'Turnstile gate assistance keeps queue time under 45 seconds, encouraging repeat walk-ins.',
+      },
+      {
+        driverVector: 'Deliveries',
+        impactedVector: 'Wastage',
+        correlationCoefficient: 0.20,
+        synthesis: 'Cold chain verified at dock entry with zero thermal anomalies logged.',
+      },
+    ],
+    causalTimeline: [
+      {
+        time: '06:30 AM',
+        vector: 'Deliveries',
+        event: 'Inbound Hub Truck Unloaded',
+        impactDescription: 'Fresh bread, dairy, and cold-pressed juices verified and stocked.',
+        severity: 'blue',
+      },
+      {
+        time: '08:00 AM',
+        vector: 'Sales',
+        event: 'High Velocity Morning Rush',
+        impactDescription: 'Scan & Go users account for 41% of transactions with zero wait time.',
+        severity: 'blue',
+      },
+    ],
+  },
+}
+
+// Store Manager Customized Daily To-Do Checklist
+export type ManagerChecklistItem = {
+  id: string
+  shift: 'Morning Opening (06:00 - 09:00)' | 'Midday Rush (11:00 - 14:00)' | 'Afternoon Inbound (14:00 - 17:00)' | 'Evening Close (19:00 - 22:00)'
+  title: string
+  description: string
+  assignee: string
+  dueTime: string
+  priority: 'Critical' | 'High' | 'Medium' | 'Routine'
+  impactText: string
+  completed: boolean
+  triggerKey?: string
+}
+
+export const storeManagerChecklists: Record<string, ManagerChecklistItem[]> = {
+  Whitefield: [
+    {
+      id: 'wf-1',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Inspect Chiller Unit 2 Door Seal & Cold Chain Log',
+      description: 'Check magnetic gasket latch, clear defrost ice coils, and verify internal sensor returns below -18°C.',
+      assignee: 'Rajesh Kumar (Facility Associate)',
+      dueTime: '07:30 AM',
+      priority: 'Critical',
+      impactText: 'Protects ₹5,840 frozen inventory & halts defrost spoilage',
+      completed: false,
+      triggerKey: 'maintenance',
+    },
+    {
+      id: 'wf-2',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Follow Up Delayed Bread Delivery PO #8412',
+      description: 'Contact Harvest Gold regional logistics dispatch; log carrier breach ticket and request priority Hoskote transit.',
+      assignee: 'Anita Desai (Inbound Lead)',
+      dueTime: '08:00 AM',
+      priority: 'Critical',
+      impactText: 'Addresses 14 depleted breakfast SKUs leaking ₹4,200/hr',
+      completed: false,
+      triggerKey: 'replenishment',
+    },
+    {
+      id: 'wf-3',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Re-assign Floor Associate to Unload Backroom Staging',
+      description: 'Pull associate Amit from Bay 5 to clear staging backlog caused by 3 morning absences.',
+      assignee: 'Arjun Nambiar (Store Manager)',
+      dueTime: '08:45 AM',
+      priority: 'High',
+      impactText: 'Overcomes 72% staffing bottleneck before 9:00 AM footfall spike',
+      completed: true,
+    },
+    {
+      id: 'wf-4',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Execute 40% Clearance Markdown on 48 Milk Units (T-6h)',
+      description: 'Affix yellow discount collar tags to Dairy Bay 3 and trigger wireless ESL price drop (₹42 → ₹25).',
+      assignee: 'Rajesh Kumar (Floor Associate)',
+      dueTime: '11:30 AM',
+      priority: 'Critical',
+      impactText: 'Liquidates 48 units before 6:00 PM expiry; recovers ₹1,200 margin',
+      completed: false,
+      triggerKey: 'markdown',
+    },
+    {
+      id: 'wf-5',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Receive Emergency Bread Transfer from Indiranagar Hub',
+      description: 'Receive 35 units Harvest Gold Bread via courier express, scan into POS, and place directly in bread aisle.',
+      assignee: 'Vikram Singh (Floor Supervisor)',
+      dueTime: '12:15 PM',
+      priority: 'High',
+      impactText: 'Restores core breakfast availability; recovers ₹3,950 sales loss',
+      completed: false,
+      triggerKey: 'transfer',
+    },
+    {
+      id: 'wf-6',
+      shift: 'Afternoon Inbound (14:00 - 17:00)',
+      title: 'Verify CoolTech HVAC Technician Ticket #FAC-441',
+      description: 'Escort arriving technician to Walk-In Chiller 2, inspect replacement gasket installation, and sign service voucher.',
+      assignee: 'Anita Desai (Inbound Lead)',
+      dueTime: '03:30 PM',
+      priority: 'High',
+      impactText: 'Permanently eliminates +6.2°C thermal leak before evening cycle',
+      completed: false,
+    },
+    {
+      id: 'wf-7',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Perishable Produce Trim & Organic Green Markdowns',
+      description: 'Inspect spinach, coriander, and leafy greens. Trim wilted stock and apply 30% evening close tag.',
+      assignee: 'Meena R (Produce Specialist)',
+      dueTime: '08:00 PM',
+      priority: 'Medium',
+      impactText: 'Cuts overnight trim shrinkage by 65%',
+      completed: false,
+    },
+    {
+      id: 'wf-8',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Reconcile Turnstile Gate Logs vs POS Audit',
+      description: 'Verify 0 exit pass exceptions across Staff Turnstile Gate 2; cross-check offline transactions.',
+      assignee: 'Arjun Nambiar (Store Manager)',
+      dueTime: '09:45 PM',
+      priority: 'Routine',
+      impactText: 'Maintains 0.0% unverified exit pass variance',
+      completed: false,
+    },
+  ],
+  Koramangala: [
+    {
+      id: 'kora-1',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Conduct Cycle Count on Butter & Dairy Bay 2',
+      description: 'Physically reconcile 12-unit POS discrepancy identified during Sunday closing tally.',
+      assignee: 'Sneha Patel (Inventory Lead)',
+      dueTime: '07:45 AM',
+      priority: 'High',
+      impactText: 'Corrects inventory records and syncs reorder threshold',
+      completed: true,
+    },
+    {
+      id: 'kora-2',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Trigger Breakfast Pairing Bundle Discount (Bread + Butter)',
+      description: 'Deploy bundle promotional POS rule (₹30 discount) to clear 32 short-dated loaves before student rush.',
+      assignee: 'Priya Sharma (Store Manager)',
+      dueTime: '11:15 AM',
+      priority: 'Critical',
+      impactText: 'Liquidates ₹5,890 short-dated dairy stock with 84% recovery',
+      completed: false,
+      triggerKey: 'markdown',
+    },
+    {
+      id: 'kora-3',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Implement Staggered Associate Floor Break Schedule',
+      description: 'Ensure maximum of 1 associate off-floor at any given time between 12:00 PM and 3:00 PM.',
+      assignee: 'Priya Sharma (Store Manager)',
+      dueTime: '12:00 PM',
+      priority: 'High',
+      impactText: 'Eliminates 16.7% midday coverage gap',
+      completed: true,
+    },
+    {
+      id: 'kora-4',
+      shift: 'Afternoon Inbound (14:00 - 17:00)',
+      title: 'Receive Hosur Road Replenishment Dispatch',
+      description: 'Verify seal condition and temperature logs for incoming dairy replenishment.',
+      assignee: 'Rohan Joshi (Dock Supervisor)',
+      dueTime: '02:30 PM',
+      priority: 'Medium',
+      impactText: 'Replenishes safety buffer for evening peak',
+      completed: false,
+    },
+    {
+      id: 'kora-5',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Update Dynamic Academic Calendar Demand Parameter',
+      description: 'Adjust Friday automated reorder factor down by 25% for upcoming university semester recess.',
+      assignee: 'Priya Sharma (Store Manager)',
+      dueTime: '08:30 PM',
+      priority: 'High',
+      impactText: 'Prevents future ₹16,200 margin loss from uncalibrated holiday stock',
+      completed: false,
+    },
+  ],
+  Malleshwaram: [
+    {
+      id: 'mal-1',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Inspect Freezer Aisle 4 Stock Rotation (FIFO)',
+      description: 'Bring near-date frozen nuggets to front row; verify cold temperatures.',
+      assignee: 'Karthik Rao (Store Manager)',
+      dueTime: '08:15 AM',
+      priority: 'High',
+      impactText: 'Prevents ₹2,750 frozen waste write-off',
+      completed: true,
+    },
+    {
+      id: 'mal-2',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Publish Flash Combo with Traditional Staples',
+      description: 'Tag frozen snacks with 20% discount when purchased alongside premium cooking oil.',
+      assignee: 'Sunil Gowda (Floor Lead)',
+      dueTime: '11:45 AM',
+      priority: 'Medium',
+      impactText: 'Accelerates slow freezer turnover',
+      completed: false,
+      triggerKey: 'markdown',
+    },
+    {
+      id: 'mal-3',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Temple Festival Evening Footfall Preparation',
+      description: 'Prepare express checkout lane and stock high-velocity flowers and incense sticks.',
+      assignee: 'Karthik Rao (Store Manager)',
+      dueTime: '06:00 PM',
+      priority: 'Routine',
+      impactText: 'Captures ₹18,000 peak evening walk-in sales',
+      completed: false,
+    },
+  ],
+  Jayanagar: [
+    {
+      id: 'jay-1',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Verify Fresh Organic Produce Pre-Staging',
+      description: 'Ensure morning leafy greens and vegetables are misted and displayed on cold racks.',
+      assignee: 'Deepa Hegde (Store Manager)',
+      dueTime: '07:00 AM',
+      priority: 'Routine',
+      impactText: 'Maintains 99.5% customer freshness satisfaction',
+      completed: true,
+    },
+    {
+      id: 'jay-2',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Review Midday FIFO Movement on Dairy Bay',
+      description: 'Perform visual spot check on curd and paneer packs.',
+      assignee: 'Suresh B (Floor Lead)',
+      dueTime: '01:00 PM',
+      priority: 'Routine',
+      impactText: 'Preserves 0.3% low wastage rate',
+      completed: true,
+    },
+    {
+      id: 'jay-3',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Log Daily Benchmark Metrics & Staff Commendation',
+      description: 'Publish 100% attendance and zero shrinkage audit report to Head Office portal.',
+      assignee: 'Deepa Hegde (Store Manager)',
+      dueTime: '09:00 PM',
+      priority: 'Routine',
+      impactText: 'Benchmark store operational integrity',
+      completed: false,
+    },
+  ],
+  Indiranagar: [
+    {
+      id: 'ind-1',
+      shift: 'Morning Opening (06:00 - 09:00)',
+      title: 'Verify Scan & Go Turnstile Exit Beacon Connectivity',
+      description: 'Test BLE beacon ping on Gate 1 and Gate 2; ensure app checkout sync latency is <300ms.',
+      assignee: 'Sanjay Verma (Store Manager)',
+      dueTime: '07:15 AM',
+      priority: 'High',
+      impactText: 'Enables 0-wait checkout for 40%+ shoppers',
+      completed: true,
+    },
+    {
+      id: 'ind-2',
+      shift: 'Midday Rush (11:00 - 14:00)',
+      title: 'Stage 35 Units Bread for Emergency Courier Transfer to Whitefield',
+      description: 'Pack excess buffer Harvest Gold Bread into thermal transit bins for inter-store dispatch.',
+      assignee: 'Manoj Kumar (Logistics Lead)',
+      dueTime: '11:45 AM',
+      priority: 'Critical',
+      impactText: 'Assists sister store Whitefield with urgent replenishment',
+      completed: false,
+      triggerKey: 'transfer',
+    },
+    {
+      id: 'ind-3',
+      shift: 'Evening Close (19:00 - 22:00)',
+      title: 'Daily Premium Basket Velocity Review',
+      description: 'Audit organic bakery and cold-pressed juice sales volumes against weekly target.',
+      assignee: 'Sanjay Verma (Store Manager)',
+      dueTime: '09:15 PM',
+      priority: 'Routine',
+      impactText: 'Confirms +6.8% sales forecast outperformance',
+      completed: false,
+    },
+  ],
+}
+
+// Operational Diagnosis Definitions for all Stores
 export const storeOperationalDiagnosis: Record<string, {
   storeName: string
   todaySummary: string
@@ -337,6 +1179,137 @@ export const storeOperationalDiagnosis: Record<string, {
           clearanceProbability: 92,
           nearbyShoppersTargeted: 410,
           shelfLabelUpdateMode: 'Combo POS promotion published',
+        },
+      },
+    ],
+  },
+  Malleshwaram: {
+    storeName: 'Malleshwaram',
+    todaySummary: 'Soft evening footfall impacting frozen ready-to-eat turnover. Proactively bundle near-date frozen products with regional staples.',
+    actionPriorities: [
+      {
+        id: 'mal-prob-1',
+        title: 'Frozen Snacks Turnover Deceleration',
+        problemType: 'Imminent Expiry Spoilage',
+        severity: 'Medium',
+        timeWindow: 'T-48 Hours (3 Days of Cover)',
+        affectedItems: 'McCain Smiles & Yummiez Veg Nuggets · 64 units',
+        atRiskValue: 2750,
+        signals: [
+          {
+            domain: 'Category Sales Velocity',
+            signalText: 'Frozen ready-to-eat category velocity tracking 34% below chain average in traditional North Bengaluru pocket.',
+            severityScore: '-34% Sub-category Velocity',
+          },
+          {
+            domain: 'Footfall Demographics',
+            signalText: 'Walk-ins dominated by senior households with lower preference for Western frozen snack lines.',
+            severityScore: 'Demographic Mismatch',
+          },
+        ],
+        causalSynthesis:
+          'Standard chain-wide freezer allocations overloaded Malleshwaram with Western frozen snacks that underperform relative to traditional fresh produce, creating gradual aging toward expiry limits.',
+        actions: {
+          replenishment: 'Lower standing frozen SKU allocation for Malleshwaram by 40% and re-allocate to Koramangala.',
+          markdown: 'Launch 20% cross-category promotion with Fortune Sunflower Oil.',
+          wastageFix: 'Localize store assortment algorithm to reflect neighborhood dietary profiles.',
+          taskOrEscalation: 'Move frozen display to primary checkout aisle endcap.',
+        },
+        simulation: {
+          actionTitle: 'Simulate 20% Endcap Clearance Promotion',
+          actionType: 'markdown',
+          proposedIntervention: 'Discount frozen items by 20% and reposition to Checkout Endcap 1.',
+          originalCost: 2750,
+          projectedRecoveryValue: 2200,
+          recoveryPercent: 80.0,
+          expectedClearanceHours: 6.0,
+          clearanceProbability: 85,
+          nearbyShoppersTargeted: 290,
+          shelfLabelUpdateMode: 'Endcap promotional tag printed & ESL updated',
+        },
+      },
+    ],
+  },
+  Jayanagar: {
+    storeName: 'Jayanagar',
+    todaySummary: 'Operational benchmark store. All 5 operational vectors within optimal limits. Minimal evening green trim waste requiring routine mitigation.',
+    actionPriorities: [
+      {
+        id: 'jay-prob-1',
+        title: 'Perishable Green Leafy Vegetable Trim Control',
+        problemType: 'Imminent Expiry Spoilage',
+        severity: 'Medium',
+        timeWindow: 'T-8 Hours (Closing Trim)',
+        affectedItems: 'Palak, Methi, Coriander · 18 bunches',
+        atRiskValue: 820,
+        signals: [
+          {
+            domain: 'Produce Freshness Audit',
+            signalText: 'Leafy greens reach cosmetic wilt stage after 12 hours of ambient display.',
+            severityScore: 'Cosmetic Moisture Loss',
+          },
+        ],
+        causalSynthesis:
+          'Routine end-of-day moisture loss on delicate produce. Handled via standard evening trim and 30% closing discount.',
+        actions: {
+          replenishment: 'Adjust morning intake batch to split into 2 daily dispatches.',
+          markdown: 'Apply 30% evening close tag at 8:00 PM.',
+          wastageFix: 'Install automated misting nozzle on Produce Rack 1.',
+          taskOrEscalation: 'Assign Associate Suresh to conduct 8 PM trim and repackaging.',
+        },
+        simulation: {
+          actionTitle: 'Simulate 30% Evening Misting Clearance',
+          actionType: 'markdown',
+          proposedIntervention: 'Discount remaining 18 bunches by 30% during evening walk-in peak.',
+          originalCost: 820,
+          projectedRecoveryValue: 574,
+          recoveryPercent: 70.0,
+          expectedClearanceHours: 1.8,
+          clearanceProbability: 95,
+          nearbyShoppersTargeted: 180,
+          shelfLabelUpdateMode: 'Produce clearance basket tagged',
+        },
+      },
+    ],
+  },
+  Indiranagar: {
+    storeName: 'Indiranagar',
+    todaySummary: 'Top-tier operational benchmark store. Excess safety buffer available to provide emergency replenishment support to sister stores.',
+    actionPriorities: [
+      {
+        id: 'ind-prob-1',
+        title: 'Inter-Store Emergency Stock Sharing Support',
+        problemType: 'Fast-Mover Stockout Delay',
+        severity: 'Medium',
+        timeWindow: 'Immediate Dispatch Window',
+        affectedItems: 'Harvest Gold Bread 400g · 35 units available for cross-docking',
+        atRiskValue: 1575,
+        signals: [
+          {
+            domain: 'Stock Buffer Health',
+            signalText: 'Indiranagar maintains 2.4 days of excess bread cover following morning delivery beat.',
+            severityScore: '+2.4 Days Cover Surplus',
+          },
+        ],
+        causalSynthesis:
+          'Indiranagar has optimal stock buffer and logistics capability to dispatch 35 units to relieve Whitefield breakfast stockout without jeopardizing own customer service levels.',
+        actions: {
+          replenishment: 'Pack 35 units into express courier bins for Whitefield dispatch.',
+          markdown: 'None required.',
+          wastageFix: 'Optimize network-wide buffer rebalancing.',
+          taskOrEscalation: 'Log inter-store stock transfer voucher in SAP/POS.',
+        },
+        simulation: {
+          actionTitle: 'Simulate Inter-Store Dispatch to Whitefield',
+          actionType: 'replenishment',
+          proposedIntervention: 'Dispatch 35 units via intra-city express courier (transit: 18 min).',
+          originalCost: 1575,
+          projectedRecoveryValue: 3950,
+          recoveryPercent: 250.7,
+          expectedClearanceHours: 1.5,
+          clearanceProbability: 98,
+          nearbyShoppersTargeted: 240,
+          shelfLabelUpdateMode: 'Direct POS stock transfer voucher generated',
         },
       },
     ],

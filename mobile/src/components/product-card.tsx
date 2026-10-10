@@ -19,8 +19,10 @@ export function ProductCard({
   return (
     <Pressable
       onPress={() => router.push(`/product/${encodeURIComponent(product.name)}`)}
-      className="mb-3 w-[48%] rounded-2xl bg-white p-3 shadow-sm border border-gray-100 active:opacity-95">
-      <View className="relative h-28 items-center justify-center rounded-xl mb-1">
+      className="mb-3 w-[48%] rounded-2xl border border-gray-100 bg-white p-3 shadow-sm active:opacity-95">
+      <View
+        style={{ height: 110, width: '100%' }}
+        className="relative items-center justify-center rounded-xl overflow-hidden bg-white border border-[#f0f2f5] p-2 mb-1">
         {product.image ? (
           <Image
             source={{ uri: product.image }}

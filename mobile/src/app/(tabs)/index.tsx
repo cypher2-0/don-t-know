@@ -268,10 +268,17 @@ export default function HomeScreen() {
               <Pressable
                 key={p.name}
                 onPress={() => router.push(`/product/${encodeURIComponent(p.name)}`)}
-                className="w-[130px] rounded-2xl border border-[#e5e7eb] bg-white p-2.5 active:opacity-95">
-                <View className="relative h-18 w-full items-center justify-center rounded-xl bg-slate-50 overflow-hidden border border-[#f0f2f5]">
+                style={{ width: 135, height: 175 }}
+                className="rounded-2xl border border-[#e5e7eb] bg-white p-2.5 active:opacity-95">
+                <View
+                  style={{ width: '100%', height: 90 }}
+                  className="relative items-center justify-center rounded-xl bg-slate-50 overflow-hidden border border-[#f0f2f5]">
                   {p.image ? (
-                    <Image source={{ uri: p.image }} className="h-full w-full" resizeMode="cover" />
+                    <Image
+                      source={{ uri: p.image }}
+                      style={{ width: '100%', height: 90 }}
+                      resizeMode="cover"
+                    />
                   ) : (
                     <Flame size={20} color="#ef4444" />
                   )}
@@ -314,10 +321,17 @@ export default function HomeScreen() {
                 <Pressable
                   key={p.name}
                   onPress={() => router.push(`/product/${encodeURIComponent(p.name)}`)}
-                  className="w-[130px] rounded-2xl border border-[#b7d66b] bg-[#f6fbf2] p-2.5 active:opacity-95">
-                  <View className="h-18 w-full items-center justify-center rounded-xl bg-slate-50 overflow-hidden border border-[#d8eacb]">
+                  style={{ width: 135, height: 175 }}
+                  className="rounded-2xl border border-[#b7d66b] bg-[#f6fbf2] p-2.5 active:opacity-95">
+                  <View
+                    style={{ width: '100%', height: 90 }}
+                    className="items-center justify-center rounded-xl bg-slate-50 overflow-hidden border border-[#d8eacb]">
                     {p.image ? (
-                      <Image source={{ uri: p.image }} className="h-full w-full" resizeMode="cover" />
+                      <Image
+                        source={{ uri: p.image }}
+                        style={{ width: '100%', height: 90 }}
+                        resizeMode="cover"
+                      />
                     ) : (
                       <Sparkles size={18} color="#2e8b65" />
                     )}

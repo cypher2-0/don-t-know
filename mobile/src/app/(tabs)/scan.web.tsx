@@ -23,8 +23,6 @@ import {
   Zap,
 } from "lucide-react-native";
 import { router } from "expo-router";
-import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode";
-
 import { useCart } from "@/components/cart-provider";
 import { CartPill } from "@/components/cart-pill";
 import { Screen } from "@/components/screen";
@@ -42,28 +40,33 @@ export default function ScanScreen() {
   
   // Initialize html5-qrcode for the web platform
   useEffect(() => {
-    if (mode === "camera") {
-      const scanner = new Html5QrcodeScanner("reader", {
-        fps: 10,
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.QR_CODE,
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E
-        ]
-      }, false);
-      
-      scanner.render((decodedText) => {
-        // Pause scanner visually if possible, or just ignore if already scanning
-        triggerScan(decodedText);
-      }, (err) => {
-        // ignore errors
-      });
+    if (mode === "camera" && typeof window !== "undefined") {
+      let scannerInstance: any = null;
+      try {
+        const html5Module = require("html5-qrcode");
+        const { Html5QrcodeScanner, Html5QrcodeSupportedFormats } = html5Module;
+        const scanner = new Html5QrcodeScanner("reader", {
+          fps: 10,
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E
+          ]
+        }, false);
+        scannerInstance = scanner;
+        
+        scanner.render((decodedText: string) => {
+          triggerScan(decodedText);
+        }, () => {});
+      } catch {}
 
       return () => {
-        scanner.clear().catch(console.error);
+        try {
+          if (scannerInstance) scannerInstance.clear();
+        } catch {}
       };
     }
   }, [mode, isScanning]);

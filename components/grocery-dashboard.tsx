@@ -65,8 +65,8 @@ import {
   storeOperationalDiagnosis,
   type ConnectedProblem,
 } from "@/lib/head-office-ops";
-import CustomerApp from "@/components/customer-app";
 import StaffGateScannerWeb from "@/components/staff-gate-scanner-web";
+import HeadOfficeCommandCenter from "@/components/head-office-command-center";
 
 type View =
   | "overview"
@@ -220,6 +220,11 @@ function Sidebar({
                   12
                 </span>
               )}
+              {item.label === "Store rankings" && (
+                <span className="ml-auto rounded-md bg-rose-100 px-1.5 py-0.5 text-[9px] font-black text-rose-700">
+                  Tier 1
+                </span>
+              )}
             </button>
           );
         })}
@@ -256,12 +261,12 @@ function Sidebar({
 
 function Topbar({
   onMenu,
-  onCustomer,
   onVerifyQR,
+  onGoToRankings,
 }: {
   onMenu: () => void;
-  onCustomer: () => void;
   onVerifyQR: () => void;
+  onGoToRankings?: () => void;
 }) {
   return (
     <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-white/20 bg-white/60 px-5 backdrop-blur-xl lg:px-8">
@@ -276,6 +281,15 @@ function Topbar({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {onGoToRankings && (
+          <button
+            onClick={onGoToRankings}
+            className="hidden items-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200/80 px-3.5 py-2 text-[11px] font-extrabold text-rose-800 shadow-2xs hover:scale-105 transition-all md:flex"
+          >
+            <span className="size-2 rounded-full bg-rose-500 animate-pulse" />
+            <span>Head Office Ops</span>
+          </button>
+        )}
         <button
           onClick={onVerifyQR}
           className="hidden items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#e3f1dc] to-[#cbe3c0] px-4 py-2 text-[11px] font-bold text-[#1a5b42] shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:brightness-105 active:scale-95 md:flex"
@@ -295,12 +309,10 @@ function Topbar({
           <Bell className="size-[17px] text-muted-foreground" />
           <span className="absolute right-2 top-2 size-1.5 rounded-full bg-red-500" />
         </button>
-        <button
-          onClick={onCustomer}
-          className="hidden rounded-xl bg-gradient-to-r from-[#164e3b] to-[#0f3528] px-4 py-2 text-[11px] font-bold text-white shadow-[0_4px_14px_rgba(22,78,59,0.39)] transition-all duration-300 hover:scale-105 hover:shadow-[0_6px_20px_rgba(22,78,59,0.5)] active:scale-95 md:block"
-        >
-          Preview customer app
-        </button>
+        <div className="hidden items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-[11px] font-semibold text-emerald-800 md:flex">
+          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Mobile App Live</span>
+        </div>
       </div>
     </header>
   );
@@ -389,6 +401,35 @@ function Overview({ setView }: { setView: (v: View) => void }) {
           <ChevronDown className="size-3.5" />
         </button>
       </div>
+
+      {/* Head Office Multi-Store Urgency Command Alert */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-rose-200 bg-gradient-to-r from-rose-50/90 via-amber-50/70 to-emerald-50/60 p-4 sm:p-5 shadow-sm">
+        <div className="flex items-center gap-3.5">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-xs">
+            <AlertTriangle className="size-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[9px] font-black uppercase text-white tracking-wide">
+                Tier 1 Critical Alert
+              </span>
+              <p className="text-[13px] font-extrabold text-slate-900">
+                Whitefield Requires Immediate Intervention (Score: 88/100)
+              </p>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
+              Perishables expiry hazard + high-velocity bread stockout + freezer breach. Estimated daily margin loss: <b className="text-rose-700">₹38,400</b>.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setView('rankings')}
+          className="flex shrink-0 items-center gap-1.5 self-start sm:self-auto rounded-xl bg-[#124d3b] px-4 py-2.5 text-[11px] font-extrabold text-white shadow-xs hover:bg-[#0c372a] transition-all"
+        >
+          Open Head Office Ops & Correlator →
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <Kpi
           label="Total sales today"
@@ -2163,7 +2204,6 @@ function PageTitle({
 export default function GroceryDashboard() {
   const [view, setView] = useState<View>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [customer, setCustomer] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrToken, setQrToken] = useState("");
   const [verifyStatus, setVerifyStatus] = useState<any>(null);
@@ -2183,8 +2223,6 @@ export default function GroceryDashboard() {
     }
   };
 
-  if (customer) return <CustomerApp onBack={() => setCustomer(false)} />;
-
   return (
     <div className="flex min-h-screen bg-[#f0f4ec] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-[#f0f4ec] to-[#e8eee6] text-foreground">
       <Sidebar
@@ -2196,12 +2234,14 @@ export default function GroceryDashboard() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
           onMenu={() => setMobileOpen(true)}
-          onCustomer={() => setCustomer(true)}
           onVerifyQR={() => setQrModalOpen(true)}
+          onGoToRankings={() => setView("rankings")}
         />
         <main className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
           {view === "overview" ? (
             <Overview setView={setView} />
+          ) : view === "rankings" ? (
+            <HeadOfficeCommandCenter />
           ) : (
             <DataPage view={view} />
           )}
