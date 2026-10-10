@@ -61,7 +61,9 @@ import {
 } from '@/lib/mock-data'
 import RazorpayCheckoutModal from '@/components/razorpay-checkout'
 
-type Product = (typeof customerProducts)[0]
+type Product = (typeof customerProducts)[0] & {
+  image?: string
+}
 
 type CartItem = {
   product: Product

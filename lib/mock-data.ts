@@ -32,8 +32,20 @@ export const navItems = [
 export const formatINR = (value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
 export const riskTone = (status: Store['status']) => status === 'Critical' ? 'critical' : status === 'Watch' ? 'warning' : 'healthy'
 
-export const customerProducts = [
-<<<<<<< HEAD
+export type CustomerProductItem = {
+  barcode: string
+  name: string
+  size: string
+  price: number
+  category: string
+  color: string
+  rating: number
+  discount?: string
+  image?: string
+  aisle?: string
+}
+
+export const customerProducts: CustomerProductItem[] = [
   { barcode: '8901252010057', name: 'Amul Taaza Milk', size: '500 ml', price: 28, category: 'Dairy', color: 'bg-emerald-100', rating: 4.8 },
   { barcode: '8901262040013', name: 'Fresh Paneer', size: '200 g', price: 95, category: 'Dairy', color: 'bg-slate-100', rating: 4.7 },
   { barcode: '8901262020039', name: 'Amul Salted Butter', size: '100 g', price: 58, category: 'Dairy', color: 'bg-yellow-100', rating: 4.9 },
