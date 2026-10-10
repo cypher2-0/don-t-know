@@ -505,7 +505,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     <div className="flex w-full flex-col bg-[#fbfdf9] font-sans h-full min-h-screen">
       <div className="relative mx-auto flex min-h-screen w-full flex-col bg-white">
         {/* App Topbar */}
-        <header className="flex items-center justify-between bg-white px-5 pb-3 pt-5 sticky top-0 z-10">
+        <header className="flex items-center justify-between bg-white px-4 sm:px-6 pb-3 pt-4 sm:pt-5 sticky top-0 z-10">
           <div className="flex items-center gap-2">
             <ShoppingBasket className="size-8 text-[#164e3b]" />
             <span className="text-[22px] font-bold tracking-tight text-[#173f31]">
@@ -551,7 +551,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* ======================================================================= */}
         {/* ======================================================================= */}
         {tab === 'Home' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-32 pt-2">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             {/* Store Location Bar */}
             <div className="relative">
               <button
@@ -700,13 +700,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Product Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4">
               {homeFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-3 sm:p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
@@ -729,7 +729,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     </div>
 
                     <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <p className="truncate text-[13px] sm:text-[15px] font-bold text-[#173f31]">{p.name}</p>
                       <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
                         <span>{p.size}</span>
                         {p.rating && (
@@ -807,7 +807,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 2: EXPLORE */}
         {/* ======================================================================= */}
         {tab === 'Explore' && (
-          <main className="flex-1 overflow-y-auto px-4 pb-32 pt-4">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Browse Aisles</p>
               <h1 className="text-[18px] font-bold text-[#173f31]">Explore Store</h1>
@@ -881,13 +881,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Product Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4">
               {exploreFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-3 sm:p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
@@ -1078,7 +1078,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 4: ORDERS */}
         {/* ======================================================================= */}
         {tab === 'Orders' && (
-          <main className="flex-1 overflow-y-auto px-6 pb-32 pt-6">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             <div>
               <p className="text-[14px] font-bold uppercase tracking-wider text-[#2e8b65]">Order History</p>
               <h1 className="text-[24px] font-bold text-[#173f31]">Your Orders</h1>
@@ -1109,7 +1109,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                 const isConfirmed = o.status === 'Confirmed'
                 const isExpanded = expandedOrderId === o.id
                 return (
-                  <div key={o.id} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={o.id} className="rounded-3xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                     <div
                       onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
                       className="flex cursor-pointer items-center justify-between"
