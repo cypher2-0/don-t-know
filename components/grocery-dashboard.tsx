@@ -380,20 +380,32 @@ function WastageChangeBadge({ change }: { change: number }) {
   );
 }
 function Overview({ setView }: { setView: (v: View) => void }) {
-  const [selectedStore, setSelectedStore] = useState(2);
+  const [selectedStore, setSelectedStore] = useState(0);
   const [alertDismissed, setAlertDismissed] = useState<number[]>([]);
+
+  const healthyCount = stores.filter((s) => s.status === "Healthy").length;
+  const watchCount = stores.filter((s) => s.status === "Watch").length;
+  const criticalCount = stores.filter((s) => s.status === "Critical").length;
+  const topStore = headOfficeStoreRankings[0] || stores[0];
+  const lastDaySales = salesData[salesData.length - 1];
+  const totalSalesToday = lastDaySales ? `₹${lastDaySales.actual}L` : "₹5.7L";
+  const potentialWasteTotal = expiringProducts.reduce((sum, p) => {
+    const val = parseInt(p.cost.replace(/[^0-9]/g, '')) || 0;
+    return sum + val;
+  }, 0);
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold text-[#2e8b65]">
-            Tuesday, 14 May 2024
+            Bengaluru Franchise Network · 25 Live Stores
           </p>
           <h1 className="mt-1 text-[25px] font-bold tracking-tight text-[#143d31]">
-            Good morning, Ananya
+            Executive Operations Command
           </h1>
           <p className="mt-1 text-[12px] text-muted-foreground">
-            Here&apos;s what&apos;s happening across your grocery network.
+            Real-time franchise performance across 25 Bengaluru stores and 42 active SKUs.
           </p>
         </div>
         <button className="flex items-center gap-2 rounded-xl border bg-white px-3.5 py-2.5 text-[11px] font-semibold text-foreground shadow-sm">
@@ -411,14 +423,14 @@ function Overview({ setView }: { setView: (v: View) => void }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[9px] font-black uppercase text-white tracking-wide">
-                Tier 1 Critical Alert
+                {topStore.tier || "Urgency Priority #1"}
               </span>
               <p className="text-[13px] font-extrabold text-slate-900">
-                Whitefield Requires Immediate Intervention (Score: 88/100)
+                {topStore.name} Highest Priority Intervention (Risk: {topStore.urgencyScore || (topStore as any).risk}/100)
               </p>
             </div>
             <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
-              Perishables expiry hazard + high-velocity bread stockout + freezer breach. Estimated daily margin loss: <b className="text-rose-700">₹38,400</b>.
+              {topStore.primaryIssue || (topStore as any).reason}. Estimated daily margin loss: <b className="text-rose-700">{formatINR(topStore.estimatedDailyMarginLoss || 31568)}</b>.
             </p>
           </div>
         </div>
@@ -432,27 +444,27 @@ function Overview({ setView }: { setView: (v: View) => void }) {
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <Kpi
-          label="Total sales today"
-          value="₹19.4L"
-          note="Across 10 stores"
+          label="Total daily sales"
+          value={totalSalesToday}
+          note={`Across all ${stores.length} Bengaluru stores`}
           icon={ShoppingBag}
         />
         <Kpi
           label="Sales vs forecast"
-          value="+6.8%"
-          note="₹1.2L above target"
+          value="+5.8%"
+          note="Strong momentum in staples & bakery"
           icon={ArrowUpRight}
         />
         <Kpi
-          label="Inventory value"
+          label="Network inventory value"
           value="₹2.84Cr"
-          note="+2.1% from yesterday"
+          note="1,050 store-SKU stockpoints"
           icon={Box}
         />
         <Kpi
-          label="Potential waste"
-          value="₹42,680"
-          note="12 products at risk"
+          label="Potential at-risk waste"
+          value={formatINR(potentialWasteTotal)}
+          note={`${expiringProducts.length} perishable batches flagged`}
           icon={AlertTriangle}
           tone="amber"
           positive={false}
@@ -466,7 +478,7 @@ function Overview({ setView }: { setView: (v: View) => void }) {
                 Store health map
               </h2>
               <p className="mt-0.5 text-[10px] text-muted-foreground">
-                Live operational status by location
+                All 25 Bengaluru franchise locations
               </p>
             </div>
             <button className="rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold text-muted-foreground">
@@ -477,21 +489,21 @@ function Overview({ setView }: { setView: (v: View) => void }) {
           <div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <StatusDot tone="healthy" /> Healthy{" "}
-              <b className="text-foreground">6</b>
+              <b className="text-foreground">{healthyCount}</b>
             </span>
             <span className="flex items-center gap-1.5">
               <StatusDot tone="warning" /> Watch{" "}
-              <b className="text-foreground">3</b>
+              <b className="text-foreground">{watchCount}</b>
             </span>
             <span className="flex items-center gap-1.5">
               <StatusDot tone="critical" /> Critical{" "}
-              <b className="text-foreground">1</b>
+              <b className="text-foreground">{criticalCount}</b>
             </span>
             <button
               onClick={() => setView("stores")}
               className="ml-auto font-semibold text-[#287450]"
             >
-              View all stores →
+              View all 25 stores →
             </button>
           </div>
         </section>
@@ -1772,58 +1784,65 @@ function DataPage({ view }: { view: View }) {
         </div>
 
         {/* Urgency Summary Badges */}
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-red-200 bg-red-50/60 p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-red-800">
-                Tier 1: Immediate Intervention
-              </span>
-              <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                1 Store
-              </span>
-            </div>
-            <p className="mt-2 text-[18px] font-bold text-red-900">
-              Whitefield (Urgency 88)
-            </p>
-            <p className="mt-1 text-[10px] text-red-700">
-              Expires in &lt;6h, 14 stockouts, Chiller 2 thermal breach.
-            </p>
-          </div>
+        {(() => {
+          const tier1 = headOfficeStoreRankings.filter(s => s.tier.includes('Tier 1'));
+          const tier2 = headOfficeStoreRankings.filter(s => s.tier.includes('Tier 2'));
+          const tier3 = headOfficeStoreRankings.filter(s => s.tier.includes('Tier 3'));
+          return (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-red-200 bg-red-50/60 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-red-800">
+                    Tier 1: Immediate Intervention
+                  </span>
+                  <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                    {tier1.length} Stores
+                  </span>
+                </div>
+                <p className="mt-2 text-[16px] font-bold text-red-900 truncate">
+                  {tier1.length > 0 ? tier1.map(s => s.name).slice(0, 3).join(' · ') : 'None'}
+                </p>
+                <p className="mt-1 text-[10px] text-red-700">
+                  Critical stockout exposure or elevated perishables spoilage.
+                </p>
+              </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-amber-800">
-                Tier 2: Watchlist & Risk Emerging
-              </span>
-              <span className="rounded-full bg-amber-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                2 Stores
-              </span>
-            </div>
-            <p className="mt-2 text-[18px] font-bold text-amber-900">
-              Koramangala · Malleshwaram
-            </p>
-            <p className="mt-1 text-[10px] text-amber-700">
-              Elevated dairy waste & slow freezer inventory turnover.
-            </p>
-          </div>
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-amber-800">
+                    Tier 2: Watchlist & Risk Emerging
+                  </span>
+                  <span className="rounded-full bg-amber-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                    {tier2.length} Stores
+                  </span>
+                </div>
+                <p className="mt-2 text-[16px] font-bold text-amber-900 truncate">
+                  {tier2.map(s => s.name).slice(0, 3).join(' · ')}
+                </p>
+                <p className="mt-1 text-[10px] text-amber-700">
+                  Inbound logistics delay or emerging stockout thresholds.
+                </p>
+              </div>
 
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-emerald-800">
-                Tier 3: Operational Benchmark
-              </span>
-              <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                2 Stores
-              </span>
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-emerald-800">
+                    Tier 3: Operational Benchmark
+                  </span>
+                  <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                    {tier3.length} Stores
+                  </span>
+                </div>
+                <p className="mt-2 text-[16px] font-bold text-emerald-900 truncate">
+                  {tier3.map(s => s.name).slice(0, 3).join(' · ')}
+                </p>
+                <p className="mt-1 text-[10px] text-emerald-700">
+                  Balanced coverage, minimal waste & high compliance adherence.
+                </p>
+              </div>
             </div>
-            <p className="mt-2 text-[18px] font-bold text-emerald-900">
-              Indiranagar · Jayanagar
-            </p>
-            <p className="mt-1 text-[10px] text-emerald-700">
-              Balanced coverage, minimal waste & 100% staff attendance.
-            </p>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Head Office Comprehensive Urgency Table */}
         <section className="rounded-3xl border border-border/80 bg-white p-5 shadow-[0_2px_14px_rgba(15,59,45,0.03)]">
