@@ -19,16 +19,16 @@ export function ProductCard({
   return (
     <Pressable
       onPress={() => router.push(`/product/${encodeURIComponent(product.name)}`)}
-      className="mb-3 w-[48%] rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-sm active:opacity-95">
-      <View className="relative h-28 items-center justify-center rounded-xl overflow-hidden bg-white border border-[#f0f2f5] p-2">
+      className="mb-3 w-[48%] rounded-2xl bg-white p-3 shadow-sm border border-gray-100 active:opacity-95">
+      <View className="relative h-28 items-center justify-center rounded-xl mb-1">
         {product.image ? (
           <Image
             source={{ uri: product.image }}
-            className="h-full w-full rounded-lg"
-            resizeMode="cover"
+            className="h-full w-full"
+            resizeMode="contain"
           />
         ) : (
-          <ShoppingBag size={36} color="#5b876e" opacity={isOutOfStock ? 0.2 : 0.5} />
+          <ShoppingBag size={36} color="#e5e7eb" opacity={isOutOfStock ? 0.2 : 1} />
         )}
         {product.discount && !isOutOfStock ? (
           <View className="absolute left-2 top-2 rounded-full bg-[#164e3b] px-1.5 py-0.5">
@@ -61,9 +61,16 @@ export function ProductCard({
         ) : null}
       </View>
       <View className="mt-2.5 flex-row items-center justify-between">
-        <Text className={`text-[13px] font-bold ${isOutOfStock ? 'text-[#9ca3af]' : 'text-[#173f31]'}`}>
-          ₹{product.price}
-        </Text>
+        <View className="flex-row items-baseline gap-1">
+          <Text className={`text-[14px] font-bold ${isOutOfStock ? 'text-[#9ca3af]' : 'text-[#173f31]'}`}>
+            ₹{product.price}
+          </Text>
+          {product.discount && !isOutOfStock && (
+             <Text className="text-[10px] text-gray-400 line-through">
+               ₹{Math.round(product.price * 1.15)}
+             </Text>
+          )}
+        </View>
         {isOutOfStock ? (
           <Pressable
             onPress={(e) => {
@@ -80,25 +87,25 @@ export function ProductCard({
             <Text className="text-[9px] font-bold text-[#92400e]">Notify</Text>
           </Pressable>
         ) : qty > 0 ? (
-          <View className="flex-row items-center rounded-lg bg-[#dff0d8] px-1 py-0.5">
+          <View className="flex-row items-center rounded-lg border border-gray-200 bg-[#f8faf8] p-1 shadow-sm">
             <Pressable
               onPress={(e) => {
                 e.stopPropagation?.();
                 changeQty(product.name, -1);
               }}
               hitSlop={6}
-              className="size-5 items-center justify-center">
-              <Text className="text-[13px] font-bold text-[#21664b]">−</Text>
+              className="size-6 items-center justify-center rounded-md bg-white">
+              <Text className="text-[14px] font-bold text-[#164e3b]">−</Text>
             </Pressable>
-            <Text className="min-w-4 text-center text-[11px] font-bold text-[#21664b]">{qty}</Text>
+            <Text className="min-w-5 text-center text-[12px] font-bold text-[#164e3b]">{qty}</Text>
             <Pressable
               onPress={(e) => {
                 e.stopPropagation?.();
                 changeQty(product.name, 1);
               }}
               hitSlop={6}
-              className="size-5 items-center justify-center">
-              <Text className="text-[13px] font-bold text-[#21664b]">+</Text>
+              className="size-6 items-center justify-center rounded-md bg-[#e3f1dc]">
+              <Text className="text-[14px] font-bold text-[#164e3b]">+</Text>
             </Pressable>
           </View>
         ) : (
@@ -109,8 +116,9 @@ export function ProductCard({
               else addToCart(product, 1);
             }}
             hitSlop={6}
-            className="rounded-lg bg-[#dff0d8] px-2.5 py-1">
-            <Text className="text-[11px] font-bold text-[#21664b]">+ Add</Text>
+            className="flex-row items-center gap-1 rounded-lg bg-[#164e3b] px-3 py-1.5 shadow-sm">
+            <ShoppingBag size={12} color="#ffffff" />
+            <Text className="text-[11px] font-bold text-white">Add</Text>
           </Pressable>
         )}
       </View>
