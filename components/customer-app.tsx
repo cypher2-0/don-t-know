@@ -505,7 +505,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
     <div className="flex w-full flex-col bg-[#fbfdf9] font-sans h-full min-h-screen">
       <div className="relative mx-auto flex min-h-screen w-full flex-col bg-white">
         {/* App Topbar */}
-        <header className="flex items-center justify-between bg-white px-5 pb-3 pt-5 sticky top-0 z-10">
+        <header className="flex items-center justify-between bg-white px-4 sm:px-6 pb-3 pt-4 sm:pt-5 sticky top-0 z-10">
           <div className="flex items-center gap-2">
             <ShoppingBasket className="size-8 text-[#164e3b]" />
             <span className="text-[22px] font-bold tracking-tight text-[#173f31]">
@@ -551,7 +551,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* ======================================================================= */}
         {/* ======================================================================= */}
         {tab === 'Home' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-32 pt-2">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             {/* Store Location Bar */}
             <div className="relative">
               <button
@@ -700,13 +700,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Product Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4">
               {homeFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-3 sm:p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
@@ -729,7 +729,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     </div>
 
                     <div className="cursor-pointer flex-1" onClick={() => openProductDetail(p)}>
-                      <p className="truncate text-[15px] font-bold text-[#173f31]">{p.name}</p>
+                      <p className="truncate text-[13px] sm:text-[15px] font-bold text-[#173f31]">{p.name}</p>
                       <div className="mt-1 flex items-center justify-between text-[13px] text-gray-500">
                         <span>{p.size}</span>
                         {p.rating && (
@@ -807,7 +807,7 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 2: EXPLORE */}
         {/* ======================================================================= */}
         {tab === 'Explore' && (
-          <main className="flex-1 overflow-y-auto px-4 pb-32 pt-4">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Browse Aisles</p>
               <h1 className="text-[18px] font-bold text-[#173f31]">Explore Store</h1>
@@ -881,13 +881,13 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Product Grid */}
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4">
               {exploreFiltered.map((p) => {
                 const qty = getItemQty(p.name)
                 return (
                   <div
                     key={p.name}
-                    className="flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                    className="flex flex-col justify-between rounded-3xl bg-white p-3 sm:p-4 shadow-sm border border-gray-100 transition-all hover:shadow-md"
                   >
                     <div
                       onClick={() => openProductDetail(p)}
@@ -1078,23 +1078,23 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
         {/* TAB 4: ORDERS */}
         {/* ======================================================================= */}
         {tab === 'Orders' && (
-          <main className="flex-1 overflow-y-auto px-5 pb-28 pt-4">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-32 pt-4 sm:pt-6">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#2e8b65]">Order History</p>
-              <h1 className="text-[18px] font-bold text-[#173f31]">Your Orders</h1>
-              <p className="text-[11px] text-muted-foreground">Live orders and past receipts from {currentStore}.</p>
+              <p className="text-[14px] font-bold uppercase tracking-wider text-[#2e8b65]">Order History</p>
+              <h1 className="text-[24px] font-bold text-[#173f31]">Your Orders</h1>
+              <p className="mt-1 text-[14px] text-muted-foreground">Live orders and past receipts from {currentStore}.</p>
             </div>
 
             {/* Filter pills */}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-5 flex gap-3">
               {(['All', 'Active', 'Delivered'] as const).map((filter) => {
                 const active = ordersFilter === filter
                 return (
                   <button
                     key={filter}
                     onClick={() => setOrdersFilter(filter)}
-                    className={`rounded-full px-3.5 py-1 text-[11px] font-semibold transition-colors ${
-                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-gray-600'
+                    className={`rounded-full px-5 py-2 text-[14px] font-bold transition-colors ${
+                      active ? 'bg-[#164e3b] text-white shadow-sm' : 'border border-[#e5e7eb] bg-white text-gray-600 hover:bg-gray-50'
                     }`}
                   >
                     {filter}
@@ -1104,56 +1104,56 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* Orders list */}
-            <div className="mt-3.5 space-y-3">
+            <div className="mt-6 space-y-4">
               {displayedOrders.map((o) => {
                 const isConfirmed = o.status === 'Confirmed'
                 const isExpanded = expandedOrderId === o.id
                 return (
-                  <div key={o.id} className="rounded-2xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
+                  <div key={o.id} className="rounded-3xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                     <div
                       onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
                       className="flex cursor-pointer items-center justify-between"
                     >
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-bold text-[#173f31]">{o.id}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[18px] font-bold text-[#173f31]">{o.id}</span>
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                            className={`rounded-full px-3 py-1 text-[11px] font-bold ${
                               isConfirmed ? 'bg-[#dff0d8] text-[#1f7956]' : 'bg-[#e3f1dc] text-[#2e8b65]'
                             }`}
                           >
                             {o.status}
                           </span>
                         </div>
-                        <p className="mt-1 text-[11px] text-muted-foreground">
-                          {o.date} · {o.items} items · ₹{o.total}
+                        <p className="mt-2 text-[14px] text-gray-500">
+                          {o.date} · {o.items} items · <span className="font-bold text-[#173f31]">₹{o.total}</span>
                         </p>
                       </div>
-                      {isExpanded ? <ChevronUp className="size-4 text-gray-500" /> : <ChevronDown className="size-4 text-gray-500" />}
+                      {isExpanded ? <ChevronUp className="size-6 text-gray-400" /> : <ChevronDown className="size-6 text-gray-400" />}
                     </div>
 
                     {/* Expandable item details */}
                     {isExpanded && (
-                      <div className="mt-3 border-t border-[#f0f2ef] pt-3 animate-in fade-in">
+                      <div className="mt-4 border-t border-[#f0f2ef] pt-4 animate-in fade-in">
                         {isConfirmed ? (
-                          <div className="mb-3 rounded-xl bg-[#e3f1dc] p-3 text-[11px]">
+                          <div className="mb-4 rounded-2xl bg-[#e3f1dc] p-4 text-[14px]">
                             <div className="flex items-center gap-2 font-bold text-[#173f31]">
-                              <PackageCheck className="size-4 text-[#2e8b65]" />
+                              <PackageCheck className="size-5 text-[#2e8b65]" />
                               <span>Order is being packed at {currentStore}</span>
                             </div>
-                            <p className="mt-1 text-[10px] text-[#4b7861]">
+                            <p className="mt-1 text-[13px] text-[#4b7861]">
                               Slot: {o.slot ?? 'In 20 mins'} · Arriving in ~15 mins
                             </p>
                           </div>
                         ) : (
-                          <div className="mb-2 flex items-center gap-2 text-[10px] text-muted-foreground">
-                            <Clock className="size-3" /> Slot: {o.slot ?? 'Delivered'}
+                          <div className="mb-3 flex items-center gap-2 text-[14px] text-muted-foreground">
+                            <Clock className="size-4" /> Slot: {o.slot ?? 'Delivered'}
                           </div>
                         )}
 
                         {o.itemsList && o.itemsList.length > 0 && (
-                          <div className="space-y-1.5 text-[11px]">
-                            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Items Ordered:</p>
+                          <div className="space-y-3 text-[14px]">
+                            <p className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground">Items Ordered:</p>
                             {o.itemsList.map((item, idx) => (
                               <div key={idx} className="flex justify-between text-gray-700">
                                 <span>{item.qty} × {item.name} ({item.size})</span>
@@ -1166,12 +1166,12 @@ export default function CustomerApp({ onBack }: { onBack: () => void }) {
                     )}
 
                     {/* Footer buttons */}
-                    <div className="mt-3 flex items-center justify-between border-t border-[#f0f2ef] pt-3 text-[10px]">
-                      <span className="text-muted-foreground">{currentStore}</span>
+                    <div className="mt-4 flex items-center justify-between border-t border-[#f0f2ef] pt-4 text-[14px]">
+                      <span className="text-gray-500">{currentStore}</span>
                       {isConfirmed ? (
                         <button
                           onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
-                          className="flex items-center gap-1 rounded-lg bg-[#e3f1dc] px-2.5 py-1 font-bold text-[#1f7956]"
+                          className="flex items-center gap-2 rounded-xl bg-[#e3f1dc] px-4 py-2 font-bold text-[#1f7956] hover:bg-[#d5eacb] transition-colors"
                         >
                           <Truck className="size-3" /> Live Tracking
                         </button>
