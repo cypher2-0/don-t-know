@@ -1,23 +1,24 @@
-export type CustomerProduct = {
+import { getCloudinaryBarcodeUrl } from './cloudinary';
+
+export interface DefaultProduct {
   name: string;
   size: string;
   price: number;
   category: string;
   color: string;
-  rating?: number;
+  rating: number;
   discount?: string;
-  unit?: string;
   barcode: string;
-  barcodeImageUrl?: string;
-  aisle?: string;
-  image?: any;
-  inStock?: boolean;
-  stockQty?: number;
+  barcodeImageUrl: string;
+  aisle: string;
+  image: string;
+  inStock: boolean;
+  stockQty: number;
   bestSeller?: boolean;
-  buyCount?: number; // how many people bought this in last 30 days
-};
+  buyCount: number;
+}
 
-export const customerProducts: CustomerProduct[] = [
+export const defaultCatalog: DefaultProduct[] = [
   // Dairy (Aisle 1)
   {
     name: 'Amul Taaza Milk',
@@ -27,6 +28,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-emerald-100',
     rating: 4.8,
     barcode: '8901262010053',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262010053'),
     aisle: 'Aisle 1 · Chiller 2',
     image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -42,6 +44,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-slate-100',
     rating: 4.7,
     barcode: '8901262020106',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262020106'),
     aisle: 'Aisle 1 · Chiller 3',
     image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -56,6 +59,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-yellow-100',
     rating: 4.9,
     barcode: '8901262030013',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262030013'),
     aisle: 'Aisle 1 · Chiller 1',
     image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -71,6 +75,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-amber-100',
     rating: 4.8,
     barcode: '8901262040019',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262040019'),
     aisle: 'Aisle 1 · Rack A',
     image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -85,6 +90,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-cyan-100',
     rating: 4.7,
     barcode: '8901262050018',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262050018'),
     aisle: 'Aisle 1 · Chiller 4',
     image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&auto=format&fit=crop&q=80',
     inStock: false,
@@ -99,6 +105,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-indigo-100',
     rating: 4.6,
     barcode: '8901262060017',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901262060017'),
     aisle: 'Aisle 1 · Chiller 4',
     image: 'https://images.unsplash.com/photo-1571212515416-fef01fc43637?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -114,6 +121,7 @@ export const customerProducts: CustomerProduct[] = [
     rating: 4.8,
     discount: '10% OFF',
     barcode: '8901063141121',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901063141121'),
     aisle: 'Aisle 1 · Chiller 2',
     image: 'https://images.unsplash.com/photo-1618164436241-4473940d1f5c?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -131,6 +139,7 @@ export const customerProducts: CustomerProduct[] = [
     rating: 4.6,
     discount: '15% OFF',
     barcode: '8901000100012',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100012'),
     aisle: 'Aisle 2 · Fresh Bay 1',
     image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -146,6 +155,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-rose-100',
     rating: 4.9,
     barcode: '8901000100029',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100029'),
     aisle: 'Aisle 2 · Fruit Crate 3',
     image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -160,6 +170,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-red-100',
     rating: 4.5,
     barcode: '8901000100036',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100036'),
     aisle: 'Aisle 2 · Veg Bin 2',
     image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -174,6 +185,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-purple-100',
     rating: 4.7,
     barcode: '8901000100074',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100074'),
     aisle: 'Aisle 2 · Veg Bin 1',
     image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=500&auto=format&fit=crop&q=80',
     inStock: false,
@@ -188,6 +200,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-emerald-100',
     rating: 4.6,
     barcode: '8901000100043',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100043'),
     aisle: 'Aisle 2 · Herbs Shelf',
     image: 'https://images.unsplash.com/photo-1608797178974-15b35a61dd75?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -202,6 +215,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-green-200',
     rating: 4.5,
     barcode: '8901000100050',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100050'),
     aisle: 'Aisle 2 · Leafy Rack',
     image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -216,6 +230,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-teal-100',
     rating: 4.6,
     barcode: '8901000100067',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901000100067'),
     aisle: 'Aisle 2 · Fresh Bay 2',
     image: 'https://images.unsplash.com/photo-1556801712-76c8eb07bbc9?w=500&auto=format&fit=crop&q=80',
     inStock: false,
@@ -232,6 +247,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-amber-100',
     rating: 4.8,
     barcode: '8901725181222',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901725181222'),
     aisle: 'Aisle 3 · Shelf 1',
     image: 'https://images.unsplash.com/photo-1574316071802-0d684efa7cd5?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -247,6 +263,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-amber-50',
     rating: 4.7,
     barcode: '8901140001019',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901140001019'),
     aisle: 'Aisle 3 · Shelf 2',
     image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -262,6 +279,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-yellow-50',
     rating: 4.6,
     barcode: '8906007280014',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8906007280014'),
     aisle: 'Aisle 3 · Shelf 3',
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -276,6 +294,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-orange-100',
     rating: 4.7,
     barcode: '8901140001026',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901140001026'),
     aisle: 'Aisle 3 · Pulses Bay',
     image: 'https://images.unsplash.com/photo-1585994192701-f1a505c817ea?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -290,6 +309,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-yellow-100',
     rating: 4.9,
     barcode: '8901058852315',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901058852315'),
     aisle: 'Aisle 3 · Instant Foods',
     image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -307,6 +327,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-orange-100',
     rating: 4.7,
     barcode: '8906014430013',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8906014430013'),
     aisle: 'Aisle 4 · Bread Stand',
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -321,6 +342,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-orange-50',
     rating: 4.8,
     barcode: '8908011223344',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8908011223344'),
     aisle: 'Aisle 4 · Artisanal',
     image: 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -335,6 +357,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-amber-100',
     rating: 4.8,
     barcode: '8906014430020',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8906014430020'),
     aisle: 'Aisle 4 · Pastry Case',
     image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&auto=format&fit=crop&q=80',
     inStock: false,
@@ -349,6 +372,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-stone-100',
     rating: 4.6,
     barcode: '8906014430037',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8906014430037'),
     aisle: 'Aisle 4 · Bread Stand',
     image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -363,6 +387,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-orange-50',
     rating: 4.5,
     barcode: '8906014430044',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8906014430044'),
     aisle: 'Aisle 4 · Buns Bay',
     image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -379,6 +404,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-yellow-200',
     rating: 4.5,
     barcode: '8901491101837',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901491101837'),
     aisle: 'Aisle 5 · Chips Bay',
     image: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -394,6 +420,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-amber-200',
     rating: 4.8,
     barcode: '8904004400123',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8904004400123'),
     aisle: 'Aisle 5 · Namkeen Rack',
     image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -409,6 +436,7 @@ export const customerProducts: CustomerProduct[] = [
     rating: 4.9,
     discount: '10% OFF',
     barcode: '8901725132019',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901725132019'),
     aisle: 'Aisle 5 · Biscuits Shelf',
     image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -424,6 +452,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-orange-200',
     rating: 4.7,
     barcode: '8901491101844',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901491101844'),
     aisle: 'Aisle 5 · Chips Bay',
     image: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -438,6 +467,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-purple-100',
     rating: 4.9,
     barcode: '8901233024881',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8901233024881'),
     aisle: 'Aisle 5 · Chocolates',
     image: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -456,6 +486,7 @@ export const customerProducts: CustomerProduct[] = [
     rating: 4.7,
     discount: '20% OFF',
     barcode: '8902088011223',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8902088011223'),
     aisle: 'Aisle 6 · Deep Freezer 1',
     image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -470,6 +501,7 @@ export const customerProducts: CustomerProduct[] = [
     color: 'bg-cyan-100',
     rating: 4.6,
     barcode: '8902088011230',
+    barcodeImageUrl: getCloudinaryBarcodeUrl('8902088011230'),
     aisle: 'Aisle 6 · Deep Freezer 2',
     image: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&auto=format&fit=crop&q=80',
     inStock: true,
@@ -477,157 +509,3 @@ export const customerProducts: CustomerProduct[] = [
     buyCount: 167,
   },
 ];
-
-// "People who bought X also bought Y" recommendation mapping
-export const recommendationMap: Record<string, string[]> = {
-  'Aashirvaad Atta': ['Fortune Sunflower Oil', 'Tata Sampann Toor Dal', 'India Gate Basmati Rice', 'Nashik Red Onions'],
-  'India Gate Basmati Rice': ['Tata Sampann Toor Dal', 'Aashirvaad Atta', 'Hybrid Tomatoes', 'Fortune Sunflower Oil'],
-  'Amul Taaza Milk': ['Harvest Gold Bread', 'Amul Salted Butter', 'Farm Fresh Eggs', 'Dark Fantasy Choco Fills'],
-  'Amul Salted Butter': ['Harvest Gold Bread', 'Amul Taaza Milk', 'Farm Fresh Eggs', 'Butter Croissant'],
-  'Fresh Paneer': ['Hybrid Tomatoes', 'Nashik Red Onions', 'Fresh Coriander', 'Spinach Bunch (Palak)'],
-  'Organic Bananas': ['Shimla Royal Apples', 'Amul Taaza Milk', 'Greek Yogurt Blueberry', 'Farm Fresh Eggs'],
-  'Maggi 2-Minute Noodles': ["Lay's Classic Salted", 'Kurkure Masala Munch', 'Cadbury Dairy Milk Silk', 'Amul Taaza Milk'],
-  'Cadbury Dairy Milk Silk': ['Dark Fantasy Choco Fills', "Lay's Classic Salted", 'Haldiram\'s Aloo Bhujia', 'Amul Taaza Milk'],
-  "Lay's Classic Salted": ['Kurkure Masala Munch', 'Haldiram\'s Aloo Bhujia', 'Cadbury Dairy Milk Silk', 'Maggi 2-Minute Noodles'],
-  'Harvest Gold Bread': ['Amul Salted Butter', 'Amul Taaza Milk', 'Farm Fresh Eggs', 'Britannia Cheese Slices'],
-  'Farm Fresh Eggs': ['Harvest Gold Bread', 'Amul Taaza Milk', 'Amul Salted Butter', 'Fresh Paneer'],
-};
-
-export function getRecommendations(productName: string): CustomerProduct[] {
-  const recNames = recommendationMap[productName] ?? [];
-  return recNames
-    .map((n) => customerProducts.find((p) => p.name === n))
-    .filter(Boolean) as CustomerProduct[];
-}
-
-export function getBestSellers(): CustomerProduct[] {
-  return customerProducts
-    .filter((p) => p.bestSeller && p.inStock !== false)
-    .sort((a, b) => (b.buyCount ?? 0) - (a.buyCount ?? 0));
-}
-
-export function getOutOfStockProducts(): CustomerProduct[] {
-  return customerProducts.filter((p) => p.inStock === false);
-}
-
-export type StoreLocation = {
-  name: string;
-  address: string;
-  exitGate: string;
-  hours: string;
-  distance: string;
-  lat: number;
-  lng: number;
-  hasRegularItems?: boolean;
-  stockAvailability?: number; // percentage
-};
-
-export const storesList: StoreLocation[] = [
-  { name: 'GreenBasket Express · Indiranagar', address: '4th Main Rd, Indiranagar, Bengaluru', exitGate: 'Turnstile Exit #2', hours: 'Open until 11 PM', distance: 'In-Store', lat: 12.9784, lng: 77.6408, hasRegularItems: true, stockAvailability: 94 },
-  { name: 'GreenBasket Superstore · Koramangala', address: '80 Feet Rd, 4th Block, Koramangala', exitGate: 'Turnstile Exit #1', hours: 'Open until 11 PM', distance: '3.4 km', lat: 12.9352, lng: 77.6245, hasRegularItems: true, stockAvailability: 87 },
-  { name: 'GreenBasket Hypermarket · Whitefield', address: 'ITPL Main Rd, Whitefield', exitGate: 'Express Turnstile #3', hours: 'Open until 11 PM', distance: '8.2 km', lat: 12.9698, lng: 77.7500, hasRegularItems: false, stockAvailability: 91 },
-  { name: 'GreenBasket Express · Jayanagar', address: '11th Main, 4th Block, Jayanagar', exitGate: 'Turnstile Exit #1', hours: 'Open until 10:30 PM', distance: '5.1 km', lat: 12.9250, lng: 77.5938, hasRegularItems: true, stockAvailability: 82 },
-  { name: 'GreenBasket Superstore · Malleshwaram', address: 'Sampige Rd, Malleshwaram', exitGate: 'Express Gate #2', hours: 'Open until 10:30 PM', distance: '7.8 km', lat: 12.9965, lng: 77.5695, hasRegularItems: false, stockAvailability: 89 },
-];
-
-export const paymentMethods = [
-  { id: 'razorpay', name: 'Razorpay Instant UPI & Cards', subtitle: 'GPay, PhonePe, Paytm, RuPay · Instant Exit Pass', badge: 'FASTEST EXIT' },
-  { id: 'upi', name: 'Direct UPI App', subtitle: 'Google Pay, PhonePe, BHIM', badge: null },
-  { id: 'card', name: 'Credit / Debit Card', subtitle: 'Visa, Mastercard, RuPay', badge: null },
-  { id: 'wallet', name: 'GreenBasket Loyalty Wallet', subtitle: 'Balance: 2,480 pts (₹248 val)', badge: null },
-  { id: 'cash_desk', name: 'Pay at Express Security Gate', subtitle: 'Pay cash directly at exit turnstile desk', badge: null },
-];
-
-export const shopCategories = ['All', 'Dairy', 'Produce', 'Staples', 'Bakery', 'Snacks', 'Frozen'];
-
-export const storeInfo = {
-  name: 'GreenBasket Express · Indiranagar',
-  distance: 'In-Store (Aisle 2 Beacon)',
-  hours: 'Open until 11 PM',
-  address: '4th Main Rd, Indiranagar, Bengaluru 560038',
-  deliveryTime: '0 Min Wait (Skip the Line)',
-  exitGate: 'Express Turnstile Gate 2',
-};
-
-export const deliverySlots = ['Instant Exit Pass', 'Valid for 30 mins'];
-
-export const pastOrders = [
-  {
-    id: '#GB-PASS-2481',
-    date: '12 May',
-    items: 4,
-    total: 742,
-    status: 'Exit Cleared',
-    slot: 'Scanned & paid at Turnstile 2',
-    itemsList: [
-      { name: 'Aashirvaad Atta', qty: 1, price: 310, size: '5 kg' },
-      { name: 'India Gate Basmati Rice', qty: 2, price: 125, size: '1 kg' },
-      { name: 'Harvest Gold Bread', qty: 2, price: 45, size: '400 g' },
-      { name: 'Amul Taaza Milk', qty: 2, price: 28, size: '500 ml' },
-    ],
-  },
-  {
-    id: '#GB-PASS-2398',
-    date: '8 May',
-    items: 3,
-    total: 486,
-    status: 'Exit Cleared',
-    slot: 'Scanned & paid at Turnstile 1',
-    itemsList: [
-      { name: 'Fresh Paneer', qty: 2, price: 95, size: '200 g' },
-      { name: 'Shimla Royal Apples', qty: 1, price: 140, size: '4 pcs' },
-      { name: 'Fortune Sunflower Oil', qty: 1, price: 145, size: '1 L' },
-    ],
-  },
-  {
-    id: '#GB-PASS-2311',
-    date: '2 May',
-    items: 6,
-    total: 1290,
-    status: 'Exit Cleared',
-    slot: 'Self-Billing Express',
-    itemsList: [
-      { name: 'Aashirvaad Atta', qty: 2, price: 310, size: '5 kg' },
-      { name: 'India Gate Basmati Rice', qty: 3, price: 125, size: '1 kg' },
-      { name: 'Amul Salted Butter', qty: 3, price: 58, size: '100 g' },
-    ],
-  },
-];
-
-// Product suggestion tickets
-export type ProductSuggestion = {
-  id: string;
-  productName: string;
-  description: string;
-  category: string;
-  userName: string;
-  storeName: string;
-  timestamp: string;
-  status: 'Pending' | 'Under Review' | 'Approved' | 'Declined';
-};
-
-export const productSuggestions: ProductSuggestion[] = [
-  { id: 'SUG-001', productName: 'Organic Jaggery', description: 'Please bring organic jaggery powder, 500g packs', category: 'Staples', userName: 'Arjun Mehta', storeName: 'GreenBasket Express · Indiranagar', timestamp: '2 days ago', status: 'Under Review' },
-  { id: 'SUG-002', productName: 'Oat Milk', description: 'Oatly or similar oat milk brand for lactose intolerant', category: 'Dairy', userName: 'Arjun Mehta', storeName: 'GreenBasket Express · Indiranagar', timestamp: '5 days ago', status: 'Approved' },
-];
-
-// Restock notification watchlist
-export type RestockWatch = {
-  productName: string;
-  barcode: string;
-  category: string;
-  subscribedAt: string;
-  notified: boolean;
-};
-
-const DESCRIPTIONS: Record<string, string> = {
-  Dairy: 'Farm-fresh dairy, kept cold-chained at <4°C from our warehouse to your doorstep. Best consumed within the printed date.',
-  Produce: 'Farm-fresh, hand-picked daily from local organic farms. Washed and hygienically packed with zero chemical wax.',
-  Staples: 'Premium-grade pantry essentials, triple-checked for purity and packed in multi-layer moisture-resistant bags.',
-  Bakery: 'Baked fresh every morning before sunrise at our artisanal kitchen — strictly no artificial preservatives.',
-  Snacks: 'Crunchy favourites and tea-time savouries, packed with nitrogen flush to preserve crispiness.',
-  Frozen: 'Stored at -18°C sub-zero freezer cold-chain. Ready-to-cook delicacies and quick bites.',
-};
-
-export const productDescription = (category: string) =>
-  DESCRIPTIONS[category] ?? 'Quality-checked at the store and packed fresh for your order.';

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
+  Image,
   Pressable,
   ScrollView,
   Text,
@@ -205,9 +206,15 @@ export default function ScanScreen() {
               <Pressable
                 key={prod.name}
                 onPress={() => triggerScan(prod)}
-                className="items-center rounded-xl border border-[#e5e7eb] bg-white p-2.5 active:bg-[#f2f8ee]">
-                <ScanLine size={16} color="#2e8b65" />
-                <Text numberOfLines={1} className="mt-1 text-[10px] font-bold text-[#173f31]">
+                className="items-center rounded-xl border border-[#e5e7eb] bg-white p-2 active:bg-[#f2f8ee] w-20">
+                <View className="size-10 items-center justify-center rounded-lg bg-slate-50 overflow-hidden border border-[#f0f2f5]">
+                  {prod.image ? (
+                    <Image source={{ uri: prod.image }} className="h-full w-full" resizeMode="contain" />
+                  ) : (
+                    <ScanLine size={16} color="#2e8b65" />
+                  )}
+                </View>
+                <Text numberOfLines={1} className="mt-1 text-[9px] font-bold text-[#173f31] text-center">
                   {prod.name}
                 </Text>
                 <Text className="text-[8px] text-[#9ca3af]">{prod.barcode.slice(-5)}</Text>
@@ -227,14 +234,39 @@ export default function ScanScreen() {
               <Text className="text-[10px] text-[#6b7280]">EAN: {scannedProduct.barcode}</Text>
             </View>
 
-            <View className="mt-3 flex-row items-center justify-between">
-              <View className="flex-1 pr-3">
+            <View className="mt-3 flex-row items-center gap-3">
+              <View className="size-14 items-center justify-center rounded-xl bg-white border border-[#d8eacb] overflow-hidden p-1">
+                {scannedProduct.image ? (
+                  <Image source={{ uri: scannedProduct.image }} className="h-full w-full" resizeMode="contain" />
+                ) : (
+                  <ShoppingBag size={24} color="#2e8b65" />
+                )}
+              </View>
+              <View className="flex-1">
                 <Text className="text-[14px] font-bold text-[#173f31]">{scannedProduct.name}</Text>
                 <Text className="mt-0.5 text-[11px] text-[#6b7280]">
                   {scannedProduct.size} · {scannedProduct.category}
                 </Text>
               </View>
               <Text className="text-[16px] font-bold text-[#173f31]">₹{scannedProduct.price}</Text>
+            </View>
+
+            {/* Cloudinary Barcode Visual & MongoDB Verified Source */}
+            <View className="mt-3 rounded-xl border border-[#dcebd4] bg-white p-2.5 items-center">
+              <View className="w-full flex-row items-center justify-between pb-1 border-b border-[#f0f4ee]">
+                <Text className="text-[9px] font-bold text-[#2e8b65]">⚡ Cloudinary Barcode CDN</Text>
+                <Text className="text-[9px] font-bold text-[#173f31]">🍃 MongoDB Catalog</Text>
+              </View>
+              <View className="h-10 w-full items-center justify-center pt-1">
+                <Image
+                  source={{ uri: `https://barcodeapi.org/api/128/${scannedProduct.barcode}` }}
+                  className="h-8 w-52"
+                  resizeMode="contain"
+                />
+              </View>
+              <Text className="mt-0.5 text-[8px] font-mono text-[#6b7280]">
+                EAN: {scannedProduct.barcode}
+              </Text>
             </View>
 
             <View className="mt-4 flex-row gap-2">

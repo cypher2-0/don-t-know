@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Alert,
+  Image,
   Pressable,
   ScrollView,
   Text,
@@ -152,9 +153,12 @@ export default function CartScreen() {
               <View
                 key={item.product.name}
                 className="mt-2.5 flex-row gap-3 rounded-2xl border border-[#e5e7eb] bg-white p-3 shadow-2xs">
-                <View
-                  className={`size-14 items-center justify-center rounded-xl ${item.product.color}`}>
-                  <ShoppingBag size={22} color="#5b876e" opacity={0.5} />
+                <View className="size-14 items-center justify-center rounded-xl bg-slate-50 border border-[#f0f2f5] overflow-hidden p-1">
+                  {item.product.image ? (
+                    <Image source={{ uri: item.product.image }} className="h-full w-full" resizeMode="contain" />
+                  ) : (
+                    <ShoppingBag size={22} color="#5b876e" opacity={0.5} />
+                  )}
                 </View>
                 <View className="flex-1">
                   <Text numberOfLines={1} className="text-[12px] font-bold text-[#173f31]">

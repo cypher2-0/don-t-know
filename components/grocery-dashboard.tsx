@@ -66,6 +66,7 @@ import {
   type ConnectedProblem,
 } from "@/lib/head-office-ops";
 import CustomerApp from "@/components/customer-app";
+import StaffGateScannerWeb from "@/components/staff-gate-scanner-web";
 
 type View =
   | "overview"
@@ -279,7 +280,7 @@ function Topbar({
           onClick={onVerifyQR}
           className="hidden items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#e3f1dc] to-[#cbe3c0] px-4 py-2 text-[11px] font-bold text-[#1a5b42] shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:brightness-105 active:scale-95 md:flex"
         >
-          <QrCode className="size-3.5" /> Verify Exit
+          <ShieldCheck className="size-3.5 text-emerald-700" /> Turnstile Gate Scanner
         </button>
         <div className="hidden items-center gap-2 rounded-xl border bg-[#fafcfa] px-3 py-2 sm:flex">
           <Search className="size-4 text-muted-foreground" />
@@ -2209,74 +2210,14 @@ export default function GroceryDashboard() {
 
       {qrModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6"
           onClick={() => setQrModalOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"
+            className="w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-3xl bg-[#0b1712] shadow-2xl ring-1 ring-white/10"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-border/80 pb-3">
-              <h3 className="text-[16px] font-bold text-[#143d31]">
-                Verify Exit Receipt
-              </h3>
-              <button
-                onClick={() => setQrModalOpen(false)}
-                className="rounded-lg p-1 hover:bg-muted"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-[12px] text-muted-foreground mb-2">
-                Use hardware scanner or enter code manually:
-              </p>
-              <input
-                value={qrToken}
-                onChange={(e) => setQrToken(e.target.value)}
-                placeholder="e.g. ORD-XYZ-VERIFIED-1234"
-                className="w-full rounded-xl border border-border/80 px-4 py-2.5 text-[13px] font-medium outline-none focus:border-[#164e3b]"
-              />
-              <button
-                onClick={handleVerifyQR}
-                className="mt-3 w-full rounded-xl bg-[#164e3b] py-2.5 text-[12px] font-bold text-white hover:bg-[#124031]"
-              >
-                Verify
-              </button>
-            </div>
-
-            {verifyStatus && (
-              <div
-                className={`mt-4 rounded-xl border p-4 ${verifyStatus.success ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"}`}
-              >
-                {verifyStatus.success ? (
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="size-8 text-emerald-600" />
-                    <div>
-                      <p className="text-[14px] font-bold text-emerald-900">
-                        Valid Receipt
-                      </p>
-                      <p className="text-[11px] text-emerald-700">
-                        Order {verifyStatus.orderNumber} is paid. Allow exit.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="size-8 text-red-600" />
-                    <div>
-                      <p className="text-[14px] font-bold text-red-900">
-                        Verification Failed
-                      </p>
-                      <p className="text-[11px] text-red-700">
-                        {verifyStatus.error}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            <StaffGateScannerWeb onClose={() => setQrModalOpen(false)} />
           </div>
         </div>
       )}
