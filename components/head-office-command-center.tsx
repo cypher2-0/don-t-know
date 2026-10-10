@@ -61,7 +61,10 @@ import {
   type VectorType,
 } from '@/lib/head-office-ops'
 
+import franchiseDataset from '@/data/franchise_ops/aggregated_franchise_ops.json'
+
 export default function HeadOfficeCommandCenter() {
+  const [dataSource, setDataSource] = useState<'franchise_25' | 'deep_5'>('franchise_25')
   const [activeTab, setActiveTab] = useState<'rankings' | 'correlator' | 'checklist' | 'simulator'>('rankings')
   const [selectedStoreId, setSelectedStoreId] = useState<string>('Whitefield')
   const [tierFilter, setTierFilter] = useState<'All' | UrgencyTier>('All')
@@ -99,17 +102,53 @@ export default function HeadOfficeCommandCenter() {
     },
   ])
   const [notificationToast, setNotificationToast] = useState<{ message: string; type: 'success' | 'alert' } | null>(null)
+  const currentStores =
+    dataSource === 'franchise_25'
+      ? (franchiseDataset.stores as any[]).map((s) => ({
+          rank: s.rank,
+          storeId: s.storeId,
+          name: s.name,
+          city: `${s.location} · ${s.format} (${s.franchisee})`,
+          urgencyScore: s.urgencyScore,
+          tier: s.tier as UrgencyTier,
+          primaryIssue: s.primaryIssue,
+          expiryRiskValue: Math.round(s.totalWastageValue / 10),
+          stockoutSkus: s.stockoutCount,
+          shrinkageAnomaly: `${s.totalWastageQty} units logged`,
+          rosterGap: `${s.avgStaffingRatio}% avg staffing ratio`,
+          estimatedDailyMarginLoss: s.dailyMarginLoss,
+          lat: 12.9716,
+          lng: 77.5946,
+          managerName: `${s.franchisee} Lead`,
+          managerPhone: `Store ID: ${s.storeId}`,
+        }))
+      : headOfficeStoreRankings
 
   const activeStoreRanking =
-    headOfficeStoreRankings.find((s) => s.name.toLowerCase() === selectedStoreId.toLowerCase()) ||
-    headOfficeStoreRankings[0]
+    currentStores.find(
+      (s) =>
+        s.name.toLowerCase().includes(selectedStoreId.toLowerCase()) ||
+        s.storeId?.toLowerCase() === selectedStoreId.toLowerCase()
+    ) || currentStores[0]
 
-  const activeCorrelation = storeCorrelationProfiles[activeStoreRanking.name] || storeCorrelationProfiles.Whitefield
-  const activeDiagnosis = storeOperationalDiagnosis[activeStoreRanking.name] || storeOperationalDiagnosis.Whitefield
-  const activeChecklist = checklists[activeStoreRanking.name] || []
+  const activeCorrelation =
+    storeCorrelationProfiles[activeStoreRanking.name.split(' ')[0]] ||
+    storeCorrelationProfiles[activeStoreRanking.name] ||
+    storeCorrelationProfiles.Whitefield
+
+  const activeDiagnosis =
+    storeOperationalDiagnosis[activeStoreRanking.name.split(' ')[0]] ||
+    storeOperationalDiagnosis[activeStoreRanking.name] ||
+    storeOperationalDiagnosis.Whitefield
+
+  const activeChecklist =
+    checklists[activeStoreRanking.name.split(' ')[0]] ||
+    checklists[activeStoreRanking.name] ||
+    checklists.Whitefield ||
+    []
 
   // Filtered stores
-  const filteredStores = headOfficeStoreRankings.filter((store) => {
+  const filteredStores = currentStores.filter((store) => {
     const matchesTier = tierFilter === 'All' || store.tier === tierFilter
     const matchesSearch =
       store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,12 +159,13 @@ export default function HeadOfficeCommandCenter() {
 
   // Toggle checklist item
   const handleToggleChecklist = (itemId: string) => {
+    const key = activeStoreRanking.name.split(' ')[0]
     setChecklists((prev) => {
-      const storeItems = prev[activeStoreRanking.name] || []
+      const storeItems = prev[key] || prev.Whitefield || []
       const updated = storeItems.map((item) =>
         item.id === itemId ? { ...item, completed: !item.completed } : item
       )
-      return { ...prev, [activeStoreRanking.name]: updated }
+      return { ...prev, [key]: updated }
     })
   }
 
@@ -199,10 +239,10 @@ export default function HeadOfficeCommandCenter() {
   }
 
   // Chain stats
-  const totalMarginAtRisk = headOfficeStoreRankings.reduce((acc, s) => acc + s.estimatedDailyMarginLoss, 0)
-  const totalStockoutSkus = headOfficeStoreRankings.reduce((acc, s) => acc + s.stockoutSkus, 0)
-  const totalExpiryRisk = headOfficeStoreRankings.reduce((acc, s) => acc + s.expiryRiskValue, 0)
-  const tier1Count = headOfficeStoreRankings.filter((s) => s.tier === 'Tier 1: Immediate Intervention').length
+  const totalMarginAtRisk = currentStores.reduce((acc, s) => acc + s.estimatedDailyMarginLoss, 0)
+  const totalStockoutSkus = currentStores.reduce((acc, s) => acc + s.stockoutSkus, 0)
+  const totalExpiryRisk = currentStores.reduce((acc, s) => acc + s.expiryRiskValue, 0)
+  const tier1Count = currentStores.filter((s) => s.tier === 'Tier 1: Immediate Intervention').length
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -239,8 +279,38 @@ export default function HeadOfficeCommandCenter() {
 
               <span className="flex items-center gap-1.5 rounded-full bg-rose-500/25 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-rose-200 border border-rose-500/40">
                 <Flame className="size-3 text-rose-400" />
-                {tier1Count} Store Tier-1 Intervention Required
+                {tier1Count} Stores Need Tier-1 Intervention
               </span>
+
+              {/* Live Dataset Source Switcher */}
+              <div className="flex items-center rounded-2xl bg-white/10 p-1 border border-white/15">
+                <button
+                  onClick={() => {
+                    setDataSource('franchise_25')
+                    setSelectedStoreId(franchiseDataset.stores[0].name)
+                  }}
+                  className={`rounded-xl px-3 py-1 text-[10px] font-black transition-all ${
+                    dataSource === 'franchise_25'
+                      ? 'bg-white text-[#041c14] shadow-sm'
+                      : 'text-emerald-200 hover:text-white'
+                  }`}
+                >
+                  ✦ 25-Store Franchise Dataset (54k Records)
+                </button>
+                <button
+                  onClick={() => {
+                    setDataSource('deep_5')
+                    setSelectedStoreId('Whitefield')
+                  }}
+                  className={`rounded-xl px-3 py-1 text-[10px] font-black transition-all ${
+                    dataSource === 'deep_5'
+                      ? 'bg-white text-[#041c14] shadow-sm'
+                      : 'text-emerald-200 hover:text-white'
+                  }`}
+                >
+                  Focused 5-Store Telemetry
+                </button>
+              </div>
             </div>
 
             <h1 className="mt-3.5 text-[28px] sm:text-[34px] font-black tracking-tight text-white leading-tight">
